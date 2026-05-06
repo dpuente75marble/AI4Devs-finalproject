@@ -246,6 +246,97 @@ TB-002, TB-003
 
 ---
 
+## TB-007A - Configure Swagger/OpenAPI Documentation
+
+### Description
+
+Configure Swagger/OpenAPI documentation generation for backend APIs.
+
+### Priority
+
+High
+
+### Dependencies
+
+TB-003
+
+### Notes
+
+The OpenAPI specification will support:
+
+- frontend integration
+- AI-assisted backend development
+- API consistency
+- testing workflows
+
+---
+
+## TB-007B - Create AI Context Files
+
+### Description
+
+Create AI context files such as CLAUDE.md, AGENTS.md, and project development conventions.
+
+### Priority
+
+High
+
+### Dependencies
+
+TB-001
+
+### Notes
+
+These files will help AI-assisted tools understand:
+
+- architecture conventions
+- development workflow
+- testing strategy
+- project structure
+- coding expectations
+
+---
+
+## TB-007C - Configure Initial Cursor Rules
+
+### Description
+
+Create reusable Cursor rules for frontend, backend, testing, and documentation workflows.
+
+### Priority
+
+High
+
+### Dependencies
+
+TB-007B
+
+### Notes
+
+Rules will help maintain consistency across AI-assisted development workflows.
+
+---
+
+## TB-007D - Define Initial Development Agents
+
+### Description
+
+Define initial development-oriented AI agents for backend, frontend, testing, and documentation workflows.
+
+### Priority
+
+Medium
+
+### Dependencies
+
+TB-007B
+
+### Notes
+
+Development agents will support implementation productivity while preserving human validation responsibilities.
+
+---
+
 # 4. Backend Tasks
 
 # Authentication
@@ -915,7 +1006,7 @@ Potential future backlog items:
 - vector database integration
 - AI memory management
 - AI planning assistant
-- autonomous delivery agents
+- autonomous product agents
 - advanced operational dashboards
 
 These tasks are intentionally excluded from the MVP.

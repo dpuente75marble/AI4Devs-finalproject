@@ -22,6 +22,11 @@
 18. Security Considerations
 19. Engineering Workflow
 20. Technical Non-Goals
+21. Architecture Decision Records
+22. Architecture Diagrams
+23. Future Technical Evolution
+24. Technical Design Summary
+25. TDD Strategy
 
 ---
 
@@ -469,6 +474,28 @@ Contains:
 - AI providers must be accessed through interfaces
 - Modules must be independently testable
 
+## API Documentation and OpenAPI Strategy
+
+The backend API will follow an OpenAPI-first mindset.
+
+The project will expose Swagger/OpenAPI documentation to describe:
+
+- endpoints
+- request payloads
+- response payloads
+- validation rules
+- authentication requirements
+
+Swagger/OpenAPI documentation will support:
+
+- frontend integration
+- AI-assisted backend development
+- API consistency
+- testing workflows
+- future external integrations
+
+The OpenAPI specification will also serve as contextual input for AI-assisted implementation workflows.
+
 ---
 
 # 9. Database Strategy
@@ -826,6 +853,19 @@ Detailed AI workflow will be defined in:
 docs/07-ai-development-workflow.md
 ~~~
 
+## MCP as Development Support
+
+The development workflow may optionally use MCP-compatible integrations during implementation phases.
+
+Potential MCP integrations include:
+
+- PostgreSQL schema inspection
+- repository context access
+- issue tracking integration
+- documentation retrieval
+
+MCP usage is considered a development productivity enhancement and is not required for the MVP runtime architecture.
+
 ---
 
 # 20. Technical Non-Goals
@@ -1050,6 +1090,8 @@ The architecture is intentionally designed to balance:
 - future scalability
 - AI-assisted engineering workflows
 - maintainable implementation complexity
+
+---
 
 # 25. TDD Strategy
 
