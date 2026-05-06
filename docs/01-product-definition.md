@@ -76,6 +76,8 @@ The platform aims to:
 - Generate standardized operational outputs
 - Reduce planning and delivery errors
 - Improve team delivery predictability
+- Support multi-project delivery visibility
+- Support cross-department resource allocation planning
 
 ---
 

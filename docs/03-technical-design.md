@@ -485,14 +485,46 @@ Prisma ORM will be used for:
 The initial model will include:
 
 - User
+- Department
 - Project
 - Sprint
 - TeamMember
+- ProjectAssignment
 - Absence
 - UserStory
 - RequirementDocument
 - RefinementResult
 - ExportJob
+
+## Initial Domain Relationships
+
+```mermaid
+flowchart TD
+
+    Department
+    Project
+    Sprint
+    UserStory
+    TeamMember
+    ProjectAssignment
+    Absence
+
+    Department --> Project
+    Project --> Sprint
+    Sprint --> UserStory
+
+    TeamMember --> ProjectAssignment
+    ProjectAssignment --> Project
+
+    TeamMember --> Absence
+```
+
+The data model is designed to support:
+
+- multiple departments
+- multiple projects
+- temporary cross-project assignments
+- future scalability for delivery operations
 
 The detailed database schema will be defined in:
 

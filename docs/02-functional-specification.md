@@ -100,10 +100,14 @@ Allows users to configure sprint team capacity.
 ## Functionalities
 
 - Create team members
-- Define role
+- Define team member role
+- Define base department
+- Assign team members to projects
+- Support temporary cross-department assignments
 - Configure sprint capacity
 - Configure vacations
 - Configure absences/non-working days
+- Configure allocation percentage per project if needed
 
 ## Inputs
 
@@ -115,6 +119,8 @@ Allows users to configure sprint team capacity.
 
 - Available sprint capacity
 - Team allocation information
+- Cross-project allocation visibility
+- Department allocation overview
 
 ---
 
