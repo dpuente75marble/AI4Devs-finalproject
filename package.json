@@ -4,6 +4,11 @@
   "private": true,
   "packageManager": "pnpm@10.33.4",
   "scripts": {
-    "workspace:check": "pnpm -r list --depth -1"
+    "workspace:check": "pnpm -r list --depth -1",
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:web": "pnpm --filter web dev",
+    "build": "pnpm -r --if-present run build",
+    "test": "pnpm -r --if-present run test",
+    "lint": "pnpm -r --if-present run lint"
   }
 }
