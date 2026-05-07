@@ -143,7 +143,7 @@ The architecture follows:
 - specification-first development
 - AI-assisted engineering workflows
 
-The platform uses a modular monolith architecture with pragmatic Clean Architecture and Hexagonal Architecture principles.
+The platform uses a modular monolith architecture designed around pragmatic Clean Architecture and Hexagonal Architecture principles.
 
 ~~~text
 React Frontend
