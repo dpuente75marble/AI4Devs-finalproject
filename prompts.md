@@ -1,470 +1,79 @@
-# DeliveryOps AI - AI Prompts Documentation
+# DeliveryOps AI - Trazabilidad de Prompts de IA
 
-# Table of Contents
+## 1. Introducción
 
-1. Prompting Strategy
-2. Product Definition Prompts
-3. Architecture Prompts
-4. Data Model Prompts
-5. User Story and BDD Prompts
-6. AI Workflow Prompts
-7. Backend Engineering Prompts
-8. Frontend Engineering Prompts
-9. Testing Prompts
-10. Human Validation Notes
-11. Prompt Engineering Summary
+Este documento registra el uso real de prompts durante la implementación del MVP de DeliveryOps AI bajo un enfoque AI-first.
+
+Su objetivo es aportar trazabilidad académica sobre:
+
+- qué se solicitó a la IA,
+- qué alcance tuvo cada solicitud,
+- y qué decisiones finales fueron tomadas por criterio humano.
+
+Solo se incluyen prompts efectivamente utilizados en la implementación realizada hasta este punto.
 
 ---
 
-# 1. Prompting Strategy
+## 2. Criterio de registro de prompts
 
-DeliveryOps AI follows an AI-assisted engineering workflow where prompts are treated as engineering assets.
+Reglas aplicadas para este registro:
 
-The project uses prompts to support:
-
-- product definition
-- architecture design
-- backlog generation
-- implementation assistance
-- testing workflows
-- documentation generation
-
-The prompting strategy prioritizes:
-
-- contextual prompts
-- architecture-aware prompts
-- incremental generation
-- human validation
-- traceability
-
-Prompts are intentionally refined iteratively instead of relying on single large generations.
+1. Se registra un prompt cuando generó cambios concretos en el repositorio o validaciones técnicas ejecutadas.
+2. Se documenta el objetivo funcional/técnico del prompt, no conversaciones accesorias.
+3. Se evita inventar resultados no ejecutados o no validados.
+4. Se separan claramente acciones de IA y decisiones humanas.
+5. Se mantiene foco MVP (sin sobreingeniería ni alcance empresarial avanzado).
 
 ---
 
-# 2. Product Definition Prompts
+## 3. Herramientas IA utilizadas
 
-## Prompt 1 - Product Vision Definition
-
-### Objective
-
-Define the initial SaaS product vision and MVP boundaries.
-
-### Prompt
-
-~~~text
-Act as a Tech Lead, Product Manager, and Software Architect expert in SaaS products and end-to-end delivery systems.
-
-Help define a realistic MVP for a platform that automates sprint planning, capacity analysis, User Story refinement, and operational reporting.
-
-The platform should solve real delivery management problems using CSV imports, AI-assisted refinement, and operational exports.
-
-Avoid overengineering and prioritize a realistic Master project scope.
-~~~
-
-### Human Validation
-
-The generated proposal was refined to:
-
-- reduce excessive enterprise scope
-- focus on a complete E2E operational flow
-- maintain realistic implementation feasibility
+- ChatGPT: apoyo en definición de pasos, revisión técnica, toma de decisiones y generación de prompts para Cursor.
+- Cursor: implementación asistida sobre el repositorio.
+- Modelos LLM OpenAI-compatible: asistencia para generación, revisión y validación de código/documentación.
+- Supervisión humana: todas las decisiones técnicas relevantes fueron revisadas antes de consolidarse en commits.
 
 ---
 
-## Prompt 2 - MVP Scope Prioritization
+## 4. Tabla de prompts usados
 
-### Objective
-
-Prioritize realistic Must-Have and Should-Have features.
-
-### Prompt
-
-~~~text
-Help prioritize the MVP scope for an AI-assisted delivery management platform.
-
-The MVP must remain realistic for a Master project while still demonstrating:
-
-- backend
-- frontend
-- database
-- AI integration
-- testing
-- CI/CD
-- deployment
-
-Propose Must-Have and Should-Have features while avoiding unnecessary enterprise complexity.
-~~~
-
-### Human Validation
-
-The final scope was simplified to:
-
-- authentication
-- CSV import
-- sprint analysis
-- AI refinement
-- Excel export
-
-Advanced analytics and enterprise capabilities were intentionally postponed.
+| ID | Prompt principal | Objetivo | Resultado real |
+|---|---|---|---|
+| P-001 | Inicialización del monorepo | Crear base `pnpm workspace` con estructura `apps/web`, `apps/api`, `packages/shared` | Estructura creada, `package.json` raíz, `pnpm-workspace.yaml`, `.editorconfig`, `.gitignore` |
+| P-002 | Inicialización backend NestJS | Crear app NestJS standalone en `apps/api` (sin monorepo Nest) | App NestJS creada con `name: "api"` y ejecución por `pnpm --filter api start:dev` |
+| P-003 | Healthcheck backend | Reemplazar endpoint demo por endpoint profesional de salud | `GET /api/health` operativo con respuesta `{ "status": "ok", "service": "deliveryops-api" }` y tests ajustados |
+| P-004 | Inicialización frontend React/Vite | Crear app frontend React + TypeScript + Vite en `apps/web` | App creada con `name: "web"`, build validado, dev server operativo |
+| P-005 | Limpieza frontend | Eliminar demo de Vite/React y dejar landing mínima | Landing base de producto implementada, assets demo eliminados, build validado |
+| P-006 | Scripts raíz monorepo | Agregar scripts simples de trabajo en raíz | Scripts `workspace:check`, `dev:api`, `dev:web`, `build`, `test`, `lint` agregados y validados |
+| P-007 | Foundation Prisma + PostgreSQL | Preparar base mínima de persistencia para `apps/api` | Prisma instalado en `apps/api`, `docker-compose.yml` con `postgres:16-alpine`, migración inicial aplicada y Prisma Client generado |
 
 ---
 
-# 3. Architecture Prompts
+## 5. Decisiones humanas aplicadas
 
-## Prompt 3 - Technical Architecture Definition
+Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
-### Objective
-
-Define the technical architecture and stack.
-
-### Prompt
-
-~~~text
-Design a modern SaaS architecture for an AI-assisted delivery operations platform using:
-
-- React
-- TypeScript
-- NestJS
-- PostgreSQL
-
-The architecture must support:
-
-- Clean Architecture
-- Hexagonal Architecture
-- modular monolith structure
-- AI provider decoupling
-- free-tier deployment
-- AI-assisted development workflows
-
-Avoid unnecessary microservices complexity.
-~~~
-
-### Human Validation
-
-The architecture was refined to:
-
-- keep a modular monolith
-- use pragmatic Clean Architecture
-- avoid premature distributed systems complexity
+- Mantener alcance MVP y postergar Clean Architecture completa para fases posteriores.
+- No introducir Nx, Turborepo, Lerna ni tooling adicional en esta etapa.
+- No integrar Prisma con modelos de negocio complejos; solo modelo mínimo de validación (`HealthCheck`).
+- No incorporar aún Tailwind, shadcn, routing frontend ni integración backend-frontend.
+- Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
+- Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 
 ---
 
-## Prompt 4 - AI Engineering Workflow
+## 6. Próximos prompts a registrar
 
-### Objective
+Siguientes bloques recomendados para mantener trazabilidad AI-first:
 
-Define an AI-assisted engineering workflow aligned with modern AI Engineering practices.
-
-### Prompt
-
-~~~text
-Define an AI Engineering workflow using:
-
-- Cursor
-- SpecKit
-- BDD
-- TDD
-- reusable prompts
-- AI rules
-- AI skills
-- AI agents
-
-The workflow must remain realistic for a single-developer Master project.
-~~~
-
-### Human Validation
-
-The workflow was adjusted to:
-
-- preserve human validation
-- avoid excessive autonomous behavior
-- maintain implementation simplicity
+1. Integración de Prisma Client en NestJS (módulo/servicio de infraestructura mínimo).
+2. Primer módulo vertical MVP (por ejemplo, import de User Stories).
+3. Contrato API inicial y validación DTO (sin sobreextender dominio).
+4. Primera integración frontend-backend para consumo de endpoint real.
+5. Estrategia base de testing por capa (unit, e2e mínimo, smoke flows).
+6. Preparación de despliegue MVP inicial (sin optimizaciones enterprise).
 
 ---
 
-# 4. Data Model Prompts
-
-## Prompt 5 - Multi-Project Data Model
-
-### Objective
-
-Design a realistic delivery operations data model.
-
-### Prompt
-
-~~~text
-Design a relational database model for a SaaS delivery operations platform.
-
-The system must support:
-
-- multiple departments
-- multiple projects
-- sprint planning
-- temporary project assignments
-- absences
-- User Stories
-- AI refinement results
-- export jobs
-
-The model should remain realistic and avoid excessive enterprise complexity.
-~~~
-
-### Human Validation
-
-The final model intentionally separated:
-
-- TeamMember
-- ProjectAssignment
-- Department
-
-to support temporary cross-project assignments.
-
----
-
-# 5. User Story and BDD Prompts
-
-## Prompt 6 - User Story Generation
-
-### Objective
-
-Generate MVP User Stories aligned with BDD.
-
-### Prompt
-
-~~~text
-Generate realistic User Stories for a SaaS platform that supports:
-
-- CSV import
-- sprint planning
-- AI-assisted refinement
-- operational reporting
-
-Each User Story must include:
-
-- business value
-- priority
-- Given/When/Then acceptance criteria
-
-Avoid creating unnecessary backlog complexity.
-~~~
-
-### Human Validation
-
-The final backlog was simplified to focus on:
-
-- operational value
-- realistic implementation scope
-- end-to-end MVP completeness
-
----
-
-# 6. AI Workflow Prompts
-
-## Prompt 7 - AI Provider Strategy
-
-### Objective
-
-Define a flexible AI provider architecture.
-
-### Prompt
-
-~~~text
-Design an AI provider abstraction layer that supports:
-
-- OpenAI-compatible providers
-- Azure OpenAI
-- mock AI providers
-
-The architecture must avoid vendor lock-in and support testing workflows.
-~~~
-
-### Human Validation
-
-Mock providers were intentionally prioritized to:
-
-- reduce API costs
-- simplify testing
-- support deterministic demos
-
----
-
-## Prompt 8 - AI Agent Strategy
-
-### Objective
-
-Define a realistic AI agents strategy.
-
-### Prompt
-
-~~~text
-Help define a realistic AI agents strategy for a Master project focused on AI-assisted software engineering.
-
-Differentiate:
-
-- development agents
-- product agents
-
-Avoid unrealistic autonomous AI claims.
-~~~
-
-### Human Validation
-
-The final strategy was adjusted to:
-
-- include development-oriented agents
-- postpone autonomous product agents
-- preserve human governance
-
----
-
-# 7. Backend Engineering Prompts
-
-## Prompt 9 - Backend Modular Architecture
-
-### Objective
-
-Define the backend module structure.
-
-### Prompt
-
-~~~text
-Design a modular NestJS backend structure using pragmatic Clean Architecture.
-
-The backend must include:
-
-- domain
-- application
-- infrastructure
-- presentation
-
-The architecture must support:
-
-- authentication
-- sprint analysis
-- AI refinement
-- exports
-- Prisma repositories
-- OpenAPI documentation
-
-Avoid unnecessary CQRS or event-driven complexity.
-~~~
-
-### Human Validation
-
-CQRS and event-driven architecture were intentionally excluded from the MVP.
-
----
-
-# 8. Frontend Engineering Prompts
-
-## Prompt 10 - Frontend Architecture
-
-### Objective
-
-Define the frontend architecture and state strategy.
-
-### Prompt
-
-~~~text
-Design a React frontend architecture for an operational SaaS platform.
-
-The frontend must use:
-
-- React
-- TypeScript
-- feature-based organization
-- TanStack Query
-- Tailwind CSS
-- shadcn/ui
-
-The architecture should prioritize maintainability and operational usability over visual complexity.
-~~~
-
-### Human Validation
-
-The frontend was simplified to:
-
-- avoid excessive global state
-- prioritize server-driven state
-- keep components small and modular
-
----
-
-# 9. Testing Prompts
-
-## Prompt 11 - TDD Strategy
-
-### Objective
-
-Define a pragmatic TDD strategy.
-
-### Prompt
-
-~~~text
-Define a pragmatic TDD strategy for a SaaS MVP using:
-
-- NestJS
-- React
-- Jest
-- Playwright
-
-TDD should focus on critical business logic while avoiding unnecessary testing complexity.
-~~~
-
-### Human Validation
-
-TDD was limited to:
-
-- sprint calculations
-- absence impact
-- CSV validation
-- export validation
-- AI orchestration logic
-
----
-
-# 10. Human Validation Notes
-
-Human validation remained mandatory across all phases of the project.
-
-## Human Responsibilities
-
-The human engineer validated:
-
-- architecture decisions
-- scope boundaries
-- technical tradeoffs
-- generated User Stories
-- generated backlog tasks
-- testing priorities
-- AI workflow decisions
-
----
-
-## Main Human Adjustments
-
-Important human-driven adjustments included:
-
-- reducing enterprise scope
-- avoiding microservices
-- avoiding unnecessary AI complexity
-- prioritizing free-tier deployment
-- simplifying operational workflows
-- keeping the MVP realistic for the Master timeline
-
----
-
-# 11. Prompt Engineering Summary
-
-DeliveryOps AI treats prompt engineering as an important engineering discipline.
-
-The project intentionally uses:
-
-- contextual prompting
-- architecture-aware prompting
-- incremental prompting
-- AI governance
-- traceable prompt evolution
-- human validation
-
-The prompting workflow aims to demonstrate a realistic AI Engineering process suitable for modern SaaS software development.
+**Última actualización:** 2026-05-08  
+**Alcance cubierto:** Foundation de monorepo, backend, frontend y base de datos local para MVP.
