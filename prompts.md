@@ -46,6 +46,7 @@ Reglas aplicadas para este registro:
 | P-005 | Limpieza frontend | Eliminar demo de Vite/React y dejar landing mínima | Landing base de producto implementada, assets demo eliminados, build validado |
 | P-006 | Scripts raíz monorepo | Agregar scripts simples de trabajo en raíz | Scripts `workspace:check`, `dev:api`, `dev:web`, `build`, `test`, `lint` agregados y validados |
 | P-007 | Foundation Prisma + PostgreSQL | Preparar base mínima de persistencia para `apps/api` | Prisma instalado en `apps/api`, `docker-compose.yml` con `postgres:16-alpine`, migración inicial aplicada y Prisma Client generado |
+| P-008 | Integración Prisma en NestJS | Integrar `PrismaService` y `PrismaModule` en `apps/api` con foundation mínima reusable y lifecycle correcto | Se implementó `PrismaService` con `OnModuleInit` y `$connect()`, Prisma quedó ubicado en `infrastructure`, se ajustó `PrismaModule` para quitar `@Global()` por decisión arquitectónica y se validó con `pnpm --filter api build` + `pnpm --filter api test` |
 
 ---
 
@@ -59,6 +60,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - No incorporar aún Tailwind, shadcn, routing frontend ni integración backend-frontend.
 - Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
+- Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
 
 ---
 
