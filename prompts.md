@@ -48,6 +48,7 @@ Reglas aplicadas para este registro:
 | P-007 | Foundation Prisma + PostgreSQL | Preparar base mínima de persistencia para `apps/api` | Prisma instalado en `apps/api`, `docker-compose.yml` con `postgres:16-alpine`, migración inicial aplicada y Prisma Client generado |
 | P-008 | Integración Prisma en NestJS | Integrar `PrismaService` y `PrismaModule` en `apps/api` con foundation mínima reusable y lifecycle correcto | Se implementó `PrismaService` con `OnModuleInit` y `$connect()`, Prisma quedó ubicado en `infrastructure`, se ajustó `PrismaModule` para quitar `@Global()` por decisión arquitectónica y se validó con `pnpm --filter api build` + `pnpm --filter api test` |
 | P-009 | ConfigModule y gestión de variables de entorno | Sustituir `dotenv` directo por `ConfigModule` de NestJS | `@nestjs/config` instalado en `apps/api`, `ConfigModule.forRoot()` configurado en `AppModule`, eliminado `import 'dotenv/config'` de `main.ts`, `build`/`test` OK y `start:dev` bloqueado solo por puerto `3000` ocupado |
+| P-010 | Swagger/OpenAPI foundation | Preparar documentación OpenAPI mínima alineada con enfoque OpenAPI-first | Se instalaron `@nestjs/swagger` y `swagger-ui-express`, se configuró Swagger en `main.ts`, documentación disponible en `/api/docs`, endpoint `GET /api/health` documentado, validaciones `build`/`test` correctas y Swagger validado manualmente en navegador |
 
 ---
 
@@ -63,6 +64,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 - Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
 - Se pospone validation schema de variables de entorno para mantener scope MVP.
+- Se pospone versionado y seguridad Swagger para mantener simplicidad MVP.
 
 ---
 
