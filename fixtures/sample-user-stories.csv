@@ -1,0 +1,7 @@
+external_id,title,description,story_points,status,sprint
+US-101,Login de usuario,Como usuario quiero iniciar sesión con email y contraseña para acceder al workspace,5,ready,Sprint 1
+US-102,Recuperar contraseña,Como usuario quiero restablecer mi contraseña mediante enlace por email,3,draft,Sprint 1
+US-103,Importar User Stories CSV,Como Project Manager quiero subir un CSV de historias para centralizar el backlog del sprint,8,in_progress,Sprint 1
+US-201,Configurar capacidad del equipo,Como Tech Lead quiero definir la capacidad del sprint por miembro para planificar entregas,5,ready,Sprint 2
+US-202,Detectar sobrecarga de sprint,Como Delivery Manager quiero ver si los story points superan la capacidad disponible,8,ready,Sprint 2
+US-203,Exportar informe operativo,Como Project Manager quiero exportar un resumen del sprint para compartir con stakeholders,5,draft,Sprint 2
