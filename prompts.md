@@ -51,6 +51,7 @@ Reglas aplicadas para este registro:
 | P-010 | Swagger/OpenAPI foundation | Preparar documentación OpenAPI mínima alineada con enfoque OpenAPI-first | Se instalaron `@nestjs/swagger` y `swagger-ui-express`, se configuró Swagger en `main.ts`, documentación disponible en `/api/docs`, endpoint `GET /api/health` documentado, validaciones `build`/`test` correctas y Swagger validado manualmente en navegador |
 | P-011 | Tailwind frontend foundation | Preparar foundation frontend moderna y MVP-friendly usando Tailwind CSS | Instalación de `tailwindcss` y `@tailwindcss/vite`, integración en `vite.config.ts`, configuración de `index.css`, landing refactorizada usando utilidades Tailwind, `build`/`dev` validados correctamente, uso de Tailwind v4 sin `tailwind.config.ts` ni PostCSS manual |
 | P-012 | React Router frontend foundation | Preparar foundation mínima de navegación frontend para futuros vertical slices | Instalación de `react-router-dom`, configuración `BrowserRouter`, navegación base con `AppNav`, creación de páginas placeholder (`DashboardPage`, `UserStoriesPage`, `SettingsPage`), redirects básicos hacia `/dashboard`, `build`/`dev` validados correctamente |
+| P-013 | User Stories Import MVP spec | Definir el primer vertical slice real del producto siguiendo enfoque spec-first | Creación de `docs/user-stories-import-mvp.md`, definición de flujo E2E CSV → API → Prisma → UI, alcance MVP, API mínima, UI mínima, modelo de datos, escenarios BDD y DoD del slice |
 
 ---
 
@@ -64,6 +65,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - No incorporar aún shadcn ni integración backend-frontend.
 - Se mantiene configuración mínima de Tailwind v4 para evitar complejidad innecesaria en fase foundation.
 - Se mantiene routing simple sin layouts complejos ni feature slices completas en fase foundation.
+- Se prioriza vertical slice funcional pequeño frente a arquitectura enterprise prematura.
 - Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 - Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
