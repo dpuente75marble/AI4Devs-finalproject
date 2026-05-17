@@ -11,3 +11,18 @@ model HealthCheck {
   status    String   @default("ok")
   createdAt DateTime @default(now())
 }
+
+model UserStory {
+  id          String   @id @default(cuid())
+  externalId  String
+  title       String
+  description String   @default("")
+  storyPoints Int
+  status      String
+  sprint      String?
+  source      String   @default("csv")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+}
