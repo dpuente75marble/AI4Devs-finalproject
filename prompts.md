@@ -52,6 +52,7 @@ Reglas aplicadas para este registro:
 | P-011 | Tailwind frontend foundation | Preparar foundation frontend moderna y MVP-friendly usando Tailwind CSS | Instalación de `tailwindcss` y `@tailwindcss/vite`, integración en `vite.config.ts`, configuración de `index.css`, landing refactorizada usando utilidades Tailwind, `build`/`dev` validados correctamente, uso de Tailwind v4 sin `tailwind.config.ts` ni PostCSS manual |
 | P-012 | React Router frontend foundation | Preparar foundation mínima de navegación frontend para futuros vertical slices | Instalación de `react-router-dom`, configuración `BrowserRouter`, navegación base con `AppNav`, creación de páginas placeholder (`DashboardPage`, `UserStoriesPage`, `SettingsPage`), redirects básicos hacia `/dashboard`, `build`/`dev` validados correctamente |
 | P-013 | User Stories Import MVP spec | Definir el primer vertical slice real del producto siguiendo enfoque spec-first | Creación de `docs/user-stories-import-mvp.md`, definición de flujo E2E CSV → API → Prisma → UI, alcance MVP, API mínima, UI mínima, modelo de datos, escenarios BDD y DoD del slice |
+| P-014 | UserStory Prisma model | Implementar el modelo mínimo UserStory siguiendo la spec del vertical slice | Creación del modelo Prisma `UserStory`, migración `add_user_story`, índice en `createdAt`, validaciones `prisma migrate dev`, `prisma generate`, `build` y `test` |
 
 ---
 
@@ -66,6 +67,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - Se mantiene configuración mínima de Tailwind v4 para evitar complejidad innecesaria en fase foundation.
 - Se mantiene routing simple sin layouts complejos ni feature slices completas en fase foundation.
 - Se prioriza vertical slice funcional pequeño frente a arquitectura enterprise prematura.
+- Se mantiene un modelo plano sin relaciones complejas para acelerar el primer vertical slice.
 - Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 - Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
