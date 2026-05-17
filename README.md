@@ -2,7 +2,7 @@
 
 AI-assisted SaaS platform for sprint planning, capacity analysis, requirement refinement, and operational delivery management.
 
-![Status](https://img.shields.io/badge/status-in%20progress-blue)
+![Status](https://img.shields.io/badge/status-MVP%20E2E%20slice-green)
 ![MVP](https://img.shields.io/badge/MVP-AI--assisted-success)
 ![License](https://img.shields.io/badge/license-Master%20Project-lightgrey)
 
@@ -88,10 +88,16 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 ## Frontend
 
+**Implemented in current MVP:**
+
 - React
 - TypeScript
 - Vite
 - Tailwind CSS
+- React Router
+
+**Planned for upcoming iterations:**
+
 - shadcn/ui
 - TanStack Query
 - Zustand
@@ -112,7 +118,12 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 ## Testing
 
-- Jest
+**Implemented in current MVP:**
+
+- Jest (API unit tests for CSV parser/validator)
+
+**Planned for upcoming iterations:**
+
 - Vitest
 - React Testing Library
 - Playwright
@@ -121,8 +132,13 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 ## Infrastructure
 
+**Implemented in current MVP:**
+
+- Docker (local PostgreSQL via `docker-compose.yml`)
+
+**Planned for upcoming iterations:**
+
 - GitHub Actions
-- Docker
 - Vercel
 - Render
 - Neon PostgreSQL
@@ -218,6 +234,7 @@ Human validation remains mandatory for all critical decisions.
 - [06-technical-backlog.md](docs/06-technical-backlog.md)
 - [07-ai-development-workflow.md](docs/07-ai-development-workflow.md)
 - [08-delivery-plan.md](docs/08-delivery-plan.md)
+- [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) — first vertical slice specification
 
 ---
 
@@ -257,36 +274,145 @@ AI4Devs-finalproject/
 
 # Current Status
 
-## Completed
+## Implemented
 
-- product definition
-- architecture design
-- data model
-- technical backlog
-- AI workflow
-- delivery planning
-- prompt engineering documentation
+- monorepo (`pnpm` workspace: `apps/web`, `apps/api`, `packages/shared`)
+- frontend foundation (React + Vite + TypeScript + Tailwind CSS + React Router)
+- backend foundation (NestJS + ConfigModule + modular structure)
+- Prisma + PostgreSQL (local Docker database)
+- Swagger / OpenAPI (`/api/docs`)
+- **User Stories CSV import E2E** (first functional vertical slice)
+- frontend/backend integration (`VITE_API_URL`, local CORS for Vite dev ports)
+- Docker local database (`postgres:16-alpine` on port `5433`)
+- product, architecture, and AI-assisted traceability documentation (`docs/`, `prompts.md`)
 
 ---
 
 ## In Progress
 
-- monorepo initialization
-- frontend foundation
-- backend foundation
-- database initialization
+- MVP stabilization
+- delivery preparation
+- documentation hardening
 
 ---
 
 ## Planned
 
 - authentication
-- CSV import
-- sprint analysis
-- AI refinement
+- sprint planning and capacity analysis
+- AI-assisted requirement refinement
 - export generation
-- deployment
-- E2E testing
+- deployment and CI/CD
+- extended E2E and UI test coverage
+
+---
+
+# Current Implemented Vertical Slice
+
+**User Stories CSV Import MVP** — spec: [user-stories-import-mvp.md](docs/user-stories-import-mvp.md)
+
+End-to-end flow currently working in local development:
+
+~~~text
+CSV upload (web /user-stories)
+      |
+      v
+POST /api/user-stories/import  (multipart, validation per row)
+      |
+      v
+Valid rows persisted via Prisma
+      |
+      v
+PostgreSQL (UserStory table)
+      |
+      v
+GET /api/user-stories  →  frontend table refresh
+~~~
+
+**What it demonstrates:** specification-first delivery, AI-assisted implementation, OpenAPI-documented API, pragmatic MVP backend module (`user-stories`), and a minimal React UI without advanced state libraries.
+
+**Out of scope in this slice:** auth, sprint capacity, AI refinement, exports, multi-tenant, and async processing.
+
+---
+
+# Local Development Setup
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 10+
+- Docker (for local PostgreSQL)
+
+### 1. Install dependencies
+
+```bash
+pnpm install
+```
+
+### 2. Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+Database runs on `localhost:5433` (see `docker-compose.yml`).
+
+### 3. Configure environment
+
+**API** — ensure `apps/api/.env` includes a valid `DATABASE_URL`, for example:
+
+```env
+DATABASE_URL=postgresql://deliveryops:deliveryops@localhost:5433/deliveryops_ai
+```
+
+Apply Prisma migrations if needed:
+
+```bash
+pnpm --filter api prisma migrate dev
+```
+
+**Web** — copy the example env and adjust if required:
+
+```bash
+cp apps/web/.env.example apps/web/.env
+```
+
+`apps/web/.env`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+> Restart the Vite dev server after changing `VITE_*` variables.
+
+### 4. Run applications
+
+Terminal 1 — API:
+
+```bash
+pnpm --filter api start:dev
+```
+
+API: `http://localhost:3000`  
+Swagger: `http://localhost:3000/api/docs`  
+Health: `http://localhost:3000/api/health`
+
+Terminal 2 — Web:
+
+```bash
+pnpm --filter web dev
+```
+
+Open the URL shown by Vite (e.g. `http://localhost:5173`) and navigate to `/user-stories`.
+
+### 5. Quick validation
+
+```bash
+pnpm --filter api build && pnpm --filter api test
+pnpm --filter web build
+```
+
+**Smoke test:** import a CSV with columns `external_id`, `title`, `description`, `story_points`, `status`, `sprint` and confirm rows appear in the table.
 
 ---
 
