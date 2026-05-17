@@ -65,10 +65,10 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
 - Mantener alcance MVP y postergar Clean Architecture completa para fases posteriores.
 - No introducir Nx, Turborepo, Lerna ni tooling adicional en esta etapa.
-- No integrar Prisma con modelos de negocio complejos; solo modelo mínimo de validación (`HealthCheck`).
-- No incorporar aún shadcn ni integración backend-frontend.
+- Postergar modelos de negocio complejos (`Project`, `Sprint`, relaciones); `HealthCheck` como validación inicial de Prisma; primer modelo de dominio: `UserStory` plano sin FKs.
+- No incorporar aún shadcn/ui, TanStack Query, Zustand ni autenticación.
 - Se mantiene configuración mínima de Tailwind v4 para evitar complejidad innecesaria en fase foundation.
-- Se mantiene routing simple sin layouts complejos ni feature slices completas en fase foundation.
+- Se mantienen layouts y rutas simples; primer vertical slice E2E completado en User Stories Import; `Dashboard` y `Settings` permanecen placeholder.
 - Se prioriza vertical slice funcional pequeño frente a arquitectura enterprise prematura.
 - Se mantiene un modelo plano sin relaciones complejas para acelerar el primer vertical slice.
 - Se prioriza vertical slice funcional end-to-end frente a capas enterprise prematuras.
@@ -85,14 +85,14 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
 Siguientes bloques recomendados para mantener trazabilidad AI-first:
 
-1. Integración de Prisma Client en NestJS (módulo/servicio de infraestructura mínimo).
-2. Primer módulo vertical MVP (por ejemplo, import de User Stories).
-3. Contrato API inicial y validación DTO (sin sobreextender dominio).
-4. Primera integración frontend-backend para consumo de endpoint real.
-5. Estrategia base de testing por capa (unit, e2e mínimo, smoke flows).
-6. Preparación de despliegue MVP inicial (sin optimizaciones enterprise).
+1. Delivery readiness hardening (sincronización documental y preparación de entrega).
+2. Sample CSV and demo documentation (fixtures y guion de demostración local).
+3. CI/CD básico (`build` + `test` en pull request).
+4. Segundo vertical slice funcional (p. ej. team capacity o sprint overview).
+5. Testing E2E mínimo (API y flujo UI del import CSV).
+6. Deployment preparation (entornos, variables y despliegue inicial).
 
 ---
 
-**Última actualización:** 2026-05-08  
-**Alcance cubierto:** Foundation de monorepo, backend, frontend y base de datos local para MVP.
+**Última actualización:** 2026-05-17  
+**Alcance cubierto:** Foundation de monorepo, backend NestJS, frontend React, Prisma/PostgreSQL, Swagger/OpenAPI, primer vertical slice E2E User Stories Import, integración frontend/backend y smoke test manual validado.
