@@ -384,13 +384,15 @@ And no user stories are created
 
 ## Definición de hecho (DoD) del slice
 
-- [ ] Migración Prisma `UserStory` aplicada  
-- [ ] `POST /api/user-stories/import` y `GET /api/user-stories` operativos y documentados en Swagger  
-- [ ] `UserStoriesPage` permite import + listado  
-- [ ] Escenarios BDD 1, 3 y 4 verificados manualmente (mínimo)  
-- [ ] `pnpm --filter api build` y `pnpm --filter api test` OK  
-- [ ] `pnpm --filter web build` OK  
-- [ ] Entrada añadida en `prompts.md`
+- [x] Migración Prisma `UserStory` aplicada  
+- [x] `POST /api/user-stories/import` y `GET /api/user-stories` operativos y documentados en Swagger  
+- [x] `UserStoriesPage` permite import + listado  
+- [x] Escenarios BDD 1, 3 y 4 verificados manualmente (mínimo)  
+- [x] `pnpm --filter api build` y `pnpm --filter api test` OK  
+- [x] `pnpm --filter web build` OK  
+- [x] Entrada añadida en `prompts.md`
+
+> **Implemented and manually validated on 2026-05-17.**
 
 ---
 

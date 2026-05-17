@@ -333,6 +333,8 @@ GET /api/user-stories  →  frontend table refresh
 
 **Out of scope in this slice:** auth, sprint capacity, AI refinement, exports, multi-tenant, and async processing.
 
+**E2E demo (Delivery 1):** step-by-step guide in [docs/DEMO.md](docs/DEMO.md) · sample file [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv)
+
 ---
 
 # Local Development Setup
@@ -412,7 +414,7 @@ pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
 ```
 
-**Smoke test:** import a CSV with columns `external_id`, `title`, `description`, `story_points`, `status`, `sprint` and confirm rows appear in the table.
+**Smoke test:** follow [docs/DEMO.md](docs/DEMO.md), import [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv), and confirm rows appear in the table.
 
 ---
 
