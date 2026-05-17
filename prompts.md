@@ -54,6 +54,8 @@ Reglas aplicadas para este registro:
 | P-013 | User Stories Import MVP spec | Definir el primer vertical slice real del producto siguiendo enfoque spec-first | Creación de `docs/user-stories-import-mvp.md`, definición de flujo E2E CSV → API → Prisma → UI, alcance MVP, API mínima, UI mínima, modelo de datos, escenarios BDD y DoD del slice |
 | P-014 | UserStory Prisma model | Implementar el modelo mínimo UserStory siguiendo la spec del vertical slice | Creación del modelo Prisma `UserStory`, migración `add_user_story`, índice en `createdAt`, validaciones `prisma migrate dev`, `prisma generate`, `build` y `test` |
 | P-015 | User Stories CSV import backend | Implementar el backend MVP completo para importación CSV de User Stories | Creación módulo `user-stories`, endpoints `GET /api/user-stories` y `POST /api/user-stories/import`, parser CSV con `csv-parse`, validación de filas, persistencia Prisma, import parcial con errores por fila, Swagger documentado, tests parser/validator, smoke test manual validado |
+| P-016 | User Stories import frontend | Implementar el frontend MVP E2E para importación y visualización de User Stories | Creación de `userStoriesApi.ts`, integración con backend NestJS, carga inicial de User Stories, upload CSV, feedback de import, refetch automático, tabla de User Stories, soporte `VITE_API_URL`, smoke test E2E validado |
+| P-017 | Dev CORS adjustment | Permitir comunicación frontend/backend en puertos dinámicos Vite durante desarrollo | Ampliación whitelist CORS localhost 5173-5178, resolución de error `Failed to fetch`, validación E2E frontend/backend correcta |
 
 ---
 
@@ -70,6 +72,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - Se prioriza vertical slice funcional pequeño frente a arquitectura enterprise prematura.
 - Se mantiene un modelo plano sin relaciones complejas para acelerar el primer vertical slice.
 - Se prioriza vertical slice funcional end-to-end frente a capas enterprise prematuras.
+- Se prioriza integración E2E funcional antes de introducir state management avanzado o design systems.
 - Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 - Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
