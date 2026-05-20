@@ -1,0 +1,33 @@
+---
+description: Monorepo structure and architectural boundaries
+globs: apps/**,packages/**,docker-compose.yml
+alwaysApply: false
+---
+
+# Architecture
+
+Ver [ARCHITECTURE.md](../../ARCHITECTURE.md).
+
+## Monorepo
+
+- `apps/api` — NestJS, Prisma, dominio REST. **No** lógica de UI aquí.
+- `apps/web` — React SPA. **No** acceso directo a DB.
+- `packages/shared` — Vacío; no crear abstracciones ahí hasta spec explícita.
+
+Comandos: `pnpm --filter api|web <script>`.
+
+## Principios
+
+- **Modular monolith** — Un módulo Nest por feature (`user-stories/` como plantilla).
+- **OpenAPI-first** — Contrato en Swagger antes de dar endpoint por cerrado.
+- **Prisma única capa DB** — Solo desde `PrismaService` en API; migraciones en `apps/api/prisma/`.
+- **Sin sobreingeniería** — No hexagonal/CQRS/event bus en MVP; servicios + utils + DTOs bastan.
+
+## API
+
+- Prefijo global: `/api`.
+- CORS actual: solo dev Vite (`main.ts`); no asumir producción configurada.
+
+## Datos reales en DB
+
+`HealthCheck`, `UserStory` (sin `Project`/`Sprint` FK). Modelo completo en `docs/04-data-model.md` es **objetivo**, no implementado.

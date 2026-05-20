@@ -1,0 +1,38 @@
+---
+description: React web conventions — apps/web
+globs: apps/web/**/*.{tsx,ts}
+alwaysApply: false
+---
+
+# React (apps/web)
+
+Referencia: `UserStoriesPage.tsx`, `api/userStoriesApi.ts`.
+
+## Estructura
+
+- `pages/` — Una página por ruta principal.
+- `api/` — Cliente HTTP (`fetch`); **no** llamar `fetch` inline en JSX salvo casos triviales.
+- `components/` — UI reutilizable pequeña (ej. `AppNav`).
+
+## Estado y datos
+
+- Estado local (`useState` + `useEffect`/`useCallback`) suficiente en MVP.
+- **No** introducir Zustand, TanStack Query, React Hook Form ni Zod sin spec/tarea.
+- Tras mutación exitosa: refetch explícito (patrón `loadStories()` post-import).
+
+## UI
+
+- Tailwind utility-first; sin librería de componentes aún.
+- Componentes y funciones pequeñas; claridad visual > animaciones.
+- Mensajes de error/éxito accesibles (`role="alert"`, `role="status"`).
+
+## API client
+
+- Base URL: `import.meta.env.VITE_API_URL` (fallback `http://localhost:3000`).
+- Rutas con prefijo `/api/...`.
+- Tipos TS en el mismo archivo `api/*` hasta exista `packages/shared`.
+
+## Evitar
+
+- Abstractions prematuras (hooks genéricos, design system).
+- Lógica de negocio pesada en componentes; validación de CSV es responsabilidad del API.

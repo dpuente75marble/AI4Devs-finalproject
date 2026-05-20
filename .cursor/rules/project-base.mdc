@@ -1,0 +1,29 @@
+---
+description: AI-first workflow base — DeliveryOps AI / LIDR MVP
+alwaysApply: true
+---
+
+# Project base (DeliveryOps AI)
+
+Leer antes de cambiar código: [AGENTS.md](../../AGENTS.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), spec del slice en `docs/`.
+
+## Workflow AI-first
+
+1. **Analizar** — Código existente, Swagger (`/api/docs`), spec del dominio. No asumir features de `docs/04-data-model.md` si no están en Prisma/código.
+2. **Spec-first** — Comportamiento nuevo: mini-spec en `docs/` (o ampliar spec existente) **antes** de implementar.
+3. **Vertical slice** — Un flujo E2E acotado por tarea/PR. Patrón de referencia: `user-stories` ([docs/user-stories-import-mvp.md](../../docs/user-stories-import-mvp.md)).
+4. **Human review** — Spec, límites de negocio y smoke E2E requieren validación humana antes de cerrar.
+5. **Docs en el flujo** — Actualizar spec/README/DEMO **en la misma iteración** que el código; no documentar solo al final.
+6. **prompts.md** — Tras iteración relevante asistida por IA: nueva entrada `P-xxx` (solo si la tarea lo pide; no editar sin instrucción explícita).
+7. **Claridad > velocidad** — Diffs pequeños, trazables; sin refactors colaterales.
+
+## Prohibido / no asumir
+
+- Inventar endpoints, campos Prisma o pantallas no especificadas.
+- Auth, IA, multi-tenant, `packages/shared` (vacío), shadcn/TanStack Query/Zustand (no instalados).
+- Añadir dependencias npm sin justificación en spec o tarea.
+- Commits o cambios en `prompts.md` sin petición explícita del usuario.
+
+## Alcance implementado hoy
+
+E2E funcional: CSV → `POST/GET /api/user-stories` → Prisma `UserStory` → UI `/user-stories`. Demo: [docs/DEMO.md](../../docs/DEMO.md).

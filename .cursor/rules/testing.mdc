@@ -1,0 +1,37 @@
+---
+description: Testing and validation before closing work
+globs: apps/**/*.spec.ts,apps/**/test/**,apps/**/e2e/**
+alwaysApply: false
+---
+
+# Testing & validation
+
+## Antes de cerrar una tarea
+
+```bash
+pnpm --filter api build && pnpm --filter api test
+pnpm --filter web build
+```
+
+Smoke manual del slice: [docs/DEMO.md](../../docs/DEMO.md) o escenarios BDD en la spec.
+
+## API (Jest)
+
+- Lógica pura → `*.spec.ts` junto al módulo (`parse-csv`, `validate-user-story-row`).
+- Tests pequeños, un comportamiento por caso; sin mocks innecesarios en parsers.
+- E2E actual: solo `test/app.e2e-spec.ts` (health). Nuevos endpoints críticos: valorar e2e con Supertest.
+
+## Web
+
+- No hay Vitest/RTL aún; **build TypeScript** (`pnpm --filter web build`) es gate mínimo.
+- UI: checklist manual (empty state, import OK, errores 400, refetch tabla).
+
+## Contrato
+
+- OpenAPI en `/api/docs` es fuente de verdad del REST; contrastar con spec en `docs/`.
+- No confiar solo en salida de IA: ejecutar comandos y probar CSV ([fixtures/sample-user-stories.csv](../../fixtures/sample-user-stories.csv)).
+
+## No hacer
+
+- Suites enormes o cobertura cosmética sin lógica nueva.
+- Marcar slice como hecho sin build/test/smoke documentado.

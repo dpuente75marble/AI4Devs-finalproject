@@ -1,0 +1,39 @@
+---
+description: Living documentation and honest status
+globs: docs/**,*.md,AGENTS.md,ARCHITECTURE.md
+alwaysApply: false
+---
+
+# Documentation
+
+## Documentación viva
+
+| Cuándo | Qué actualizar |
+|--------|----------------|
+| Nuevo slice | `docs/<feature>-mvp.md` + DoD |
+| Setup/flujo demo | `README.md`, `docs/DEMO.md` |
+| Decisión estructural | `ARCHITECTURE.md` o ADR en `docs/adr/` |
+| Gobierno IA | `AGENTS.md` (reglas de trabajo) |
+| Prompt trazable | `prompts.md` (solo con tarea explícita) |
+
+Actualizar **durante** el cambio, no después del merge.
+
+## Honestidad
+
+- Estado **Implementado** vs **Planned** explícito; no marcar features futuras como hechas.
+- Documentar limitaciones reales (sin auth, re-import duplica, import parcial, `packages/shared` vacío).
+- No duplicar mentiras entre README y specs; si divergen, alinear con código y Prisma.
+
+## ADRs
+
+Decisiones no obvias (límites CSV, import parcial, omitir `projectId`): `docs/adr/NNNN-titulo.md` breve (contexto, decisión, consecuencias).
+
+## Referencias
+
+- Slice actual: [docs/user-stories-import-mvp.md](../../docs/user-stories-import-mvp.md)
+- Producto/backlog: `docs/01-` … `docs/08-` (visión; verificar contra código)
+
+## Evitar
+
+- Documentación genérica copiada del máster sin anclaje al repo.
+- README que liste stack no instalado como si estuviera en uso.

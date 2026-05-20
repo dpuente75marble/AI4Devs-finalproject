@@ -1,0 +1,38 @@
+---
+description: NestJS API conventions — apps/api
+globs: apps/api/**/*.ts
+alwaysApply: false
+---
+
+# NestJS (apps/api)
+
+Referencia: `apps/api/src/user-stories/`.
+
+## Estructura
+
+- Módulo por vertical slice: `*.module.ts`, `*.controller.ts`, `*.service.ts`, `dto/`, `utils/` si hay lógica pura.
+- **Controller fino** — HTTP, interceptors (`FileInterceptor`), delegar al service.
+- **Service** — Orquestación, Prisma, `BadRequestException` con mensajes claros.
+- **Utils** — Parseo/validación testeable (ej. `parse-csv.ts`, `validate-user-story-row.ts`).
+
+## Validación y datos
+
+- Reglas de negocio explícitas; constantes en `constants.ts` (límites CSV: 1 MB, 200 filas).
+- DTOs de respuesta en `dto/` con `@ApiProperty` / tipos Swagger.
+- Import parcial aceptado: filas válidas → `createMany`; errores por fila en respuesta.
+
+## Swagger (obligatorio en endpoints nuevos)
+
+- `@ApiTags`, `@ApiOperation`, `@ApiOkResponse` / `@ApiCreatedResponse` / `@ApiBadRequestResponse`.
+- Multipart: `@ApiConsumes('multipart/form-data')` + `@ApiBody` con `format: binary`.
+
+## Evitar
+
+- Repositorios abstractos, domain events, capas `application/domain/infrastructure` completas.
+- Endpoints no listados en spec aprobada.
+- Queries raw SQL salvo necesidad documentada.
+
+## Prisma
+
+- Cambios de schema → migración en `prisma/migrations/`.
+- No ampliar `schema.prisma` más allá de la spec del slice actual.
