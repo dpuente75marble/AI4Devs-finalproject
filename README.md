@@ -8,6 +8,32 @@ AI-assisted SaaS platform for sprint planning, capacity analysis, requirement re
 
 ---
 
+# Project Information
+
+| Field | Value |
+|-------|-------|
+| **Program** | AI4Devs / LIDR — Final Master Project 2026 |
+| **Delivery** | Delivery 1 — Technical Documentation (target: 27 May 2026) |
+| **Author** | David de la Puente |
+| **Repository** | [github.com/dpuente75marble/AI4Devs-finalproject](https://github.com/dpuente75marble/AI4Devs-finalproject) |
+| **Approach** | AI-first SDLC · spec-first · vertical slices · human-in-the-loop |
+
+Operational handoff and **real repository state:** [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)
+
+---
+
+# Delivery 1 Status
+
+| Category | Status |
+|----------|--------|
+| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-017), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
+| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, **User Stories CSV import E2E** — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
+| **Planned** (Delivery 2+) | Authentication, sprint capacity, AI refinement, exports, **public deployment** |
+
+> Delivery 1 originally scoped documentation only; the repository already includes a working local E2E slice and CI as evidence of the AI-first workflow.
+
+---
+
 # Project Overview
 
 DeliveryOps AI is an AI-assisted delivery operations platform designed to help Project Managers, Tech Leads, and Delivery Managers improve software delivery workflows.
@@ -135,31 +161,35 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 **Implemented in current MVP:**
 
 - Docker (local PostgreSQL via `docker-compose.yml`)
+- GitHub Actions CI (`.github/workflows/ci.yml` — build and test on push/PR)
 
 **Planned for upcoming iterations:**
 
-- GitHub Actions
-- Vercel
-- Render
-- Neon PostgreSQL
+- Public deployment (Vercel, Render, Neon PostgreSQL)
 
 ---
 
 # Architecture Overview
 
+## Target vs Current Implementation
+
+| Layer | Target design | Current implementation |
+|-------|---------------|------------------------|
+| **Style** | Clean Architecture and Hexagonal Architecture (modular boundaries, ports/adapters for AI) | **Pragmatic modular monolith** — NestJS module per feature, service → Prisma directly |
+| **Detail** | [docs/03-technical-design.md](docs/03-technical-design.md), [ARCHITECTURE.md](ARCHITECTURE.md) | First slice: `user-stories` module; AI adapter **not implemented** yet |
+
+Clean/Hexagonal principles guide future slices; the running codebase prioritizes maintainable vertical delivery over full layered architecture.
+
 ## Architecture Principles
 
 The architecture follows:
 
-- modular monolith design
-- pragmatic Clean Architecture
-- Hexagonal Architecture
+- modular monolith design (current)
 - feature-based frontend organization
-- AI-provider decoupling
+- AI-provider decoupling (target)
 - specification-first development
 - AI-assisted engineering workflows
-
-The platform uses a modular monolith architecture designed around pragmatic Clean Architecture and Hexagonal Architecture principles.
+- pragmatic Clean Architecture and Hexagonal Architecture as **direction**, not fully applied in code today
 
 ~~~text
 React Frontend
@@ -200,24 +230,79 @@ The project follows an AI-assisted engineering workflow using:
 - BDD
 - selective TDD
 - reusable prompts
-- AI rules
+- AI rules (`.cursor/rules/`)
 - development agents
-- human validation
 
-AI is used throughout the full software lifecycle:
+**Governance and traceability:**
 
-- product definition
-- architecture
-- backlog generation
-- implementation
-- testing
-- documentation
+- [prompts.md](prompts.md) — prompt registry (P-001–P-017: foundation + CSV import slice)
+- [AGENTS.md](AGENTS.md) — scope, prohibitions, and workflow rules for AI agents and developers
+- [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md) — full AI-first SDLC methodology
 
-Human validation remains mandatory for all critical decisions.
+AI is used throughout the full software lifecycle: product definition, architecture, backlog generation, implementation, testing, and documentation.
+
+**Human-in-the-loop:** specs, business limits, security, and E2E behavior must be reviewed and approved by a human before a slice is considered done. The AI proposes; the human validates.
+
+---
+
+# Implemented API
+
+Business endpoints available today (local development):
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Service health check |
+| `GET` | `/api/user-stories` | List imported User Stories |
+| `POST` | `/api/user-stories/import` | CSV import (multipart, per-row validation) |
+
+Interactive contract: Swagger UI at `http://localhost:3000/api/docs` (with API running).
+
+---
+
+# Current Database State
+
+**Implemented in PostgreSQL (Prisma):**
+
+- `UserStory` — CSV import vertical slice
+- `HealthCheck` — persistence foundation
+
+**Target data model (documented, not yet in database):**
+
+Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `Project`, `Sprint`, `TeamMember`, `Absence`, `RequirementDocument`, `RefinementResult`, `ExportJob`, and related entities.
+
+---
+
+# User Stories and Backlog
+
+- **User Stories:** [docs/05-user-stories.md](docs/05-user-stories.md) (US-001–US-011)
+- **Technical backlog:** [docs/06-technical-backlog.md](docs/06-technical-backlog.md) (TB-xxx)
+- **GitHub backlog:** [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) (bootstrap strategy and traceability) — **GH-01–GH-14** materialized as GitHub Issues **#3–#16**
+
+**Slice coverage:** US-002 (CSV import) is partially implemented via [user-stories-import-mvp.md](docs/user-stories-import-mvp.md); remaining Must-Have stories are planned for Delivery 2+.
+
+---
+
+# GitHub Workflow
+
+- **PR-driven development** — prefer one vertical slice per PR; [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
+- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): `pnpm install` → Prisma generate → API build/test → web build (no PostgreSQL service on runner, no deploy)
+- **Milestones (created):** Delivery 1 — Technical Documentation · Delivery 2 — Functional MVP · Final Delivery — Deployed MVP (aligned with [docs/08-delivery-plan.md](docs/08-delivery-plan.md))
+- **Labels (created):** `area:*`, `epic:*`, `type:*`, `status:*`, plus `testing`, `devops`, `documentation`
+- **Issues (created):** GH-01–GH-14 → GitHub Issues **#3–#16**; bootstrap strategy and US/TB mapping in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md)
+- **New work** — feature requests via `.github/ISSUE_TEMPLATE/`
 
 ---
 
 # Documentation
+
+## Project Governance
+
+- [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) — real repository state and handoff
+- [AGENTS.md](AGENTS.md) — AI agent and developer workflow rules
+- [ARCHITECTURE.md](ARCHITECTURE.md) — implemented architecture
+- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-017)
+
+---
 
 ## Product and Architecture
 
@@ -235,13 +320,9 @@ Human validation remains mandatory for all critical decisions.
 - [06-technical-backlog.md](docs/06-technical-backlog.md)
 - [07-ai-development-workflow.md](docs/07-ai-development-workflow.md)
 - [08-delivery-plan.md](docs/08-delivery-plan.md)
+- [09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) — bootstrap strategy (issues #3–#16 = GH-01–GH-14, milestones, labels)
 - [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) — first vertical slice specification
-
----
-
-## Prompt Engineering
-
-- [prompts.md](prompts.md)
+- [DEMO.md](docs/DEMO.md) — E2E demo guide (Delivery 1 evidence)
 
 ---
 
@@ -251,17 +332,14 @@ Human validation remains mandatory for all critical decisions.
 AI4Devs-finalproject/
 │
 ├── README.md
+├── PROJECT_CONTEXT.md
+├── AGENTS.md
+├── ARCHITECTURE.md
 ├── prompts.md
 │
-├── docs/
-│   ├── 01-product-definition.md
-│   ├── 02-functional-specification.md
-│   ├── 03-technical-design.md
-│   ├── 04-data-model.md
-│   ├── 05-user-stories.md
-│   ├── 06-technical-backlog.md
-│   ├── 07-ai-development-workflow.md
-│   └── 08-delivery-plan.md
+├── .github/              workflows, PR/issue templates
+├── docs/                 product, architecture, backlog, DEMO, ADRs
+├── fixtures/             sample CSV for demo
 │
 ├── apps/
 │   ├── web/
@@ -285,6 +363,7 @@ AI4Devs-finalproject/
 - **User Stories CSV import E2E** (first functional vertical slice)
 - frontend/backend integration (`VITE_API_URL`, local CORS for Vite dev ports)
 - Docker local database (`postgres:16-alpine` on port `5433`)
+- GitHub Actions CI (build + API tests + web build on push/PR)
 - product, architecture, and AI-assisted traceability documentation (`docs/`, `prompts.md`)
 
 ---
@@ -303,7 +382,7 @@ AI4Devs-finalproject/
 - sprint planning and capacity analysis
 - AI-assisted requirement refinement
 - export generation
-- deployment and CI/CD
+- public deployment (Vercel / Render / Neon)
 - extended E2E and UI test coverage
 
 ---
