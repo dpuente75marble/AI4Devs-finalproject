@@ -1,0 +1,52 @@
+# DeliveryOps AI — MVP CI
+# Validates install, API build + unit tests, and web build on push/PR.
+# No deploy, Docker, DB, lint gates, or E2E browser tests.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          CI: true
+
+      - name: Generate Prisma Client
+        run: pnpm --filter api prisma generate
+
+      - name: Build API
+        run: pnpm --filter api build
+
+      - name: Test API
+        run: pnpm --filter api test
+
+      - name: Build web
+        run: pnpm --filter web build
