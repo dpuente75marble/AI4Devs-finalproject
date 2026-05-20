@@ -361,6 +361,7 @@ Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README se
 
 | Documento | Contenido |
 |-----------|-----------|
+| [docs/adr/README.md](docs/adr/README.md) | ADRs: decisiones arquitectónicas aceptadas (MVP) |
 | [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | Spec y BDD del slice implementado |
 | [docs/04-data-model.md](docs/04-data-model.md) | Modelo objetivo completo (mayoría no migrada) |
 | [docs/03-technical-design.md](docs/03-technical-design.md) | Diseño objetivo y principios |

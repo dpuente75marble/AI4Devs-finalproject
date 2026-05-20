@@ -225,6 +225,7 @@ Human validation remains mandatory for all critical decisions.
 - [02-functional-specification.md](docs/02-functional-specification.md)
 - [03-technical-design.md](docs/03-technical-design.md)
 - [04-data-model.md](docs/04-data-model.md)
+- [adr/README.md](docs/adr/README.md) — Architecture Decision Records (ADR-001–ADR-005)
 
 ---
 
