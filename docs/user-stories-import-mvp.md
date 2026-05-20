@@ -2,7 +2,7 @@
 
 **Proyecto:** DeliveryOps AI  
 **Vertical slice:** User Stories Import MVP  
-**Estado:** Spec-first (pendiente de implementación)  
+**Estado:** Implementado y validado manualmente (spec-first completado)  
 **Referencia producto:** US-002 (Upload User Stories CSV) en `docs/05-user-stories.md`  
 **Stack actual:** monorepo pnpm · `apps/api` (NestJS + Prisma + Swagger) · `apps/web` (React + Vite + Tailwind + React Router)
 
@@ -22,7 +22,7 @@ Este slice valida la cadena técnica completa (UI → API → Prisma → Postgre
 
 Los equipos de delivery suelen trabajar con User Stories dispersas en hojas de cálculo o exports de herramientas externas. Antes de planificar sprints o refinar requisitos con IA, necesitan una **fuente única y consultable** dentro de DeliveryOps AI.
 
-Hoy el proyecto tiene foundation técnica pero **no persiste ni muestra User Stories de negocio**. Este MVP cierra esa brecha con el caso de uso mínimo: importación CSV y listado.
+Antes de este slice, el proyecto tenía foundation técnica pero **no persistía ni mostraba User Stories de negocio**. Este MVP cerró esa brecha con importación CSV y listado; el flujo E2E está operativo en local (ver [DEMO.md](DEMO.md)).
 
 ---
 
@@ -397,4 +397,4 @@ And no user stories are created
 ---
 
 **Documento:** `docs/user-stories-import-mvp.md`  
-**Última actualización:** 2026-05-17
+**Última actualización:** 2026-05-20
