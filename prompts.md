@@ -56,6 +56,13 @@ Reglas aplicadas para este registro:
 | P-015 | User Stories CSV import backend | Implementar el backend MVP completo para importación CSV de User Stories | Creación módulo `user-stories`, endpoints `GET /api/user-stories` y `POST /api/user-stories/import`, parser CSV con `csv-parse`, validación de filas, persistencia Prisma, import parcial con errores por fila, Swagger documentado, tests parser/validator, smoke test manual validado |
 | P-016 | User Stories import frontend | Implementar el frontend MVP E2E para importación y visualización de User Stories | Creación de `userStoriesApi.ts`, integración con backend NestJS, carga inicial de User Stories, upload CSV, feedback de import, refetch automático, tabla de User Stories, soporte `VITE_API_URL`, smoke test E2E validado |
 | P-017 | Dev CORS adjustment | Permitir comunicación frontend/backend en puertos dinámicos Vite durante desarrollo | Ampliación whitelist CORS localhost 5173-5178, resolución de error `Failed to fetch`, validación E2E frontend/backend correcta |
+| P-018 | Demo E2E y fixture CSV | Documentar guion de demostración Delivery 1 y archivo de prueba para el slice de importación | `docs/DEMO.md`, `fixtures/sample-user-stories.csv`; referencias alineadas en spec y DoD del slice |
+| P-019 | CI GitHub Actions y plantillas PR | Validación automática en pull request y checklist de entrega | `.github/workflows/ci.yml` (`pnpm install` → Prisma generate → build/test API → build web), `.github/PULL_REQUEST_TEMPLATE.md`; sin PostgreSQL en runner, lint gate ni deploy |
+| P-020 | ADRs de arquitectura y governance IA | Registrar decisiones estructurales del enfoque AI-first, monorepo, stack y vertical slices | `docs/adr/ADR-001` a `ADR-005` y `docs/adr/README.md`; ADR-005 documenta foundation de `.cursor/rules/` |
+| P-021 | AGENTS.md y ARCHITECTURE.md | Definir reglas operativas para agentes IA y arquitectura implementada real del repo | `AGENTS.md` y `ARCHITECTURE.md` alineados con slice CSV, límites MVP, workflow spec-first y human-in-the-loop |
+| P-022 | Alineación README y PROJECT_CONTEXT (Delivery 1) | Sincronizar overview y handoff operativo con el estado real del repositorio | `README.md` y `PROJECT_CONTEXT.md` actualizados (CI, DEMO, slice E2E, backlog GitHub issues #3–#16, governance) |
+
+**Trazabilidad del vertical slice (Delivery 1):** P-013 → P-017 ↔ **US-002** ↔ **GH-04** ↔ [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) ↔ [docs/DEMO.md](docs/DEMO.md)
 
 ---
 
@@ -69,10 +76,8 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - No incorporar aún shadcn/ui, TanStack Query, Zustand ni autenticación.
 - Se mantiene configuración mínima de Tailwind v4 para evitar complejidad innecesaria en fase foundation.
 - Se mantienen layouts y rutas simples; primer vertical slice E2E completado en User Stories Import; `Dashboard` y `Settings` permanecen placeholder.
-- Se prioriza vertical slice funcional pequeño frente a arquitectura enterprise prematura.
-- Se mantiene un modelo plano sin relaciones complejas para acelerar el primer vertical slice.
-- Se prioriza vertical slice funcional end-to-end frente a capas enterprise prematuras.
-- Se prioriza integración E2E funcional antes de introducir state management avanzado o design systems.
+- Se prioriza vertical slice funcional end-to-end e integración E2E antes de state management avanzado o arquitectura enterprise prematura.
+- Issues GitHub **GH-01–GH-14** (remotos **#3–#16**) creados con `scripts/bootstrap-github-issues.sh` y revisión humana; estrategia en `docs/09-github-backlog-bootstrap.md` — **sin prompt IA registrado** en esta tabla.
 - Ajustar el puerto de PostgreSQL local a `5433` por conflicto real en `5432`.
 - Priorizar trazabilidad y validaciones ejecutables sobre documentación teórica extensa.
 - Preferir imports explícitos frente a módulos globales para mantener boundaries arquitectónicos claros.
@@ -81,18 +86,38 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
 ---
 
-## 6. Próximos prompts a registrar
+## 6. Prompts futuros y alcance por entrega
 
-Siguientes bloques recomendados para mantener trazabilidad AI-first:
+### Ya implementado o documentado en Delivery 1
 
-1. Delivery readiness hardening (sincronización documental y preparación de entrega).
-2. Sample CSV and demo documentation (fixtures y guion de demostración local).
-3. CI/CD básico (`build` + `test` en pull request).
-4. Segundo vertical slice funcional (p. ej. team capacity o sprint overview).
-5. Testing E2E mínimo (API y flujo UI del import CSV).
-6. Deployment preparation (entornos, variables y despliegue inicial).
+Registrado en la tabla anterior (P-001–P-022):
+
+- Foundation técnica del monorepo, API, web, Prisma y OpenAPI (P-001–P-012).
+- Primer vertical slice User Stories CSV Import (P-013–P-017).
+- Evidencia demo local y fixture (P-018).
+- CI básica en GitHub Actions y plantilla PR (P-019).
+- ADRs y governance IA, incl. referencia a reglas Cursor (P-020).
+- `AGENTS.md` y `ARCHITECTURE.md` operativos (P-021).
+- Alineación `README.md` y `PROJECT_CONTEXT.md` con estado real del repo (P-022).
+
+Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–GH-14 → issues #3–#16) vía script y revisión humana; matriz US/TB ↔ issues pendiente de cierre en **GH-03**.
+
+### Pendiente Delivery 2+ (registrar P-xxx al ejecutar)
+
+- Autenticación JWT y rutas protegidas (US-001 / GH-06).
+- Planificación sprint: capacidad, ausencias, análisis overload (US-003–005 / GH-07–09).
+- Refinamiento IA MVP: PDF, gaps, acceptance criteria (US-006–008 / GH-10).
+- Export Excel operativo (US-009 / GH-11).
+- Segundo vertical slice funcional con mini-spec previa en `docs/`.
+
+### Pendiente Final Delivery (registrar P-xxx al ejecutar)
+
+- Deploy público (web + API + PostgreSQL gestionado).
+- CI con servicio PostgreSQL y tests e2e del import API.
+- Playwright u otro E2E del flujo UI principal.
+- Paquete evidencia final ampliado (historial PRs y prompts de iteraciones finales).
 
 ---
 
-**Última actualización:** 2026-05-17  
-**Alcance cubierto:** Foundation de monorepo, backend NestJS, frontend React, Prisma/PostgreSQL, Swagger/OpenAPI, primer vertical slice E2E User Stories Import, integración frontend/backend y smoke test manual validado.
+**Última actualización:** 2026-05-20  
+**Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado.
