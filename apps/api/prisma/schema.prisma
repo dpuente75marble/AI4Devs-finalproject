@@ -26,3 +26,16 @@ model UserStory {
 
   @@index([createdAt])
 }
+
+model SprintCapacity {
+  id              String   @id @default(cuid())
+  sprint          String
+  teamName        String
+  projectName     String
+  availablePoints Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([sprint, teamName, projectName])
+  @@index([sprint])
+}
