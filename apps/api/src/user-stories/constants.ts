@@ -22,6 +22,8 @@ export const ALLOWED_CSV_COLUMNS = new Set([
   'story_points',
   'status',
   'sprint',
+  'team_name',
+  'project_name',
 ]);
 
 export const MAX_CSV_FILE_SIZE_BYTES = 1024 * 1024;

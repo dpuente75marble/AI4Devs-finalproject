@@ -56,7 +56,12 @@ describe('SprintAnalysisService', () => {
     const result = await service.findAll();
 
     expect(prisma.userStory.findMany).toHaveBeenCalledWith({
-      select: { sprint: true, storyPoints: true },
+      select: {
+        sprint: true,
+        teamName: true,
+        projectName: true,
+        storyPoints: true,
+      },
     });
     expect(prisma.sprintCapacity.findMany).toHaveBeenCalledWith({
       select: {
@@ -95,5 +100,41 @@ describe('SprintAnalysisService', () => {
     prisma.sprintAbsence.findMany.mockResolvedValue([]);
 
     await expect(service.findAll()).resolves.toEqual([]);
+  });
+
+  it('excludes demand when user stories lack team or project', async () => {
+    prisma.userStory.findMany.mockResolvedValue([
+      {
+        sprint: 'Sprint 2',
+        storyPoints: 10,
+        teamName: null,
+        projectName: null,
+      },
+    ]);
+    prisma.sprintCapacity.findMany.mockResolvedValue([
+      {
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        availablePoints: 20,
+      },
+    ]);
+    prisma.sprintAbsence.findMany.mockResolvedValue([]);
+
+    const result = await service.findAll();
+
+    expect(result).toEqual([
+      {
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        demand: 0,
+        capacity: 20,
+        absences: 0,
+        adjustedCapacity: 20,
+        utilization: 0,
+        status: 'HEALTHY',
+      },
+    ]);
   });
 });

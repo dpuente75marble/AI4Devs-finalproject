@@ -69,6 +69,8 @@ export class UserStoriesService {
           storyPoints: row.storyPoints,
           status: row.status,
           sprint: row.sprint,
+          teamName: row.teamName,
+          projectName: row.projectName,
           source: 'csv',
         })),
       });

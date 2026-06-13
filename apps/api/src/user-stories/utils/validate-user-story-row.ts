@@ -8,6 +8,8 @@ export type ValidatedUserStoryRow = {
   storyPoints: number;
   status: string;
   sprint: string | null;
+  teamName: string | null;
+  projectName: string | null;
 };
 
 export type RowValidationResult =
@@ -59,6 +61,8 @@ export function validateUserStoryRow(row: CsvRow): RowValidationResult {
 
   const description = row.description?.trim() ?? '';
   const sprint = row.sprint?.trim() || null;
+  const teamName = row.team_name?.trim() || null;
+  const projectName = row.project_name?.trim() || null;
 
   return {
     valid: true,
@@ -69,6 +73,8 @@ export function validateUserStoryRow(row: CsvRow): RowValidationResult {
       storyPoints,
       status,
       sprint,
+      teamName,
+      projectName,
     },
   };
 }

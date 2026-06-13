@@ -9,6 +9,8 @@ export type UserStory = {
   storyPoints: number
   status: string
   sprint: string | null
+  teamName: string | null
+  projectName: string | null
   source: string
   createdAt: string
   updatedAt: string
