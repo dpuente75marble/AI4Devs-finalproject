@@ -22,6 +22,9 @@ export default function AppNav() {
           <NavLink to="/user-stories" className={navLinkClass}>
             User Stories
           </NavLink>
+          <NavLink to="/sprint-analysis" className={navLinkClass}>
+            Sprint Analysis
+          </NavLink>
           <NavLink to="/settings" className={navLinkClass}>
             Settings
           </NavLink>
