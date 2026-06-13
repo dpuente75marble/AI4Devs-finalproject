@@ -2,7 +2,7 @@
 
 **Proyecto:** DeliveryOps AI  
 **Vertical slice:** Sprint Analysis MVP  
-**Estado:** Spec-first — revisión v1 (demand vs capacity, overload detection)  
+**Estado:** Spec-first — revisión v2 (agrupación por sprint + gerencia + proyecto)  
 **Referencia producto:** US-005 (Analyze Sprint Capacity vs Demand) en `docs/05-user-stories.md`  
 **Issue GitHub:** #11 (spec incremental requerida antes de código)  
 **Backlog interno:** GH-09  
@@ -19,7 +19,7 @@ This vertical slice closes the fourth link in the sprint planning flow:
 
 **Import User Stories → configure Sprint Capacity → register Sprint Absences → analyze demand vs adjusted capacity per sprint.**
 
-The slice delivers a read-only analysis engine: aggregate existing data by `sprint`, compute utilization, assign a status (`HEALTHY`, `WARNING`, `OVERLOADED`), expose a minimal API, and render a minimal table view. No charts, exports, filters, forecasting, drag-and-drop, or AI recommendations.
+The slice delivers a read-only analysis engine: aggregate existing data by `(sprint, teamName, projectName)`, compute utilization, assign a status (`HEALTHY`, `WARNING`, `OVERLOADED`), expose a minimal API, and render a minimal table view. No charts, exports, filters, forecasting, drag-and-drop, or AI recommendations.
 
 ---
 
@@ -32,7 +32,7 @@ The slice delivers a read-only analysis engine: aggregate existing data by `spri
 | **User Stories** | Demand sourced from imported CSV records (`UserStory.storyPoints`) |
 | **Sprint Capacity** | Capacity sourced from Settings configuration (`SprintCapacity.availablePoints`) |
 | **Sprint Absences** | Absences sourced from Settings configuration (`SprintAbsence.absenceDays`) |
-| **Analysis** | Sprint-level aggregation and demand/capacity comparison |
+| **Analysis** | Sprint + gerencia + proyecto aggregation and demand/capacity comparison |
 | **Backend** | NestJS module `sprint-analysis`, pure calculation functions, `GET /api/sprint-analysis` |
 | **Frontend** | Minimal Sprint Analysis page (`/sprint-analysis`) with table |
 | **Backend tests** | TDD unit tests for calculation and status logic |
@@ -77,47 +77,60 @@ The slice delivers a read-only analysis engine: aggregate existing data by `spri
 
 ## Inputs
 
+### Clave de agrupación
+
+Todas las agregaciones usan la combinación normalizada:
+
+```text
+(sprint, teamName, projectName)
+```
+
+- Normalizar con `trim()` en los tres campos.
+- Excluir registros con cualquier campo vacío tras `trim()`.
+- El mismo número de sprint puede aparecer en varias filas si cambia la gerencia o el proyecto.
+
 ### User Stories
 
-Demand is calculated as the sum of `storyPoints` grouped by `sprint`.
+Demand is calculated as the sum of `storyPoints` grouped by `(sprint, teamName, projectName)`.
 
 | Fuente | Campo | Regla de agregación |
 |--------|-------|---------------------|
-| `UserStory` | `sprint` | Clave de agrupación (normalizar con `trim()`) |
-| `UserStory` | `storyPoints` | Sumar todos los registros del mismo sprint |
+| `UserStory` | `sprint`, `teamName`, `projectName` | Clave de agrupación (normalizar con `trim()`) |
+| `UserStory` | `storyPoints` | Sumar todos los registros de la misma combinación |
 
 - User Stories con `storyPoints` nulo o ausente se tratan como **0** en la suma.
-- User Stories con `sprint` vacío tras `trim()` se **excluyen** del análisis (no generan fila).
+- User Stories sin combinación completa (`sprint`, `teamName`, `projectName`) se **excluyen** del análisis de demanda.
+- En el MVP actual, `UserStory` puede no persistir aún `teamName`/`projectName`; en ese caso no aportan demanda hasta que el import CSV los incluya en una iteración futura.
 
 ### Sprint Capacity
 
-Capacity is calculated as the sum of `availablePoints` grouped by `sprint`.
+Capacity is calculated as the sum of `availablePoints` grouped by `(sprint, teamName, projectName)`.
 
 | Fuente | Campo | Regla de agregación |
 |--------|-------|---------------------|
-| `SprintCapacity` | `sprint` | Clave de agrupación (normalizar con `trim()`) |
-| `SprintCapacity` | `availablePoints` | Sumar todos los registros del mismo sprint (todas las gerencias/proyectos) |
+| `SprintCapacity` | `sprint`, `teamName`, `projectName` | Clave de agrupación (normalizar con `trim()`) |
+| `SprintCapacity` | `availablePoints` | Sumar todos los registros de la misma combinación |
 
-- Un sprint puede tener varias filas de capacidad (distintas combinaciones `teamName` + `projectName`); el MVP **agrega a nivel sprint** únicamente.
+- En la práctica existe como máximo una fila por combinación por la unicidad de US-003; la suma mantiene la regla genérica.
 
 ### Sprint Absences
 
-Absences are calculated as the sum of `absenceDays` grouped by `sprint`.
+Absences are calculated as the sum of `absenceDays` grouped by `(sprint, teamName, projectName)`.
 
 | Fuente | Campo | Regla de agregación |
 |--------|-------|---------------------|
-| `SprintAbsence` | `sprint` | Clave de agrupación (normalizar con `trim()`) |
-| `SprintAbsence` | `absenceDays` | Sumar todos los registros del mismo sprint |
+| `SprintAbsence` | `sprint`, `teamName`, `projectName` | Clave de agrupación (normalizar con `trim()`) |
+| `SprintAbsence` | `absenceDays` | Sumar todos los registros de la misma combinación |
 
 - Regla heredada de US-004: **1 día de ausencia = 1 story point** de reducción de capacidad.
-- Varios registros de ausencia en el mismo sprint se suman antes del ajuste.
+- Varios registros de ausencia en la misma combinación se suman antes del ajuste.
 
-### Unión de sprints
+### Unión de combinaciones
 
-El conjunto de sprints analizados es la **unión** de sprints presentes en cualquiera de las tres fuentes (`UserStory`, `SprintCapacity`, `SprintAbsence`).
+El conjunto de filas analizadas es la **unión** de combinaciones `(sprint, teamName, projectName)` presentes en cualquiera de las tres fuentes.
 
-| Sprint en… | Demand | Capacity | Absences |
-|------------|--------|----------|----------|
+| Combinación en… | Demand | Capacity | Absences |
+|-----------------|--------|----------|----------|
 | Solo User Stories | SUM(storyPoints) | 0 | 0 |
 | Solo Sprint Capacity | 0 | SUM(availablePoints) | 0 |
 | Solo Sprint Absences | 0 | 0 | SUM(absenceDays) |
@@ -128,9 +141,9 @@ El conjunto de sprints analizados es la **unión** de sprints presentes en cualq
 ## Calculation Rules
 
 ```text
-Demand           = SUM(storyPoints)        grouped by sprint
-Capacity         = SUM(availablePoints)    grouped by sprint
-Absences         = SUM(absenceDays)        grouped by sprint
+Demand           = SUM(storyPoints)        grouped by (sprint, teamName, projectName)
+Capacity         = SUM(availablePoints)    grouped by (sprint, teamName, projectName)
+Absences         = SUM(absenceDays)        grouped by (sprint, teamName, projectName)
 Adjusted Capacity = max(0, Capacity - Absences)
 Utilization      = (Demand / Adjusted Capacity) × 100   when Adjusted Capacity > 0
 ```
@@ -152,13 +165,13 @@ If **Adjusted Capacity is 0** and **Demand is greater than 0**, the sprint is **
 
 | Función | Responsabilidad |
 |---------|-----------------|
-| `aggregateDemandBySprint(userStories)` | Mapa `sprint → demand` |
-| `aggregateCapacityBySprint(capacities)` | Mapa `sprint → capacity` |
-| `aggregateAbsencesBySprint(absences)` | Mapa `sprint → absences` |
+| `aggregateDemandBySprint(userStories)` | Mapa `(sprint, teamName, projectName) → demand` |
+| `aggregateCapacityBySprint(capacities)` | Mapa `(sprint, teamName, projectName) → capacity` |
+| `aggregateAbsencesBySprint(absences)` | Mapa `(sprint, teamName, projectName) → absences` |
 | `computeAdjustedCapacity(capacity, absences)` | Reutilizar helper US-004 |
 | `computeUtilization(demand, adjustedCapacity)` | Porcentaje o `null` |
 | `computeSprintStatus(demand, adjustedCapacity)` | `HEALTHY` \| `WARNING` \| `OVERLOADED` |
-| `buildSprintAnalysisRows(...)` | Orquesta agregación + cálculo por sprint; orden alfabético por `sprint` |
+| `buildSprintAnalysisRows(...)` | Orquesta agregación + cálculo por combinación; orden alfabético por `sprint`, `teamName`, `projectName` |
 
 ---
 
@@ -216,19 +229,21 @@ Adjusted Capacity = 0 AND Demand > 0
 
 Read-only. No query parameters in MVP.
 
-**Response:** `200 OK` — JSON array of sprint analysis rows, sorted alphabetically by `sprint`.
+**Response:** `200 OK` — JSON array of sprint analysis rows, sorted alphabetically by `sprint`, then `teamName`, then `projectName`.
 
 **Example response:**
 
 ```json
 [
   {
-    "sprint": "Sprint 4",
-    "demand": 42,
-    "capacity": 40,
-    "absences": 3,
-    "adjustedCapacity": 37,
-    "utilization": 113.51,
+    "sprint": "Sprint 2",
+    "teamName": "Gerencia Riesgo",
+    "projectName": "Riesgo",
+    "demand": 21,
+    "capacity": 20,
+    "absences": 0,
+    "adjustedCapacity": 20,
+    "utilization": 105,
     "status": "OVERLOADED"
   }
 ]
@@ -239,6 +254,8 @@ Read-only. No query parameters in MVP.
 | Field | Type | Description |
 |-------|------|-------------|
 | `sprint` | `string` | Sprint identifier (normalized trim) |
+| `teamName` | `string` | Gerencia (normalized trim) |
+| `projectName` | `string` | Proyecto (normalized trim) |
 | `demand` | `number` | Sum of story points (integer ≥ 0) |
 | `capacity` | `number` | Sum of available points (integer ≥ 0) |
 | `absences` | `number` | Sum of absence days (integer ≥ 0) |
@@ -269,6 +286,8 @@ Add a minimal **Sprint Analysis** view at route `/sprint-analysis`.
 | Column | Source field | Format |
 |--------|--------------|--------|
 | Sprint | `sprint` | Plain text |
+| Gerencia | `teamName` | Plain text |
+| Proyecto | `projectName` | Plain text |
 | Demand | `demand` | Integer |
 | Capacity | `capacity` | Integer |
 | Absences | `absences` | Integer |
@@ -306,7 +325,8 @@ Calculation logic must be developed test-first in pure functions under `apps/api
 | **Sprint without absences** | Absences 0 → adjusted capacity equals capacity |
 | **Sprint without capacity** | Capacity 0, demand 5 → adjusted 0 (after absences 0), `OVERLOADED` |
 | **Sprint without user stories** | Demand 0, capacity 40 → `HEALTHY` |
-| **Union of sprints** | Sprint only in capacity appears in result with demand 0 |
+| **Union of combinations** | Combination only in capacity appears in result with demand 0 |
+| **Same sprint, different teams** | Separate rows per `(sprint, teamName, projectName)` |
 
 File naming convention (align with existing slices): `*.spec.ts` colocated with utils.
 
@@ -334,12 +354,12 @@ Use Vitest + React Testing Library, following patterns in existing web tests if 
 
 Happy path in `e2e/sprint-analysis.spec.ts`:
 
-1. **Arrange:** mock or seed data for one overloaded sprint:
-   - User Stories with total demand > adjusted capacity for `Sprint 4` (e.g. demand 42).
-   - Sprint Capacity totaling 40 for `Sprint 4`.
-   - Sprint Absences totaling 3 days for `Sprint 4` (adjusted capacity 37).
+1. **Arrange:** mock or seed data for one overloaded combination:
+   - User Stories with demand 21 for `Sprint 2` + `Gerencia Riesgo` + `Riesgo`.
+   - Sprint Capacity 20 for the same combination.
+   - No absences (adjusted capacity 20).
 2. **Act:** navigate to `/sprint-analysis`.
-3. **Assert:** table shows `Sprint 4` with status **OVERLOADED** (and utilization consistent with spec).
+3. **Assert:** table shows `Sprint 2`, `Gerencia Riesgo`, `Riesgo` with status **OVERLOADED** and utilization `105.00%`.
 
 Prefer API route mocking (pattern from `e2e/settings-sprint-absences.spec.ts`) when full stack seeding is impractical in CI.
 
@@ -424,9 +444,9 @@ US-005 (este spec) ──► GET /api/sprint-analysis + vista /sprint-analysis
 
 1. **Revisión y aprobación humana** de esta spec (cierre del gate spec-first de Issue #11 / GH-09).
 2. **Implementación incremental** en orden: funciones puras + unit tests → servicio + controller → UI + nav → Playwright.
-3. **Iteración futura:** filtros por gerencia/proyecto, gráficos, export (US-009), recomendaciones IA.
+3. **Iteración futura:** columnas `teamName`/`projectName` en import CSV, gráficos, export (US-009), recomendaciones IA.
 
 ---
 
 **Documento:** `docs/sprint-analysis-mvp.md`  
-**Última actualización:** 2026-06-13 (v1 — agregación por sprint, status HEALTHY/WARNING/OVERLOADED, API y tabla mínima)
+**Última actualización:** 2026-06-13 (v2 — agrupación por sprint + gerencia + proyecto, columnas Gerencia/Proyecto en UI)

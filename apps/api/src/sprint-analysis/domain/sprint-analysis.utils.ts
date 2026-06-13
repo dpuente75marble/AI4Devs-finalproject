@@ -2,14 +2,52 @@ import { computeAdjustedCapacity as computeAdjustedCapacityFromAbsences } from '
 import type {
   SprintAnalysisAbsenceInput,
   SprintAnalysisCapacityInput,
+  SprintAnalysisCombination,
   SprintAnalysisRow,
   SprintAnalysisStatus,
   SprintAnalysisUserStoryInput,
 } from './sprint-analysis.types';
 
-function normalizeSprint(sprint: string): string | null {
-  const trimmed = sprint.trim();
-  return trimmed.length === 0 ? null : trimmed;
+function normalizeCombination(
+  sprint: string,
+  teamName: string,
+  projectName: string,
+): SprintAnalysisCombination | null {
+  const normalizedSprint = sprint.trim();
+  const normalizedTeamName = teamName.trim();
+  const normalizedProjectName = projectName.trim();
+
+  if (
+    normalizedSprint.length === 0 ||
+    normalizedTeamName.length === 0 ||
+    normalizedProjectName.length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    sprint: normalizedSprint,
+    teamName: normalizedTeamName,
+    projectName: normalizedProjectName,
+  };
+}
+
+export function buildCombinationKey(
+  sprint: string,
+  teamName: string,
+  projectName: string,
+): string {
+  return `${sprint}|${teamName}|${projectName}`;
+}
+
+function parseCombinationKey(key: string): SprintAnalysisCombination {
+  const [sprint, teamName, projectName] = key.split('|');
+
+  return {
+    sprint,
+    teamName,
+    projectName,
+  };
 }
 
 function toNumeric(value: number | null | undefined): number {
@@ -20,64 +58,111 @@ function roundToTwoDecimals(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
+function compareCombinations(
+  left: SprintAnalysisCombination,
+  right: SprintAnalysisCombination,
+): number {
+  const sprintCompare = left.sprint.localeCompare(right.sprint);
+  if (sprintCompare !== 0) {
+    return sprintCompare;
+  }
+
+  const teamCompare = left.teamName.localeCompare(right.teamName);
+  if (teamCompare !== 0) {
+    return teamCompare;
+  }
+
+  return left.projectName.localeCompare(right.projectName);
+}
+
 export function aggregateDemandBySprint(
   userStories: SprintAnalysisUserStoryInput[],
 ): Map<string, number> {
-  const demandBySprint = new Map<string, number>();
+  const demandByCombination = new Map<string, number>();
 
   for (const userStory of userStories) {
-    const sprint = normalizeSprint(userStory.sprint);
-    if (sprint === null) {
+    const combination = normalizeCombination(
+      userStory.sprint,
+      userStory.teamName,
+      userStory.projectName,
+    );
+    if (combination === null) {
       continue;
     }
 
-    const currentDemand = demandBySprint.get(sprint) ?? 0;
-    demandBySprint.set(sprint, currentDemand + toNumeric(userStory.storyPoints));
+    const key = buildCombinationKey(
+      combination.sprint,
+      combination.teamName,
+      combination.projectName,
+    );
+    const currentDemand = demandByCombination.get(key) ?? 0;
+    demandByCombination.set(
+      key,
+      currentDemand + toNumeric(userStory.storyPoints),
+    );
   }
 
-  return demandBySprint;
+  return demandByCombination;
 }
 
 export function aggregateCapacityBySprint(
   capacities: SprintAnalysisCapacityInput[],
 ): Map<string, number> {
-  const capacityBySprint = new Map<string, number>();
+  const capacityByCombination = new Map<string, number>();
 
   for (const capacity of capacities) {
-    const sprint = normalizeSprint(capacity.sprint);
-    if (sprint === null) {
+    const combination = normalizeCombination(
+      capacity.sprint,
+      capacity.teamName,
+      capacity.projectName,
+    );
+    if (combination === null) {
       continue;
     }
 
-    const currentCapacity = capacityBySprint.get(sprint) ?? 0;
-    capacityBySprint.set(
-      sprint,
+    const key = buildCombinationKey(
+      combination.sprint,
+      combination.teamName,
+      combination.projectName,
+    );
+    const currentCapacity = capacityByCombination.get(key) ?? 0;
+    capacityByCombination.set(
+      key,
       currentCapacity + toNumeric(capacity.availablePoints),
     );
   }
 
-  return capacityBySprint;
+  return capacityByCombination;
 }
 
 export function aggregateAbsencesBySprint(
   absences: SprintAnalysisAbsenceInput[],
 ): Map<string, number> {
-  const absencesBySprint = new Map<string, number>();
+  const absencesByCombination = new Map<string, number>();
 
   for (const absence of absences) {
-    const sprint = normalizeSprint(absence.sprint);
-    if (sprint === null) {
+    const combination = normalizeCombination(
+      absence.sprint,
+      absence.teamName,
+      absence.projectName,
+    );
+    if (combination === null) {
       continue;
     }
 
-    const currentAbsences = absencesBySprint.get(sprint) ?? 0;
-    absencesBySprint.set(
-      sprint,
+    const key = buildCombinationKey(
+      combination.sprint,
+      combination.teamName,
+      combination.projectName,
+    );
+    const currentAbsences = absencesByCombination.get(key) ?? 0;
+    absencesByCombination.set(
+      key,
       currentAbsences + toNumeric(absence.absenceDays),
     );
   }
 
-  return absencesBySprint;
+  return absencesByCombination;
 }
 
 export function computeAdjustedCapacity(
@@ -126,25 +211,28 @@ export function buildSprintAnalysisRows(
   capacities: SprintAnalysisCapacityInput[],
   absences: SprintAnalysisAbsenceInput[],
 ): SprintAnalysisRow[] {
-  const demandBySprint = aggregateDemandBySprint(userStories);
-  const capacityBySprint = aggregateCapacityBySprint(capacities);
-  const absencesBySprint = aggregateAbsencesBySprint(absences);
+  const demandByCombination = aggregateDemandBySprint(userStories);
+  const capacityByCombination = aggregateCapacityBySprint(capacities);
+  const absencesByCombination = aggregateAbsencesBySprint(absences);
 
-  const sprintNames = new Set<string>([
-    ...demandBySprint.keys(),
-    ...capacityBySprint.keys(),
-    ...absencesBySprint.keys(),
+  const combinationKeys = new Set<string>([
+    ...demandByCombination.keys(),
+    ...capacityByCombination.keys(),
+    ...absencesByCombination.keys(),
   ]);
 
-  return Array.from(sprintNames)
-    .map((sprint) => {
-      const demand = demandBySprint.get(sprint) ?? 0;
-      const capacity = capacityBySprint.get(sprint) ?? 0;
-      const absenceTotal = absencesBySprint.get(sprint) ?? 0;
+  return Array.from(combinationKeys)
+    .map((key) => {
+      const { sprint, teamName, projectName } = parseCombinationKey(key);
+      const demand = demandByCombination.get(key) ?? 0;
+      const capacity = capacityByCombination.get(key) ?? 0;
+      const absenceTotal = absencesByCombination.get(key) ?? 0;
       const adjustedCapacity = computeAdjustedCapacity(capacity, absenceTotal);
 
       return {
         sprint,
+        teamName,
+        projectName,
         demand,
         capacity,
         absences: absenceTotal,
@@ -153,5 +241,7 @@ export function buildSprintAnalysisRows(
         status: computeSprintStatus(demand, adjustedCapacity),
       };
     })
-    .sort((left, right) => left.sprint.localeCompare(right.sprint));
+    .sort((left, right) =>
+      compareCombinations(left, right),
+    );
 }

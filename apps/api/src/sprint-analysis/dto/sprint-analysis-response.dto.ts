@@ -7,35 +7,43 @@ export enum SprintAnalysisStatusDto {
 }
 
 export class SprintAnalysisRowDto {
-  @ApiProperty({ example: 'Sprint 4' })
+  @ApiProperty({ example: 'Sprint 2' })
   sprint!: string;
 
+  @ApiProperty({ example: 'Gerencia Riesgo' })
+  teamName!: string;
+
+  @ApiProperty({ example: 'Riesgo' })
+  projectName!: string;
+
   @ApiProperty({
-    example: 42,
-    description: 'Sum of story points for the sprint',
+    example: 21,
+    description: 'Sum of story points for the sprint, team and project',
   })
   demand!: number;
 
   @ApiProperty({
-    example: 40,
-    description: 'Sum of available points configured for the sprint',
+    example: 20,
+    description:
+      'Sum of available points configured for the sprint, team and project',
   })
   capacity!: number;
 
   @ApiProperty({
-    example: 3,
-    description: 'Sum of absence days registered for the sprint',
+    example: 0,
+    description:
+      'Sum of absence days registered for the sprint, team and project',
   })
   absences!: number;
 
   @ApiProperty({
-    example: 37,
+    example: 20,
     description: 'max(0, capacity - absences)',
   })
   adjustedCapacity!: number;
 
   @ApiProperty({
-    example: 113.51,
+    example: 105,
     nullable: true,
     description:
       'Demand as a percentage of adjusted capacity; null when demand > 0 and adjusted capacity is 0',

@@ -5,6 +5,8 @@ export type SprintAnalysisStatus = 'HEALTHY' | 'WARNING' | 'OVERLOADED'
 
 export type SprintAnalysisRow = {
   sprint: string
+  teamName: string
+  projectName: string
   demand: number
   capacity: number
   absences: number

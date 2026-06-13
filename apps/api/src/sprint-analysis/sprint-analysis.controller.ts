@@ -12,11 +12,11 @@ export class SprintAnalysisController {
   @ApiOperation({
     summary: 'Analyze sprint demand versus adjusted capacity',
     description:
-      'Aggregates imported user stories, sprint capacity and sprint absences by sprint, then returns demand, utilization and overload status for each sprint.',
+      'Aggregates imported user stories, sprint capacity and sprint absences by sprint, team and project, then returns demand, utilization and overload status for each combination.',
   })
   @ApiOkResponse({
     description:
-      'Sprint analysis rows ordered alphabetically by sprint name',
+      'Sprint analysis rows ordered alphabetically by sprint, teamName and projectName',
     type: SprintAnalysisRowDto,
     isArray: true,
   })

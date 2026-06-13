@@ -29,13 +29,28 @@ describe('SprintAnalysisService', () => {
 
   it('reads user stories, capacities and absences and returns aggregated rows', async () => {
     prisma.userStory.findMany.mockResolvedValue([
-      { sprint: 'Sprint 4', storyPoints: 42 },
+      {
+        sprint: 'Sprint 2',
+        storyPoints: 21,
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+      },
     ]);
     prisma.sprintCapacity.findMany.mockResolvedValue([
-      { sprint: 'Sprint 4', availablePoints: 40 },
+      {
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        availablePoints: 20,
+      },
     ]);
     prisma.sprintAbsence.findMany.mockResolvedValue([
-      { sprint: 'Sprint 4', absenceDays: 3 },
+      {
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        absenceDays: 0,
+      },
     ]);
 
     const result = await service.findAll();
@@ -44,19 +59,31 @@ describe('SprintAnalysisService', () => {
       select: { sprint: true, storyPoints: true },
     });
     expect(prisma.sprintCapacity.findMany).toHaveBeenCalledWith({
-      select: { sprint: true, availablePoints: true },
+      select: {
+        sprint: true,
+        teamName: true,
+        projectName: true,
+        availablePoints: true,
+      },
     });
     expect(prisma.sprintAbsence.findMany).toHaveBeenCalledWith({
-      select: { sprint: true, absenceDays: true },
+      select: {
+        sprint: true,
+        teamName: true,
+        projectName: true,
+        absenceDays: true,
+      },
     });
     expect(result).toEqual([
       {
-        sprint: 'Sprint 4',
-        demand: 42,
-        capacity: 40,
-        absences: 3,
-        adjustedCapacity: 37,
-        utilization: 113.51,
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        demand: 21,
+        capacity: 20,
+        absences: 0,
+        adjustedCapacity: 20,
+        utilization: 105,
         status: 'OVERLOADED',
       },
     ]);

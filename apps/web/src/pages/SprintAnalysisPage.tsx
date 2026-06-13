@@ -85,6 +85,12 @@ export default function SprintAnalysisPage() {
                     Sprint
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">
+                    Gerencia
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">
+                    Proyecto
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">
                     Demand
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">
@@ -106,9 +112,16 @@ export default function SprintAnalysisPage() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {rows.map((row) => (
-                  <tr key={row.sprint} className="hover:bg-gray-50">
+                  <tr
+                    key={`${row.sprint}|${row.teamName}|${row.projectName}`}
+                    className="hover:bg-gray-50"
+                  >
                     <td className="px-4 py-3 font-medium text-gray-900">
                       {row.sprint}
+                    </td>
+                    <td className="px-4 py-3 text-gray-800">{row.teamName}</td>
+                    <td className="px-4 py-3 text-gray-800">
+                      {row.projectName}
                     </td>
                     <td className="px-4 py-3 text-gray-800">{row.demand}</td>
                     <td className="px-4 py-3 text-gray-800">{row.capacity}</td>

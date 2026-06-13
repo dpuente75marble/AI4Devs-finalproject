@@ -2,12 +2,14 @@ import { expect, test, type Page } from '@playwright/test'
 
 const MOCK_SPRINT_ANALYSIS_RESPONSE = [
   {
-    sprint: 'Sprint 4',
-    demand: 42,
-    capacity: 40,
-    absences: 3,
-    adjustedCapacity: 37,
-    utilization: 113.51,
+    sprint: 'Sprint 2',
+    teamName: 'Gerencia Riesgo',
+    projectName: 'Riesgo',
+    demand: 21,
+    capacity: 20,
+    absences: 0,
+    adjustedCapacity: 20,
+    utilization: 105,
     status: 'OVERLOADED',
   },
 ]
@@ -37,14 +39,15 @@ test.describe('Sprint Analysis page', () => {
     ).toBeVisible()
     await expect(page.getByText('Loading sprint analysis...')).toBeHidden()
 
-    const row = page.getByRole('row').filter({ hasText: 'Sprint 4' })
+    const row = page.getByRole('row').filter({ hasText: 'Sprint 2' })
 
     await expect(row).toBeVisible()
-    await expect(row).toContainText('42')
-    await expect(row).toContainText('40')
-    await expect(row).toContainText('3')
-    await expect(row).toContainText('37')
-    await expect(row).toContainText('113.51%')
+    await expect(row).toContainText('Gerencia Riesgo')
+    await expect(row).toContainText('Riesgo')
+    await expect(row).toContainText('21')
+    await expect(row).toContainText('20')
+    await expect(row).toContainText('0')
+    await expect(row).toContainText('105.00%')
     await expect(row).toContainText('OVERLOADED')
   })
 })
