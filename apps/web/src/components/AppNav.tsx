@@ -25,6 +25,9 @@ export default function AppNav() {
           <NavLink to="/sprint-analysis" className={navLinkClass}>
             Sprint Analysis
           </NavLink>
+          <NavLink to="/refinement" className={navLinkClass}>
+            Refinement
+          </NavLink>
           <NavLink to="/settings" className={navLinkClass}>
             Settings
           </NavLink>

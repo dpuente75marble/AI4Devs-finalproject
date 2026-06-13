@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppNav from './components/AppNav'
 import DashboardPage from './pages/DashboardPage'
+import RefinementPage from './pages/RefinementPage'
 import SettingsPage from './pages/SettingsPage'
 import SprintAnalysisPage from './pages/SprintAnalysisPage'
 import UserStoriesPage from './pages/UserStoriesPage'
@@ -14,6 +15,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/user-stories" element={<UserStoriesPage />} />
         <Route path="/sprint-analysis" element={<SprintAnalysisPage />} />
+        <Route path="/refinement" element={<RefinementPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
