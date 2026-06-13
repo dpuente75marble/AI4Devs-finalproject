@@ -104,7 +104,8 @@ Not shown in this demo (planned for later deliveries):
 - Excel/PDF export
 - Edit/delete User Stories, deduplication on re-import
 - Production deployment and CI/CD
-- Automated E2E/UI tests
+
+Smoke E2E (Playwright, frontend-only): `pnpm test:e2e` from repo root.
 
 ---
 
