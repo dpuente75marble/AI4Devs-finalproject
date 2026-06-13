@@ -2,7 +2,7 @@
 
 **Proyecto:** DeliveryOps AI · Máster LIDR  
 **Tipo:** Extensión mínima del slice US-002 (import CSV)  
-**Estado:** Spec-first — implementación pendiente  
+**Estado:** Implementado — extensión `teamName` / `projectName` aplicada (ver [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv))  
 **Bloquea:** merge de PR #23 (US-005 Sprint Analysis)  
 **Referencias:** `docs/user-stories-import-mvp.md` · `docs/sprint-analysis-mvp.md` · US-002 / US-005 en `docs/05-user-stories.md`  
 **Stack:** monorepo pnpm · `apps/api` (NestJS + Prisma) · `apps/web` (React) · Playwright (`e2e/`)
@@ -91,16 +91,20 @@ All existing columns (`external_id`, `title`, `description`, `story_points`, `st
 - CSV **with** headers but empty cell → `null` (same as optional `sprint`).
 - CSV **with** values → `trim()` then persist; whitespace-only → `null`.
 
-### Example (extended)
+### Example (extended — demo fixture)
+
+Archivo canónico: [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv)
 
 ```csv
 external_id,title,description,story_points,status,sprint,team_name,project_name
-US-201,Riesgo scoring,,8,ready,Sprint 2,Gerencia Riesgo,Riesgo
-US-202,Alertas,,5,in_progress,Sprint 2,Gerencia Riesgo,Riesgo
-US-203,Legacy import,,3,draft,Sprint 1,,,
+US-201,Configurar capacidad del equipo,Como Tech Lead quiero definir la capacidad del sprint por miembro para planificar entregas,5,ready,Sprint 2,Gerencia Riesgo,Riesgo
+US-202,Detectar sobrecarga de sprint,Como Delivery Manager quiero ver si los story points superan la capacidad disponible,8,ready,Sprint 2,Gerencia Riesgo,Riesgo
+US-203,Exportar informe operativo,Como Project Manager quiero exportar un resumen del sprint para compartir con stakeholders,8,draft,Sprint 2,Gerencia Riesgo,Riesgo
 ```
 
-Row `US-203` illustrates an old-style row inside an extended file: no team/project → excluded from demand aggregation but still listed in User Stories.
+Las tres filas anteriores suman **21** story points de demanda para `(Sprint 2, Gerencia Riesgo, Riesgo)` — alineado con la demo de Sprint Analysis cuando la capacidad configurada es **20**.
+
+> **Compatibilidad:** CSVs sin columnas `team_name` / `project_name` siguen importándose; las filas quedan con `teamName` / `projectName` en `null` y **no aportan demanda** en US-005. Un análisis significativo exige que User Stories, Sprint Capacity y Sprint Absences compartan la misma tripleta `(sprint, teamName, projectName)`.
 
 ---
 
@@ -188,10 +192,11 @@ Align sample values with existing Settings fixtures (`Gerencia Riesgo`, `Riesgo`
 
 ## Definition of done
 
-- [ ] Spec reviewed (this document)
-- [ ] Prisma migration applied locally
-- [ ] Import + list API updated
-- [ ] Sprint Analysis reads demand from persisted fields
-- [ ] User Stories UI shows optional columns
-- [ ] Tests updated; CI green
+- [x] Spec reviewed (this document)
+- [x] Prisma migration applied locally
+- [x] Import + list API updated
+- [x] Sprint Analysis reads demand from persisted fields
+- [x] User Stories UI shows optional columns
+- [x] Tests updated; CI green
+- [x] Sample fixture [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv) aligned with demo data
 - [ ] PR #23 unblocked for merge

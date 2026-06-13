@@ -100,7 +100,8 @@ Demand is calculated as the sum of `storyPoints` grouped by `(sprint, teamName, 
 
 - User Stories con `storyPoints` nulo o ausente se tratan como **0** en la suma.
 - User Stories sin combinación completa (`sprint`, `teamName`, `projectName`) se **excluyen** del análisis de demanda.
-- En el MVP actual, `UserStory` puede no persistir aún `teamName`/`projectName`; en ese caso no aportan demanda hasta que el import CSV los incluya en una iteración futura.
+- El import CSV persiste `teamName` y `projectName` desde columnas opcionales `team_name` / `project_name` (ver `docs/user-stories-team-project-extension.md` y [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv)).
+- Para una demo con demanda real, importar el fixture de ejemplo y configurar capacidad/ausencias con la **misma** tripleta `(sprint, teamName, projectName)`.
 
 ### Sprint Capacity
 
@@ -354,10 +355,10 @@ Use Vitest + React Testing Library, following patterns in existing web tests if 
 
 Happy path in `e2e/sprint-analysis.spec.ts`:
 
-1. **Arrange:** mock or seed data for one overloaded combination:
-   - User Stories with demand 21 for `Sprint 2` + `Gerencia Riesgo` + `Riesgo`.
-   - Sprint Capacity 20 for the same combination.
-   - No absences (adjusted capacity 20).
+1. **Arrange:** import [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv) (incluye `team_name` / `project_name`) y configurar en Settings:
+   - Sprint Capacity **20** para `Sprint 2` + `Gerencia Riesgo` + `Riesgo`.
+   - User Stories US-201 + US-202 + US-203 → demanda **21** para la misma combinación.
+   - Sin ausencias (capacidad ajustada **20**).
 2. **Act:** navigate to `/sprint-analysis`.
 3. **Assert:** table shows `Sprint 2`, `Gerencia Riesgo`, `Riesgo` with status **OVERLOADED** and utilization `105.00%`.
 
@@ -444,7 +445,7 @@ US-005 (este spec) ──► GET /api/sprint-analysis + vista /sprint-analysis
 
 1. **Revisión y aprobación humana** de esta spec (cierre del gate spec-first de Issue #11 / GH-09).
 2. **Implementación incremental** en orden: funciones puras + unit tests → servicio + controller → UI + nav → Playwright.
-3. **Iteración futura:** columnas `teamName`/`projectName` en import CSV, gráficos, export (US-009), recomendaciones IA.
+3. **Iteración futura:** gráficos, export (US-009), recomendaciones IA.
 
 ---
 
