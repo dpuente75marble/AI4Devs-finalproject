@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { SprintAbsencesModule } from './sprint-absences/sprint-absences.module';
+import { SprintAnalysisModule } from './sprint-analysis/sprint-analysis.module';
 import { SprintCapacityModule } from './sprint-capacity/sprint-capacity.module';
 import { UserStoriesModule } from './user-stories/user-stories.module';
 
@@ -14,6 +15,7 @@ import { UserStoriesModule } from './user-stories/user-stories.module';
     UserStoriesModule,
     SprintCapacityModule,
     SprintAbsencesModule,
+    SprintAnalysisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
