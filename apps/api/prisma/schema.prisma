@@ -20,6 +20,8 @@ model UserStory {
   storyPoints Int
   status      String
   sprint      String?
+  teamName    String?
+  projectName String?
   source      String   @default("csv")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

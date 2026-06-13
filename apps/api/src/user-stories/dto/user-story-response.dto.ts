@@ -22,6 +22,12 @@ export class UserStoryResponseDto {
   @ApiProperty({ example: 'Sprint 1', nullable: true })
   sprint!: string | null;
 
+  @ApiProperty({ example: 'Gerencia Riesgo', nullable: true })
+  teamName!: string | null;
+
+  @ApiProperty({ example: 'Riesgo', nullable: true })
+  projectName!: string | null;
+
   @ApiProperty({ example: 'csv' })
   source!: string;
 

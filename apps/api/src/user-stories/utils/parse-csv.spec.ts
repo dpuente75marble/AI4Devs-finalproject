@@ -34,4 +34,22 @@ US-101,5,ready`;
       'CSV file contains no data rows',
     );
   });
+
+  it('parses extended CSV with team_name and project_name columns', () => {
+    const csv = `external_id,title,description,story_points,status,sprint,team_name,project_name
+US-201,Riesgo scoring,,8,ready,Sprint 2,Gerencia Riesgo,Riesgo`;
+
+    const { rows } = parseCsv(Buffer.from(csv));
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].team_name).toBe('Gerencia Riesgo');
+    expect(rows[0].project_name).toBe('Riesgo');
+  });
+
+  it('still parses legacy CSV without team_name and project_name', () => {
+    const { rows } = parseCsv(Buffer.from(VALID_CSV));
+
+    expect(rows[0].team_name).toBeUndefined();
+    expect(rows[0].project_name).toBeUndefined();
+  });
 });

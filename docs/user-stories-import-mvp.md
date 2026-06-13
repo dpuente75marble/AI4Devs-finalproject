@@ -133,6 +133,8 @@ Campos para este MVP (sin `Project` ni FK a `Sprint`):
 | `storyPoints` | `Int` | sí | ≥ 0 |
 | `status` | `String` | sí | Valores permitidos acotados (ver abajo) |
 | `sprint` | `String?` | no | Texto libre del CSV; sin entidad Sprint |
+| `teamName` | `String?` | no | Gerencia; CSV `team_name` (opcional) |
+| `projectName` | `String?` | no | Proyecto; CSV `project_name` (opcional) |
 | `source` | `String` | sí | Default: `csv` |
 | `createdAt` | `DateTime` | sí | auto |
 | `updatedAt` | `DateTime` | sí | auto |
@@ -156,16 +158,23 @@ Separador: **coma** (`,`). Primera fila: **cabecera**.
 | `story_points` | `storyPoints` | sí |
 | `status` | `status` | sí |
 | `sprint` | `sprint` | no |
+| `team_name` | `teamName` | no |
+| `project_name` | `projectName` | no |
 
 Nombres en **snake_case** para alinear con convenciones API/DB del proyecto.
 
-**Ejemplo:**
+> **`team_name` / `project_name`:** opcionales para compatibilidad con CSVs antiguos. Si faltan o van vacíos, se persisten como `null`. Para que una fila **aporte demanda** en Sprint Analysis (US-005), deben coincidir `sprint`, `team_name` y `project_name` con la capacidad y ausencias configuradas en Settings.
+
+**Ejemplo (fixture de demo):** [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv)
 
 ```csv
-external_id,title,description,story_points,status,sprint
-US-101,Login de usuario,Como usuario quiero iniciar sesión,5,ready,Sprint 1
-US-102,Recuperar contraseña,,3,draft,Sprint 1
+external_id,title,description,story_points,status,sprint,team_name,project_name
+US-101,Login de usuario,Como usuario quiero iniciar sesión con email y contraseña para acceder al workspace,5,ready,Sprint 1,Gerencia Riesgo,Riesgo
+US-102,Recuperar contraseña,Como usuario quiero restablecer mi contraseña mediante enlace por email,3,draft,Sprint 1,Gerencia Riesgo,Riesgo
+US-201,Detectar sobrecarga de sprint,Como Delivery Manager quiero ver si los story points superan la capacidad disponible,8,ready,Sprint 2,Gerencia Riesgo,Riesgo
 ```
+
+CSV legacy sin `team_name` / `project_name` sigue siendo válido; esas filas importan correctamente pero no suman demanda en el análisis hasta incluir la tripleta completa.
 
 ---
 
@@ -208,6 +217,8 @@ Prefijo global existente: `/api`.
       "storyPoints": 5,
       "status": "ready",
       "sprint": "Sprint 1",
+      "teamName": "Gerencia Riesgo",
+      "projectName": "Riesgo",
       "source": "csv",
       "createdAt": "2026-05-17T10:00:00.000Z",
       "updatedAt": "2026-05-17T10:00:00.000Z"
@@ -238,7 +249,7 @@ Prefijo global existente: `/api`.
 | Título + descripción breve | Contexto del módulo |
 | Zona de upload | `<input type="file" accept=".csv">` + botón "Importar CSV" |
 | Mensaje de resultado | Banner éxito (verde) o errores (rojo/ámbar) según respuesta API |
-| Tabla | Columnas: External ID, Title, Story Points, Status, Sprint, Created |
+| Tabla | Columnas: External ID, Title, Story Points, Status, Sprint, Gerencia, Proyecto, Created |
 | Estado vacío | Texto: "No user stories yet. Import a CSV to get started." |
 | Loading | Deshabilitar botón y spinner/texto durante import y carga inicial |
 
@@ -319,7 +330,7 @@ Network error / 5xx
 ```gherkin
 Given the API is running and the database is available
 And the user is on the "/user-stories" page
-And a valid CSV file with header "external_id,title,description,story_points,status,sprint"
+And a valid CSV file with header "external_id,title,description,story_points,status,sprint,team_name,project_name"
 And the CSV contains 2 valid data rows
 When the user uploads the CSV and confirms import
 Then the API responds with imported count equal to 2

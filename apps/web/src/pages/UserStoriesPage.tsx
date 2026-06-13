@@ -88,6 +88,9 @@ export default function UserStoriesPage() {
           Upload a CSV with columns: external_id, title, description,
           story_points, status, sprint.
         </p>
+        <p className="mt-1 text-sm text-gray-600">
+          Optional CSV columns: team_name, project_name.
+        </p>
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="flex flex-1 flex-col gap-1 text-sm text-gray-700">
@@ -178,6 +181,12 @@ export default function UserStoriesPage() {
                     Sprint
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-700">
+                    Gerencia
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">
+                    Proyecto
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-700">
                     Created
                   </th>
                 </tr>
@@ -195,6 +204,12 @@ export default function UserStoriesPage() {
                     <td className="px-4 py-3 text-gray-800">{story.status}</td>
                     <td className="px-4 py-3 text-gray-800">
                       {story.sprint ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-800">
+                      {story.teamName ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-800">
+                      {story.projectName ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
                       {formatDate(story.createdAt)}

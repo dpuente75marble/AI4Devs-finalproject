@@ -413,7 +413,7 @@ GET /api/user-stories  →  frontend table refresh
 
 **Out of scope in this slice:** auth, sprint capacity, AI refinement, exports, multi-tenant, and async processing.
 
-**E2E demo (Delivery 1):** step-by-step guide in [docs/DEMO.md](docs/DEMO.md) · sample file [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv)
+**E2E demo (Delivery 1):** step-by-step guide in [docs/DEMO.md](docs/DEMO.md) · sample file [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) (includes optional `team_name`, `project_name` for Sprint Analysis)
 
 ---
 
@@ -494,7 +494,7 @@ pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
 ```
 
-**Smoke test:** follow [docs/DEMO.md](docs/DEMO.md), import [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv), and confirm rows appear in the table.
+**Smoke test:** follow [docs/DEMO.md](docs/DEMO.md), import [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) (9 rows with `team_name` / `project_name`), and confirm rows appear in the table. For Sprint Analysis, configure matching capacity in Settings and verify demand on `/sprint-analysis`.
 
 ---
 
