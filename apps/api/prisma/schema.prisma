@@ -39,3 +39,17 @@ model SprintCapacity {
   @@unique([sprint, teamName, projectName])
   @@index([sprint])
 }
+
+model SprintAbsence {
+  id          String   @id @default(cuid())
+  sprint      String
+  teamName    String
+  projectName String
+  absenceDays Int
+  reason      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sprint])
+  @@index([sprint, teamName, projectName])
+}
