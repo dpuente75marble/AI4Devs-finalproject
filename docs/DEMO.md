@@ -5,13 +5,50 @@ Guías breves para demostrar los vertical slices E2E en local.
 | Slice | Spec |
 |-------|------|
 | User Stories CSV import (US-002) | [user-stories-import-mvp.md](user-stories-import-mvp.md) |
+| Sprint Capacity (US-003) | [sprint-capacity-mvp.md](sprint-capacity-mvp.md) |
+| Sprint Absences (US-004) | [sprint-absences-mvp.md](sprint-absences-mvp.md) |
 | Sprint Analysis (US-005) | [sprint-analysis-mvp.md](sprint-analysis-mvp.md) |
+| Refinement MVP (US-006–008) | [refinement-mvp.md](refinement-mvp.md) |
+
+**Evidencia académica (issue #4 / GH-02):**
+
+- [prompts.md](../prompts.md) — P-001–P-017 (foundation + CSV import); P-018–P-022 (DEMO, CI, ADRs, governance)
+- [docs/adr/](adr/) — ADR-001 (AI-first SDLC) · ADR-002 (pnpm monorepo) · ADR-003 (Nest+Prisma+PG) · ADR-004 (vertical slices) · ADR-005 (Cursor rules)
+
+---
+
+## Demo Checklist
+
+Use this checklist to validate the local demo before closing Delivery 1 evidence (GH-02 / issue #4).
+
+| # | Check | Expected outcome |
+|---|-------|------------------|
+| 1 | **API starts successfully** | `pnpm --filter api start:dev` → `GET /api/health` returns `{ "status": "ok" }` |
+| 2 | **Web starts successfully** | `pnpm --filter web dev` → Vite URL loads; navigation renders without errors |
+| 3 | **CSV import validated** | Import `fixtures/sample-user-stories.csv` → **9 imported**, **0 failed**; table shows 9 rows |
+| 4 | **Sprint Capacity validated** | Settings → create capacity for `Sprint 2` / `Gerencia Riesgo` / `Riesgo` with **20** points |
+| 5 | **Sprint Absences validated** | Settings → register absence for same triple (optional); adjusted capacity reflects absence days |
+| 6 | **Sprint Analysis validated** | `/sprint-analysis` → `Sprint 2` / `Gerencia Riesgo` / `Riesgo` shows demand **21** vs capacity **20** → **OVERLOADED** |
+| 7 | **Refinement MVP validated** | `/refinement` → upload `fixtures/requirements.pdf` → editable refined story, AC, and gaps displayed |
+| 8 | **Expected outcomes documented** | Results match sections below; Swagger at `/api/docs` documents all endpoints |
+
+**Build validation (optional):**
+
+```bash
+pnpm --filter api build && pnpm --filter api test
+pnpm --filter web build
+```
 
 ---
 
 ## Demo objective
 
-Show that DeliveryOps AI can **import User Stories from CSV** (with optional team/project), persist them in PostgreSQL, **list them in the web UI**, and — together with Sprint Capacity and Absences — **run Sprint Analysis** grouped by `(sprint, teamName, projectName)`.
+Show that DeliveryOps AI supports the **operational planning and refinement workflow** end-to-end in local development:
+
+1. **Import User Stories from CSV** (with optional team/project)
+2. **Configure sprint capacity** and **register absences** in Settings
+3. **Run sprint analysis** — demand vs adjusted capacity grouped by `(sprint, teamName, projectName)`
+4. **Refine requirements from PDF** — mock provider returns editable story, acceptance criteria, and gaps
 
 ---
 
@@ -26,9 +63,10 @@ Environment:
 - `apps/api/.env` with `DATABASE_URL` pointing to `localhost:5433`
 - `apps/web/.env` with `VITE_API_URL=http://localhost:3000`
 
-Sample file for import:
+Sample files:
 
 - [fixtures/sample-user-stories.csv](../fixtures/sample-user-stories.csv) — includes optional columns `team_name`, `project_name` aligned with Settings demo data
+- [fixtures/requirements.pdf](../fixtures/requirements.pdf) — text-based PDF for Refinement MVP demo
 
 > **Backward compatibility:** `team_name` and `project_name` are optional CSV columns. Legacy files without them still import, but those rows do **not** contribute demand in Sprint Analysis. Meaningful analysis requires matching `(sprint, teamName, projectName)` across User Stories, Sprint Capacity, and Sprint Absences.
 
@@ -63,6 +101,7 @@ pnpm --filter api prisma migrate dev
 | User Stories page | `/user-stories` |
 | Settings (capacity / absences) | `/settings` |
 | Sprint Analysis | `/sprint-analysis` |
+| Refinement | `/refinement` |
 | API health | http://localhost:3000/api/health |
 | Swagger | http://localhost:3000/api/docs |
 
@@ -87,6 +126,38 @@ pnpm --filter api prisma migrate dev
 
 ---
 
+## E2E demo steps — Sprint Capacity (US-003)
+
+After importing the sample CSV (or on a fresh database before analysis):
+
+1. Go to **Settings** → **Sprint Capacity** section.
+2. Select Sprint: `Sprint 2`, Gerencia: `Gerencia Riesgo`, Proyecto: `Riesgo`.
+3. Enter available points: **20**.
+4. Click **Save capacity**.
+5. Confirm the capacity appears in the list with the correct triple and points.
+
+### Expected result (capacity)
+
+- HTTP **201** on `POST /api/sprint-capacity`.
+- Capacity row visible in Settings; duplicate triple returns conflict (409).
+
+---
+
+## E2E demo steps — Sprint Absences (US-004)
+
+1. In **Settings** → **Sprint Absences** section.
+2. Select the same triple: `Sprint 2` / `Gerencia Riesgo` / `Riesgo`.
+3. Enter absence days (e.g. **2**) and a short reason.
+4. Click **Save absence**.
+5. Confirm the absence appears in the list and **adjusted capacity** reflects reduced points where shown.
+
+### Expected result (absences)
+
+- HTTP **201** on `POST /api/sprint-absences`.
+- Adjusted capacity = `max(0, availablePoints − sum(absenceDays))` for the combination.
+
+---
+
 ## E2E demo steps — Sprint Analysis (US-005)
 
 After importing the sample CSV:
@@ -103,19 +174,45 @@ After importing the sample CSV:
 
 Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Sprint 2) appear when capacity or absences exist for that triple; otherwise demand may show with zero capacity depending on seeded data.
 
+### Expected result (analysis)
+
+- `GET /api/sprint-analysis` returns rows with `demand`, `capacity`, `adjustedCapacity`, `utilization`, and `status` (`HEALTHY`, `WARNING`, or `OVERLOADED`).
+- UI table matches API data for the configured triple.
+
+---
+
+## E2E demo steps — Refinement MVP (US-006–008)
+
+1. Go to **Refinement** in the navigation.
+2. Click **Choose file** and select `fixtures/requirements.pdf`.
+3. Click **Analyze**.
+4. Wait for the analysis to complete (synchronous, mock provider).
+5. Verify the UI shows:
+   - **Refined user story** (editable textarea)
+   - **Acceptance criteria** (editable list)
+   - **Gaps / questions** (editable list)
+6. *(Optional)* Edit fields to demonstrate human-in-the-loop review.
+7. *(Optional)* Click **Clear** to reset the form.
+
+### Expected result (refinement)
+
+- HTTP **200** on `POST /api/refinement/analyze` with structured JSON (`refinedStory`, `acceptanceCriteria`, `gaps`).
+- Output is **not persisted** — refresh clears results (MVP limitation).
+- Mock provider only; no real OpenAI/Azure call.
+
 ---
 
 ## What these slices demonstrate (technical)
 
-- **Spec-first delivery** aligned with slice specs in `docs/`
+- **Spec-first delivery** aligned with slice specs in `docs/*-mvp.md`
 - **Monorepo** with independent `apps/api` and `apps/web`
-- **NestJS modules** with CSV parse, validation, Prisma persistence, and read-only analysis
-- **Partial import**: invalid rows reported without blocking valid ones
-- **Optional CSV columns** `team_name` / `project_name` with backward compatibility
-- **Sprint Analysis** demand aggregation by `(sprint, teamName, projectName)`
+- **NestJS modules** per feature: user-stories, sprint-capacity, sprint-absences, sprint-analysis, refinement
+- **Partial CSV import**: invalid rows reported without blocking valid ones
+- **Sprint planning chain**: capacity → absences → demand vs adjusted capacity analysis
+- **Refinement MVP**: PDF upload, text extraction, mock `RefinementProvider`, editable UI output
 - **OpenAPI** documentation at `/api/docs`
 - **React UI** with local state, `fetch`, and `VITE_API_URL`
-- **AI-assisted workflow** traceability via [prompts.md](../prompts.md)
+- **AI-assisted workflow** traceability via [prompts.md](../prompts.md) and [docs/adr/](adr/)
 
 ---
 
@@ -123,14 +220,15 @@ Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Spri
 
 Not shown in this demo (planned for later deliveries):
 
-- Authentication and multi-tenant workspaces
-- AI-assisted requirement refinement
-- Excel/PDF export
+- Authentication and multi-tenant workspaces (US-001)
+- Excel/PDF export (US-009)
+- Real LLM provider (OpenAI / Azure) — mock only today
+- Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import
-- Production deployment and CI/CD
+- Production deployment
 
-Smoke E2E (Playwright, frontend-only): `pnpm test:e2e` from repo root.
+Smoke E2E (Playwright): `pnpm test:e2e` from repo root.
 
 ---
 
-**Duration:** ~5–8 minutes for import + Sprint Analysis walkthrough.
+**Duration:** ~10–15 minutes for full checklist (import + settings + analysis + refinement).

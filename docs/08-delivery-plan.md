@@ -155,6 +155,19 @@ Main Deliverables:
 - runtime infrastructure
 - testing execution
 
+**Repository note (post PR #23 / #24):** Delivery 1 originally excluded implementation, but the repository already contains working vertical slices (US-002–US-008) as evidence of the AI-first workflow. Delivery 1 closure focuses on **documentation coherence and traceability**, not new code.
+
+### Delivery 1 — implementation status (repository)
+
+| Area | Status |
+|------|--------|
+| Product/architecture docs (`docs/01`–`08`) | Documented |
+| ADRs (ADR-001–ADR-005) | Documented |
+| AI workflow + prompts (P-001–P-022) | Documented |
+| GitHub backlog bootstrap (issues #3–#16) | Created |
+| E2E evidence ([DEMO.md](DEMO.md)) | Documented |
+| Functional slices US-002–US-008 | **Implemented** (exceeds original D1 scope) |
+
 ---
 
 # Delivery 2 Scope
@@ -179,6 +192,21 @@ Main Deliverables:
 - advanced AI orchestration
 - advanced observability
 - production hardening
+
+### Delivery 2 — implementation status (repository, Jun 2026)
+
+| Deliverable | User Story | Status |
+|-------------|------------|--------|
+| Backend / frontend / PostgreSQL foundation | — | **Implemented** |
+| CSV import | US-002 | **Implemented** |
+| Sprint capacity | US-003 | **Implemented** |
+| Sprint absences | US-004 | **Implemented** |
+| Sprint analysis | US-005 | **Implemented** |
+| AI refinement MVP (mock provider) | US-006–008 | **Implemented** |
+| Authentication | US-001 | Planned |
+| Excel export | US-009 | Planned |
+| Basic deployment | — | Planned |
+| Initial tests + CI | — | CI **implemented**; extended tests planned |
 
 ---
 
@@ -264,20 +292,22 @@ The project will follow an incremental implementation strategy.
 ## Recommended Execution Order
 
 ~~~text
-1. Monorepo setup
-2. Frontend and backend initialization
-3. Database setup
-4. Authentication
-5. Project and sprint entities
-6. CSV import
-7. Sprint analysis engine
-8. Team capacity management
-9. PDF processing
-10. AI refinement
-11. Export generation
-12. Testing
-13. Deployment
+1. Monorepo setup                    ✅
+2. Frontend and backend initialization ✅
+3. Database setup                    ✅
+4. Authentication                    ○ planned (US-001)
+5. Project and sprint entities       ○ partial (flat sprint/team/project fields)
+6. CSV import                        ✅ (US-002)
+7. Sprint analysis engine            ✅ (US-005)
+8. Team capacity management          ✅ (US-003)
+9. Absence management                ✅ (US-004)
+10. PDF processing + AI refinement   ✅ mock (US-006–008)
+11. Export generation                ○ planned (US-009)
+12. Testing                          ○ partial (unit tests; E2E planned)
+13. Deployment                       ○ planned (Final Delivery)
 ~~~
+
+Legend: ✅ implemented · ○ planned or partial
 
 ## Engineering Principles
 

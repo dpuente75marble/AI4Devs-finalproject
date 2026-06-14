@@ -26,9 +26,9 @@ Operational handoff and **real repository state:** [PROJECT_CONTEXT.md](PROJECT_
 
 | Category | Status |
 |----------|--------|
-| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-017), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
-| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, **User Stories CSV import E2E** — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
-| **Planned** (Delivery 2+) | Authentication, sprint capacity, AI refinement, exports, **public deployment** |
+| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-022), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
+| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-002–US-008** (CSV import, sprint capacity, absences, analysis, refinement MVP) — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
+| **Planned** (Delivery 2+) | Authentication (US-001), Excel export (US-009), **public deployment** |
 
 > Delivery 1 originally scoped documentation only; the repository already includes a working local E2E slice and CI as evidence of the AI-first workflow.
 
@@ -68,13 +68,13 @@ The project aims to:
 
 The MVP aims to deliver a complete end-to-end operational workflow including:
 
-- authentication
-- User Story CSV import
-- sprint capacity planning
-- absence management
-- sprint overload analysis
-- AI-assisted User Story refinement
-- Excel export generation
+- authentication *(planned — US-001)*
+- User Story CSV import *(implemented — US-002)*
+- sprint capacity planning *(implemented — US-003)*
+- absence management *(implemented — US-004)*
+- sprint overload analysis *(implemented — US-005)*
+- AI-assisted User Story refinement *(implemented — US-006–008, mock provider)*
+- Excel export generation *(planned — US-009)*
 
 The project intentionally prioritizes a realistic and maintainable MVP over excessive enterprise scope.
 
@@ -176,7 +176,7 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 | Layer | Target design | Current implementation |
 |-------|---------------|------------------------|
 | **Style** | Clean Architecture and Hexagonal Architecture (modular boundaries, ports/adapters for AI) | **Pragmatic modular monolith** — NestJS module per feature, service → Prisma directly |
-| **Detail** | [docs/03-technical-design.md](docs/03-technical-design.md), [ARCHITECTURE.md](ARCHITECTURE.md) | First slice: `user-stories` module; AI adapter **not implemented** yet |
+| **Detail** | [docs/03-technical-design.md](docs/03-technical-design.md), [ARCHITECTURE.md](ARCHITECTURE.md) | Feature modules: `user-stories`, `sprint-capacity`, `sprint-absences`, `sprint-analysis`, `refinement` (mock provider) |
 
 Clean/Hexagonal principles guide future slices; the running codebase prioritizes maintainable vertical delivery over full layered architecture.
 
@@ -235,7 +235,7 @@ The project follows an AI-assisted engineering workflow using:
 
 **Governance and traceability:**
 
-- [prompts.md](prompts.md) — prompt registry (P-001–P-017: foundation + CSV import slice)
+- [prompts.md](prompts.md) — prompt registry (P-001–P-022: foundation, vertical slices, Delivery 1 evidence)
 - [AGENTS.md](AGENTS.md) — scope, prohibitions, and workflow rules for AI agents and developers
 - [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md) — full AI-first SDLC methodology
 
@@ -254,6 +254,12 @@ Business endpoints available today (local development):
 | `GET` | `/api/health` | Service health check |
 | `GET` | `/api/user-stories` | List imported User Stories |
 | `POST` | `/api/user-stories/import` | CSV import (multipart, per-row validation) |
+| `GET` | `/api/sprint-capacity` | List sprint capacity configurations |
+| `POST` | `/api/sprint-capacity` | Create sprint capacity configuration |
+| `GET` | `/api/sprint-absences` | List sprint absence records |
+| `POST` | `/api/sprint-absences` | Create sprint absence record |
+| `GET` | `/api/sprint-analysis` | Demand vs adjusted capacity analysis |
+| `POST` | `/api/refinement/analyze` | PDF refinement analysis (mock provider) |
 
 Interactive contract: Swagger UI at `http://localhost:3000/api/docs` (with API running).
 
@@ -263,8 +269,12 @@ Interactive contract: Swagger UI at `http://localhost:3000/api/docs` (with API r
 
 **Implemented in PostgreSQL (Prisma):**
 
-- `UserStory` — CSV import vertical slice
+- `UserStory` — CSV import (US-002)
+- `SprintCapacity` — sprint capacity configuration (US-003)
+- `SprintAbsence` — sprint absence records (US-004)
 - `HealthCheck` — persistence foundation
+
+Sprint analysis (US-005) and refinement (US-006–008) are computed in-memory; results are not persisted.
 
 **Target data model (documented, not yet in database):**
 
@@ -278,7 +288,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - **Technical backlog:** [docs/06-technical-backlog.md](docs/06-technical-backlog.md) (TB-xxx)
 - **GitHub backlog:** [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) (bootstrap strategy and traceability) — **GH-01–GH-14** materialized as GitHub Issues **#3–#16**
 
-**Slice coverage:** US-002 (CSV import) is partially implemented via [user-stories-import-mvp.md](docs/user-stories-import-mvp.md); remaining Must-Have stories are planned for Delivery 2+.
+**Slice coverage (implemented):** US-002 (CSV import), US-003 (sprint capacity), US-004 (sprint absences), US-005 (sprint analysis), US-006–008 (refinement MVP). **Planned:** US-001 (auth), US-009 (Excel export). Specs per slice in `docs/*-mvp.md`; traceability matrix in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md).
 
 ---
 
@@ -300,7 +310,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) — real repository state and handoff
 - [AGENTS.md](AGENTS.md) — AI agent and developer workflow rules
 - [ARCHITECTURE.md](ARCHITECTURE.md) — implemented architecture
-- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-017)
+- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-022)
 
 ---
 
@@ -321,8 +331,12 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [07-ai-development-workflow.md](docs/07-ai-development-workflow.md)
 - [08-delivery-plan.md](docs/08-delivery-plan.md)
 - [09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) — bootstrap strategy (issues #3–#16 = GH-01–GH-14, milestones, labels)
-- [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) — first vertical slice specification
-- [DEMO.md](docs/DEMO.md) — E2E demo guide (Delivery 1 evidence)
+- [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) — US-002 CSV import spec
+- [sprint-capacity-mvp.md](docs/sprint-capacity-mvp.md) — US-003 sprint capacity spec
+- [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) — US-004 sprint absences spec
+- [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) — US-005 sprint analysis spec
+- [refinement-mvp.md](docs/refinement-mvp.md) — US-006–008 refinement MVP spec
+- [DEMO.md](docs/DEMO.md) — E2E demo guide and checklist (Delivery 1 evidence)
 
 ---
 
@@ -360,7 +374,11 @@ AI4Devs-finalproject/
 - backend foundation (NestJS + ConfigModule + modular structure)
 - Prisma + PostgreSQL (local Docker database)
 - Swagger / OpenAPI (`/api/docs`)
-- **User Stories CSV import E2E** (first functional vertical slice)
+- **US-002:** User Stories CSV import E2E
+- **US-003:** Sprint capacity configuration (Settings UI + API)
+- **US-004:** Sprint absences (Settings UI + API)
+- **US-005:** Sprint analysis — demand vs adjusted capacity (`/sprint-analysis`)
+- **US-006–008:** Refinement MVP — PDF upload, mock provider, editable output (`/refinement`)
 - frontend/backend integration (`VITE_API_URL`, local CORS for Vite dev ports)
 - Docker local database (`postgres:16-alpine` on port `5433`)
 - GitHub Actions CI (build + API tests + web build on push/PR)
@@ -370,50 +388,62 @@ AI4Devs-finalproject/
 
 ## In Progress
 
-- MVP stabilization
-- delivery preparation
-- documentation hardening
+- Delivery 1 documentation closure (issues #3–#5)
+- Delivery 2 remaining scope: authentication (US-001), Excel export (US-009)
 
 ---
 
 ## Planned
 
-- authentication
-- sprint planning and capacity analysis
-- AI-assisted requirement refinement
-- export generation
+- authentication (US-001 / GH-06)
+- Excel export (US-009 / GH-11)
 - public deployment (Vercel / Render / Neon)
 - extended E2E and UI test coverage
 
 ---
 
-# Current Implemented Vertical Slice
+# Implemented Vertical Slices
 
-**User Stories CSV Import MVP** — spec: [user-stories-import-mvp.md](docs/user-stories-import-mvp.md)
+Five operational slices are implemented end-to-end in local development (PRs #23–#24 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
 
-End-to-end flow currently working in local development:
+| User Story | Slice | Spec | UI route |
+|------------|-------|------|----------|
+| US-002 | CSV import | [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | `/user-stories` |
+| US-003 | Sprint capacity | [sprint-capacity-mvp.md](docs/sprint-capacity-mvp.md) | `/settings` |
+| US-004 | Sprint absences | [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | `/settings` |
+| US-005 | Sprint analysis | [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) | `/sprint-analysis` |
+| US-006–008 | Refinement MVP | [refinement-mvp.md](docs/refinement-mvp.md) | `/refinement` |
+
+**Planning flow (US-002 → US-005):**
 
 ~~~text
-CSV upload (web /user-stories)
+CSV upload (/user-stories)
       |
       v
-POST /api/user-stories/import  (multipart, validation per row)
+POST /api/user-stories/import  →  PostgreSQL (UserStory)
       |
       v
-Valid rows persisted via Prisma
+Settings: Sprint Capacity + Absences (/settings)
       |
       v
-PostgreSQL (UserStory table)
-      |
-      v
-GET /api/user-stories  →  frontend table refresh
+GET /api/sprint-analysis  →  demand vs adjusted capacity (/sprint-analysis)
 ~~~
 
-**What it demonstrates:** specification-first delivery, AI-assisted implementation, OpenAPI-documented API, pragmatic MVP backend module (`user-stories`), and a minimal React UI without advanced state libraries.
+**Refinement flow (US-006–008):**
 
-**Out of scope in this slice:** auth, sprint capacity, AI refinement, exports, multi-tenant, and async processing.
+~~~text
+PDF upload (/refinement)
+      |
+      v
+POST /api/refinement/analyze  →  mock provider
+      |
+      v
+Editable refined story, acceptance criteria, gaps (UI only — not persisted)
+~~~
 
-**E2E demo (Delivery 1):** step-by-step guide in [docs/DEMO.md](docs/DEMO.md) · sample file [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) (includes optional `team_name`, `project_name` for Sprint Analysis)
+**Still out of scope:** authentication (US-001), Excel export (US-009), production deployment, real LLM provider, persistence of refinement results.
+
+**E2E demo:** [docs/DEMO.md](docs/DEMO.md) · fixtures: [sample-user-stories.csv](fixtures/sample-user-stories.csv), [requirements.pdf](fixtures/requirements.pdf)
 
 ---
 
@@ -531,9 +561,13 @@ Includes:
 - backend
 - frontend
 - database
-- authentication
-- sprint analysis
-- AI refinement MVP
+- authentication *(planned — US-001)*
+- CSV import *(implemented — US-002)*
+- sprint capacity, absences, and analysis *(implemented — US-003–005)*
+- AI refinement MVP *(implemented — US-006–008, mock provider)*
+- Excel export *(planned — US-009)*
+- initial testing
+- CI/CD setup *(CI implemented; deploy planned)*
 
 ---
 
