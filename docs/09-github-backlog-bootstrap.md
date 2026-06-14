@@ -1,8 +1,8 @@
 # DeliveryOps AI — GitHub Backlog Bootstrap
 
 **Proyecto:** DeliveryOps AI · AI4Devs / LIDR Final Master Project  
-**Estado del documento:** Estrategia y roadmap documentados — **issues GitHub aún no creados**  
-**Última alineación:** Mayo 2026  
+**Estado del documento:** Estrategia ejecutada — **issues GitHub #3–#16 creados** (GH-01–GH-14)  
+**Última alineación:** Junio 2026 (post PR #23, #24)  
 **Referencias:** [05-user-stories.md](05-user-stories.md) · [06-technical-backlog.md](06-technical-backlog.md) · [08-delivery-plan.md](08-delivery-plan.md) · [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md)
 
 ---
@@ -17,7 +17,7 @@ El backlog se organiza en **fases incrementales** (Delivery 1 → Delivery 2 →
 
 ### Vertical slices
 
-Cada issue de implementación (Delivery 2 y Final Delivery) representa preferentemente **un vertical slice E2E acotado**: spec aprobada → API/Prisma → UI → validación manual o automatizada → PR. El primer slice demostrado en el repo es **User Stories CSV Import** (CSV → React → NestJS → Prisma → PostgreSQL).
+Cada issue de implementación (Delivery 2 y Final Delivery) representa preferentemente **un vertical slice E2E acotado**: spec aprobada → API/Prisma → UI → validación manual o automatizada → PR. Slices implementados en el repo: **US-002** (CSV import), **US-003** (capacity), **US-004** (absences), **US-005** (analysis), **US-006–008** (refinement MVP).
 
 ### Roadmap MVP
 
@@ -32,7 +32,7 @@ Cada issue GitHub propuesto enlaza explícitamente:
 - **Documentos** — specs, ADRs, DEMO, prompts
 - **Milestone** — entrega académica correspondiente
 
-La matriz detallada US/TB ↔ issues se completará en el issue **GH-03** (Delivery 1).
+La matriz autoritativa US/TB ↔ issues está en la **sección 10** (issue **GH-03** / GitHub **#5**).
 
 ### Workflow AI-first
 
@@ -52,7 +52,7 @@ Los issues no reemplazan las specs en `docs/`; las **derivan** y las **obligan**
 
 - La IA (Cursor, LLMs) puede **proponer** issues, criterios de aceptación, desgloses técnicos y borradores de implementación.
 - El **humano** aprueba specs, prioridades, límites de negocio, seguridad y el cierre E2E antes de dar un slice por terminado.
-- [prompts.md](../prompts.md) registra trazabilidad académica (P-001–P-017 cubren foundation + primer slice); nuevos prompts se añaden por iteración significativa, no de forma autónoma.
+- [prompts.md](../prompts.md) registra trazabilidad académica (P-001–P-022: foundation, slices US-002–US-008, evidencia Delivery 1)
 
 ### Spec-first
 
@@ -86,7 +86,7 @@ Los milestones de GitHub reflejan las tres entregas del máster ([08-delivery-pl
 | **Delivery 2 — Functional MVP** | 24 jun 2026 | Slices funcionales: autenticación, planificación sprint (capacidad, ausencias, análisis), refinamiento IA MVP, export Excel. Spec-first por slice. |
 | **Final Delivery — Deployed MVP** | 14 jul 2026 | MVP desplegado públicamente, CI con PostgreSQL para tests de integración, E2E automatizado (Playwright), evidencia final de workflow IA y PRs. |
 
-**Nota académica:** El plan original de Delivery 1 excluía implementación; el repositorio **ya supera** ese alcance con foundation técnica, primer slice E2E y CI en PRs reales. Delivery 1 en GitHub se centra por tanto en **coherencia documental y evidencia**, no en reimplementar lo existente.
+**Nota académica:** El plan original de Delivery 1 excluía implementación; el repositorio **ya supera** ese alcance con foundation técnica, slices E2E US-002–US-008 y CI en PRs reales (#23, #24, etc.). Delivery 1 en GitHub se centra por tanto en **coherencia documental y evidencia**, no en reimplementar lo existente.
 
 ---
 
@@ -145,20 +145,20 @@ Conjunto **mínimo pero completo** para filtrar, priorizar y trazar sin ruido.
 
 | ID | Título | Milestone | Objetivo corto | Estado esperado |
 |----|--------|-----------|----------------|-----------------|
-| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (CI, slice CSV, sin auth/IA) | Abierto → cerrar en D1 |
-| GH-02 | Paquete evidencia: DEMO, prompts P-001–P-017, ADRs | Delivery 1 | Evidencia académica workflow AI-first verificable | Abierto → cerrar en D1 |
-| GH-03 | Matriz trazabilidad US/TB ↔ issues GitHub | Delivery 1 | Tabla US-xxx / TB-xxx / Issue / Milestone / Estado | Abierto → cerrar en D1 |
-| GH-04 | Cerrar slice US-002 (spec, DoD, límites MVP) | Delivery 1 | Verificación documental del slice CSV import (sin código nuevo) | Abierto → cerrar en D1 |
-| GH-05 | Checklist entrega Delivery 1 (PR, rama, tutor) | Delivery 1 | Cierre formal entrega: PR doc-only, builds documentados | Abierto → cerrar en D1 |
-| GH-06 | US-001: Login JWT y rutas protegidas | Delivery 2 | Autenticación mínima spec-first | Planificado |
-| GH-07 | US-003: Configurar capacidad de sprint | Delivery 2 | TeamMember / capacidad persistida + UI mínima | Planificado |
-| GH-08 | US-004: Registrar ausencias | Delivery 2 | Ausencias ajustan capacidad disponible | Planificado |
-| GH-09 | US-005: Análisis capacidad vs demanda | Delivery 2 | Motor overload + vista análisis | Planificado |
-| GH-10 | US-006–008: Refinamiento IA MVP | Delivery 2 | PDF, mock provider, AC y gaps | Planificado |
-| GH-11 | US-009: Export Excel análisis sprint | Delivery 2 | Reporting descargable | Planificado |
-| GH-12 | Deploy MVP público (web + API + PG) | Final Delivery | Vercel / Render / Neon (según plan) | Planificado |
-| GH-13 | CI: PostgreSQL + tests e2e API import | Final Delivery | Validar Prisma/import en GitHub Actions | Planificado |
-| GH-14 | Playwright E2E + evidencia final prompts/PRs | Final Delivery | Flujo automatizado + paquete entrega final | Planificado |
+| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (slices US-002–US-008, sin auth/export) | **#3** — Cerrar en D1 |
+| GH-02 | Paquete evidencia: DEMO, prompts P-001–P-022, ADRs | Delivery 1 | Evidencia académica workflow AI-first verificable | **#4** — Cerrar en D1 |
+| GH-03 | Matriz trazabilidad US/TB ↔ issues GitHub | Delivery 1 | Tabla US-xxx / TB-xxx / Issue / Milestone / Estado | **#5** — Cerrar en D1 |
+| GH-04 | Cerrar slice US-002 (spec, DoD, límites MVP) | Delivery 1 | Verificación documental del slice CSV import | **#6** — Implementado |
+| GH-05 | Checklist entrega Delivery 1 (PR, rama, tutor) | Delivery 1 | Cierre formal entrega: PR doc-only, builds documentados | **#7** — Abierto |
+| GH-06 | US-001: Login JWT y rutas protegidas | Delivery 2 | Autenticación mínima spec-first | **#8** — Planificado |
+| GH-07 | US-003: Configurar capacidad de sprint | Delivery 2 | Capacidad persistida + UI Settings | **#9** — **Implementado** |
+| GH-08 | US-004: Registrar ausencias | Delivery 2 | Ausencias ajustan capacidad disponible | **#10** — **Implementado** |
+| GH-09 | US-005: Análisis capacidad vs demanda | Delivery 2 | Motor overload + vista análisis | **#11** — **Implementado** |
+| GH-10 | US-006–008: Refinamiento IA MVP | Delivery 2 | PDF, mock provider, AC y gaps | **#12** — **Implementado** |
+| GH-11 | US-009: Export Excel análisis sprint | Delivery 2 | Reporting descargable | **#13** — Planificado |
+| GH-12 | Deploy MVP público (web + API + PG) | Final Delivery | Vercel / Render / Neon (según plan) | **#14** — Planificado |
+| GH-13 | CI: PostgreSQL + tests e2e API import | Final Delivery | Validar Prisma/import en GitHub Actions | **#15** — Planificado |
+| GH-14 | Playwright E2E + evidencia final prompts/PRs | Final Delivery | Flujo automatizado + paquete entrega final | **#16** — Planificado |
 
 **Fuera del backlog inicial (Should-Have / opcional):** US-010, US-011; deduplicación CSV por `externalId`; lint gate (TB-006); `packages/shared`.
 
@@ -186,11 +186,15 @@ docs/01–08 (visión, diseño, plan)
 
 | Artefacto | Rol respecto al backlog GitHub |
 |-----------|--------------------------------|
-| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). Los issues GH-06–11 mapean US-001, US-003–009. US-002 está **implementada** (GH-04 = cierre doc). |
-| [06-technical-backlog.md](06-technical-backlog.md) | **Cómo** descomponer técnicamente (TB-xxx). GH-03 enlaza TB con issues. TB-001–007, 007A, 013 (parcial), 024 (parcial) reflejan trabajo **ya hecho** en repo. |
+| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). US-002–US-008 **implementadas**; US-001 y US-009 planificadas. |
+| [06-technical-backlog.md](06-technical-backlog.md) | **Cómo** descomponer técnicamente (TB-xxx). GH-03 enlaza TB con issues. TB foundation y slices sprint/refinement reflejan trabajo **hecho** en repo. |
 | [08-delivery-plan.md](08-delivery-plan.md) | **Cuándo** — milestones y alcance por entrega. |
-| [user-stories-import-mvp.md](user-stories-import-mvp.md) | Spec del **único slice E2E en código**; referencia para GH-04, DEMO, US-002. |
-| [DEMO.md](DEMO.md) | Guion de validación humana; evidencia Delivery 1 (GH-02). |
+| [user-stories-import-mvp.md](user-stories-import-mvp.md) | Spec US-002; referencia GH-04, DEMO. |
+| [sprint-capacity-mvp.md](sprint-capacity-mvp.md) | Spec US-003; referencia GH-07. |
+| [sprint-absences-mvp.md](sprint-absences-mvp.md) | Spec US-004; referencia GH-08. |
+| [sprint-analysis-mvp.md](sprint-analysis-mvp.md) | Spec US-005; referencia GH-09. |
+| [refinement-mvp.md](refinement-mvp.md) | Spec US-006–008; referencia GH-10. |
+| [DEMO.md](DEMO.md) | Guion de validación humana + checklist; evidencia Delivery 1 (GH-02). |
 | Milestones GitHub | Agrupación temporal académica; no sustituyen epics ni specs. |
 | PRs | Unidad de entrega y revisión; enlace obligatorio a spec + prompt ID cuando aplique. |
 
@@ -209,24 +213,21 @@ El backlog GitHub describe el **roadmap del MVP máster**, incluyendo trabajo fu
 | Monorepo pnpm (`apps/api`, `apps/web`, `packages/shared` vacío) | ✅ |
 | NestJS + Prisma + PostgreSQL local (Docker `5433`) | ✅ |
 | Swagger `/api/docs`, health `GET /api/health` | ✅ |
-| React + Vite + Tailwind + Router; rutas shell dashboard/settings | ✅ |
-| **Vertical slice US-002:** CSV import + listado User Stories | ✅ |
-| Tests API unitarios (parser, validator); e2e solo health | ✅ |
+| React + Vite + Tailwind + Router; rutas operativas | ✅ |
+| **US-002:** CSV import + listado User Stories | ✅ |
+| **US-003:** Sprint capacity (Settings + API) | ✅ |
+| **US-004:** Sprint absences (Settings + API) | ✅ |
+| **US-005:** Sprint analysis (`/sprint-analysis`) | ✅ |
+| **US-006–008:** Refinement MVP (`/refinement`, mock provider) | ✅ |
+| Tests API unitarios (parser, validator, sprint utils, refinement mock) | ✅ |
 | CI GitHub Actions: build + test API + build web (PR/push) | ✅ |
-| Documentación 01–08, ADRs, AGENTS, ARCHITECTURE, prompts P-001–P-017 | ✅ |
-| DEMO + fixture CSV | ✅ |
+| Documentación 01–08, ADRs, AGENTS, ARCHITECTURE, prompts P-001–P-022 | ✅ |
+| DEMO + fixtures (`sample-user-stories.csv`, `requirements.pdf`) | ✅ |
 
-### Planificado — Delivery 2 (issues GH-06–11)
+### Planificado — Delivery 2 (issues GH-06, GH-11)
 
-No implementado en código a fecha de este documento:
-
-- Autenticación JWT (US-001)
-- Capacidad de equipo (US-003)
-- Ausencias (US-004)
-- Análisis sprint vs demanda / overload (US-005)
-- Refinamiento IA MVP: PDF, refinamiento, AC (US-006–008)
-- Export Excel (US-009)
-- Entidades `Project`, `Sprint`, `TeamMember` completas según [04-data-model.md](04-data-model.md) — solo diseño objetivo, no esquema Prisma completo
+- Autenticación JWT (US-001 / GH-06 / #8)
+- Export Excel (US-009 / GH-11 / #13)
 
 ### Planificado — Final Delivery (issues GH-12–14)
 
@@ -295,16 +296,51 @@ Los comandos para crear labels, milestones e issues se mantendrán en un anexo o
 
 | User Story | Backlog técnico (principal) | Issue GitHub |
 |------------|----------------------------|--------------|
-| US-002 (implementada) | TB-013, TB-024, TB-036 | GH-04 (+ evidencia GH-02) |
-| US-001 | TB-008, TB-009, TB-022 | GH-06 |
-| US-003 | TB-010, TB-011, TB-025 | GH-07 |
-| US-004 | TB-012 | GH-08 |
-| US-005 | TB-014, TB-026, TB-035 | GH-09 |
-| US-006–008 | TB-015–019, TB-027–028, TB-030–031 | GH-10 |
-| US-009 | TB-020, TB-029 | GH-11 |
-| — (deploy/CI/E2E) | TB-038–043, TB-045–046 | GH-12–14 |
+| US-002 (implementada) | TB-013, TB-024, TB-036 | GH-04 / #6 |
+| US-003 (implementada) | TB-010, TB-011, TB-025 | GH-07 / #9 |
+| US-004 (implementada) | TB-012 | GH-08 / #10 |
+| US-005 (implementada) | TB-014, TB-026, TB-035 | GH-09 / #11 |
+| US-006–008 (implementada) | TB-015–019, TB-027–028, TB-030–031 | GH-10 / #12 |
+| US-001 | TB-008, TB-009, TB-022 | GH-06 / #8 |
+| US-009 | TB-020, TB-029 | GH-11 / #13 |
+| — (deploy/CI/E2E) | TB-038–043, TB-045–046 | GH-12–14 / #14–16 |
 
-La matriz autoritativa y con columnas *Estado* se completará en **GH-03**.
+---
+
+## 10. Matriz de trazabilidad (GH-03 / issue #5)
+
+Matriz autoritativa alineada con el estado del repositorio tras PR #23 y PR #24.
+
+| User Story | Technical Backlog | GitHub Issue | Milestone | Status |
+|------------|-------------------|--------------|-----------|--------|
+| — (coherencia docs) | TB-001–007, TB-007A | GH-01 / **#3** | Delivery 1 — Technical Documentation | En cierre (doc-only) |
+| — (evidencia AI-first) | TB-045 (parcial) | GH-02 / **#4** | Delivery 1 — Technical Documentation | En cierre (doc-only) |
+| — (matriz trazabilidad) | — | GH-03 / **#5** | Delivery 1 — Technical Documentation | En cierre (este documento) |
+| US-002 | TB-013, TB-024, TB-036 | GH-04 / **#6** | Delivery 1 — Technical Documentation | **Implementado** |
+| — (checklist entrega D1) | — | GH-05 / **#7** | Delivery 1 — Technical Documentation | Abierto |
+| US-001 | TB-008, TB-009, TB-022 | GH-06 / **#8** | Delivery 2 — Functional MVP | Planificado |
+| US-003 | TB-010, TB-011, TB-025 | GH-07 / **#9** | Delivery 2 — Functional MVP | **Implementado** |
+| US-004 | TB-012 | GH-08 / **#10** | Delivery 2 — Functional MVP | **Implementado** |
+| US-005 | TB-014, TB-026, TB-035 | GH-09 / **#11** | Delivery 2 — Functional MVP | **Implementado** |
+| US-006–008 | TB-015–019, TB-027–028, TB-030–031 | GH-10 / **#12** | Delivery 2 — Functional MVP | **Implementado** |
+| US-009 | TB-020, TB-029 | GH-11 / **#13** | Delivery 2 — Functional MVP | Planificado |
+| — (deploy) | TB-038–040 | GH-12 / **#14** | Final Delivery — Deployed MVP | Planificado |
+| — (CI + e2e API) | TB-041–042 | GH-13 / **#15** | Final Delivery — Deployed MVP | Planificado |
+| — (Playwright + evidencia) | TB-043, TB-046 | GH-14 / **#16** | Final Delivery — Deployed MVP | Planificado |
+
+**Convención:** `GH-0N` = backlog interno; `#N` = número de issue en GitHub (`GH-01` → `#3`, …, `GH-14` → `#16`).
+
+**Evidencia por slice implementado:**
+
+| US | Spec | Demo | Prompts (rango) | ADRs |
+|----|------|------|-----------------|------|
+| US-002 | [user-stories-import-mvp.md](user-stories-import-mvp.md) | [DEMO.md](DEMO.md) § import | P-013–P-017 | ADR-001–005 |
+| US-003 | [sprint-capacity-mvp.md](sprint-capacity-mvp.md) | [DEMO.md](DEMO.md) § capacity | (slice PRs) | ADR-004 |
+| US-004 | [sprint-absences-mvp.md](sprint-absences-mvp.md) | [DEMO.md](DEMO.md) § absences | (slice PRs) | ADR-004 |
+| US-005 | [sprint-analysis-mvp.md](sprint-analysis-mvp.md) | [DEMO.md](DEMO.md) § analysis | (slice PRs) | ADR-004 |
+| US-006–008 | [refinement-mvp.md](refinement-mvp.md) | [DEMO.md](DEMO.md) § refinement | (slice PRs) | ADR-001, ADR-004 |
+
+Foundation y evidencia Delivery 1: [prompts.md](../prompts.md) P-001–P-022 · [docs/adr/](adr/) ADR-001–ADR-005.
 
 ---
 
