@@ -2,8 +2,11 @@
 
 **Proyecto:** DeliveryOps AI  
 **Vertical slice:** User Stories Import MVP  
-**Estado:** Implementado y validado manualmente (spec-first completado)  
+**Estado:** Implementado  
+**Validación:** Validado manualmente  
+**Cierre:** Vertical slice cerrado  
 **Referencia producto:** US-002 (Upload User Stories CSV) en `docs/05-user-stories.md`  
+**Trazabilidad:** GitHub issue #6 (cierre documental del slice) · GH-04  
 **Stack actual:** monorepo pnpm · `apps/api` (NestJS + Prisma + Swagger) · `apps/web` (React + Vite + Tailwind + React Router)
 
 ---
@@ -93,7 +96,7 @@ Antes de este slice, el proyecto tenía foundation técnica pero **no persistía
 ### Contrato y calidad
 
 - DTOs y decoradores Swagger en endpoints del slice.
-- Escenarios BDD (sección 12) como base de pruebas manuales y automatizadas.
+- Escenarios BDD (sección 12) como base de pruebas manuales y automatizadas; pasos reproducibles en [docs/DEMO.md](DEMO.md).
 - Registro del prompt de implementación en `prompts.md` al cerrar el slice.
 
 ---
@@ -325,6 +328,16 @@ Network error / 5xx
 
 ## 12. Criterios BDD (Given / When / Then)
 
+Los escenarios siguientes definen el comportamiento esperado del slice. La **validación manual reproducible** (comandos, URLs, fixture CSV y pasos E2E) está documentada en [docs/DEMO.md](DEMO.md).
+
+| Escenario | Tema | Verificado en demo |
+|-----------|------|--------------------|
+| 1 | Importación exitosa | [DEMO.md § E2E demo steps — User Stories import](DEMO.md#e2e-demo-steps--user-stories-import) |
+| 2 | CSV con filas inválidas (import parcial) | [DEMO.md](DEMO.md) — escenario parcial / errores por fila |
+| 3 | Cabecera inválida | [DEMO.md](DEMO.md) — validación HTTP 400 |
+| 4 | Listado sin datos previos | [DEMO.md § paso 2](DEMO.md#e2e-demo-steps--user-stories-import) |
+| 5 | Archivo no CSV | [DEMO.md](DEMO.md) — rechazo de tipo de archivo |
+
 ### Escenario 1 — Importación exitosa
 
 ```gherkin
@@ -393,19 +406,46 @@ And no user stories are created
 
 ---
 
-## Definición de hecho (DoD) del slice
+## Límites conocidos del MVP
 
-- [x] Migración Prisma `UserStory` aplicada  
-- [x] `POST /api/user-stories/import` y `GET /api/user-stories` operativos y documentados en Swagger  
-- [x] `UserStoriesPage` permite import + listado  
-- [x] Escenarios BDD 1, 3 y 4 verificados manualmente (mínimo)  
-- [x] `pnpm --filter api build` y `pnpm --filter api test` OK  
-- [x] `pnpm --filter web build` OK  
-- [x] Entrada añadida en `prompts.md`
+Comportamientos **aceptados y documentados** en este slice; no son bugs pendientes de Delivery 1:
 
-> **Implemented and manually validated on 2026-05-17.**
+| Límite | Descripción |
+|--------|-------------|
+| **Re-import duplica filas** | Importar el mismo CSV de nuevo crea registros adicionales; no hay deduplicación por `externalId`. |
+| **Máximo 200 filas** | El backend rechaza CSV con más de 200 filas de datos (además de la cabecera). |
+| **Máximo 1 MB por archivo** | Tamaño máximo del fichero CSV en la subida `multipart/form-data`. |
+| **Import parcial permitido** | Filas válidas se persisten; las inválidas se reportan en `errors[]` sin rollback total. |
+| **Parser CSV simple** | Separador coma, cabecera obligatoria; no soporta CSV enterprise complejo (comillas anidadas, etc.). |
+| **Sin autenticación en MVP** | Cualquier cliente con acceso a la API local puede importar y listar; auth queda fuera de alcance. |
+
+---
+
+## Definition of Done
+
+Checklist de cierre del vertical slice **US-002** (GitHub issue #6):
+
+- [x] Spec completed
+- [x] CSV import implemented
+- [x] GET /api/user-stories implemented
+- [x] POST /api/user-stories/import implemented
+- [x] UI import + listing implemented
+- [x] Prisma persistence implemented
+- [x] Swagger documented
+- [x] Manual validation completed
+- [x] Tests/build validated where applicable
+- [x] MVP limits documented
+
+**Evidencia adicional:**
+
+- Escenarios BDD (sección 12) verificados manualmente; guía paso a paso en [docs/DEMO.md](DEMO.md).
+- `pnpm --filter api build` y `pnpm --filter api test` OK.
+- `pnpm --filter web build` OK.
+- Prompts de implementación registrados en `prompts.md` (P-013–P-017).
+
+> **Slice cerrado documentalmente:** implementado y validado manualmente (2026-05-17); DoD y límites MVP actualizados para cierre de issue #6 (2026-06-14).
 
 ---
 
 **Documento:** `docs/user-stories-import-mvp.md`  
-**Última actualización:** 2026-05-20
+**Última actualización:** 2026-06-14
