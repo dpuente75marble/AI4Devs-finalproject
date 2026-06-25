@@ -63,6 +63,7 @@ Reglas aplicadas para este registro:
 | P-022 | Alineación README y PROJECT_CONTEXT (Delivery 1) | Sincronizar overview y handoff operativo con el estado real del repositorio | `README.md` y `PROJECT_CONTEXT.md` actualizados (CI, DEMO, slice E2E, backlog GitHub issues #3–#16, governance) |
 | P-023 | US-009 Export Excel sprint analysis | Cerrar vertical slice spec-first: spec → TDD builder XLSX → service → endpoint → UI descarga → Playwright | `docs/export-sprint-analysis-mvp.md`; builder `buildSprintAnalysisWorkbook` con `exceljs` y tests unitarios; `SprintAnalysisService.exportToXlsx()`; `GET /api/sprint-analysis/export` (`StreamableFile` + Swagger); botón **Export Excel** en `/sprint-analysis`; `e2e/sprint-analysis-export.spec.ts`; validado: `pnpm --filter api test`, `pnpm --filter api build`, `pnpm --filter web build`, `pnpm test:e2e` (6 tests) |
 | P-024 | US-001 Login JWT y rutas protegidas | Spec-first + TDD: Prisma User, AuthService/Controller, JWT en cookie HttpOnly, JwtGuard explícito, AuthProvider/ProtectedRoute, Playwright auth | `docs/auth-mvp.md`; `AuthModule` + migración `User`; `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`; `pnpm --filter api auth:create-demo-user`; frontend sin JWT en cliente (`credentials: 'include'`); `e2e/auth-login.spec.ts` + `e2e/helpers/auth-api-mocks.ts`; validado: API **135/135**, E2E **9/9**, builds API/web OK; `pnpm lint` global con errores preexistentes fuera de US-001 |
+| P-025 | Validación local Delivery 2 y fix arranque API | Diagnosticar y corregir bloqueo de `start:dev` detectado en validación manual Delivery 2 | Validación manual OK: PostgreSQL, Prisma, demo user, health, Swagger, login JWT HttpOnly, `/api/auth/me`, rutas protegidas, Sprint Analysis, export Excel, logout; causa: `ConfigService` no resolvía en `JwtStrategy` porque `ConfigModule.forRoot()` no era global; fix mínimo: `ConfigModule.forRoot({ isGlobal: true })` en `AppModule`; variables JWT/cookies requeridas en `apps/api/.env` según `.env.example`; validado: **135/135** tests API, **9/9** Playwright, builds API/web OK |
 
 **Trazabilidad del vertical slice (Delivery 1):** P-013 → P-017 ↔ **US-002** ↔ **GH-04** ↔ [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) ↔ [docs/DEMO.md](docs/DEMO.md)
 
@@ -96,7 +97,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
 ### Ya implementado o documentado en Delivery 1
 
-Registrado en la tabla anterior (P-001–P-024):
+Registrado en la tabla anterior (P-001–P-025):
 
 - Foundation técnica del monorepo, API, web, Prisma y OpenAPI (P-001–P-012).
 - Primer vertical slice User Stories CSV Import (P-013–P-017).
@@ -114,6 +115,10 @@ Registrado en la tabla anterior (P-001–P-024):
 
 - Export Excel análisis sprint (P-023 ↔ US-009 / GH-11 / #13).
 
+### Delivery 2 — validación local y fix arranque (registrado)
+
+- Validación manual Delivery 2 y fix `ConfigModule.forRoot({ isGlobal: true })` (P-025).
+
 Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–GH-14 → issues #3–#16) vía script y revisión humana; matriz US/TB ↔ issues pendiente de cierre en **GH-03**.
 
 ### Pendiente Delivery 2+ (registrar P-xxx al ejecutar)
@@ -130,5 +135,5 @@ Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–
 
 ---
 
-**Última actualización:** 2026-06-25  
-**Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado; US-009 Export Excel P-023.
+**Última actualización:** 2026-06-26  
+**Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado; US-009 Export Excel P-023; US-001 Login JWT P-024; validación local Delivery 2 y fix arranque API P-025.
