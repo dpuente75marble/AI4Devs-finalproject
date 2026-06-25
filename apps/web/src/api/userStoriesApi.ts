@@ -52,7 +52,9 @@ async function parseErrorMessage(response: Response): Promise<string> {
 }
 
 export async function fetchUserStories(): Promise<ListUserStoriesResponse> {
-  const response = await fetch(apiUrl('/api/user-stories'))
+  const response = await fetch(apiUrl('/api/user-stories'), {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
@@ -69,6 +71,7 @@ export async function importUserStoriesCsv(
 
   const response = await fetch(apiUrl('/api/user-stories/import'), {
     method: 'POST',
+    credentials: 'include',
     body: formData,
   })
 

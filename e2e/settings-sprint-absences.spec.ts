@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { setupAuthenticatedAuthMocks } from './helpers/auth-api-mocks'
 
 type MockAbsence = {
   id: string
@@ -118,6 +119,7 @@ test.describe('Settings Sprint Absences', () => {
     page,
   }) => {
     await setupSprintAbsencesApiMocks(page)
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/settings')
 
     await expect(

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { setupAuthenticatedAuthMocks } from './helpers/auth-api-mocks'
 
 const MOCK_SPRINT_ANALYSIS_RESPONSE = [
   {
@@ -32,6 +33,7 @@ async function setupSprintAnalysisApiMocks(page: Page) {
 test.describe('Sprint Analysis page', () => {
   test('shows overloaded sprint analysis from mocked API', async ({ page }) => {
     await setupSprintAnalysisApiMocks(page)
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/sprint-analysis')
 
     await expect(

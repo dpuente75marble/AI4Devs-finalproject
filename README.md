@@ -26,9 +26,9 @@ Operational handoff and **real repository state:** [PROJECT_CONTEXT.md](PROJECT_
 
 | Category | Status |
 |----------|--------|
-| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-022), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
-| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-002–US-008** (CSV import, sprint capacity, absences, analysis, refinement MVP) — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
-| **Planned** (Delivery 2+) | Authentication (US-001), Excel export (US-009), **public deployment** |
+| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-024), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
+| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-001–US-008** (auth, CSV import, sprint capacity, absences, analysis, refinement MVP) — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
+| **Planned** (Delivery 2+) | Excel export (US-009), **public deployment** |
 
 > Delivery 1 originally scoped documentation only; the repository already includes a working local E2E slice and CI as evidence of the AI-first workflow.
 
@@ -68,7 +68,7 @@ The project aims to:
 
 The MVP aims to deliver a complete end-to-end operational workflow including:
 
-- authentication *(planned — US-001)*
+- authentication *(implemented — US-001)*
 - User Story CSV import *(implemented — US-002)*
 - sprint capacity planning *(implemented — US-003)*
 - absence management *(implemented — US-004)*
@@ -146,13 +146,13 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 **Implemented in current MVP:**
 
-- Jest (API unit tests for CSV parser/validator)
+- Jest (API unit tests)
+- Playwright (E2E smoke en `e2e/`, incl. auth)
 
 **Planned for upcoming iterations:**
 
 - Vitest
 - React Testing Library
-- Playwright
 
 ---
 
@@ -176,7 +176,7 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 | Layer | Target design | Current implementation |
 |-------|---------------|------------------------|
 | **Style** | Clean Architecture and Hexagonal Architecture (modular boundaries, ports/adapters for AI) | **Pragmatic modular monolith** — NestJS module per feature, service → Prisma directly |
-| **Detail** | [docs/03-technical-design.md](docs/03-technical-design.md), [ARCHITECTURE.md](ARCHITECTURE.md) | Feature modules: `user-stories`, `sprint-capacity`, `sprint-absences`, `sprint-analysis`, `refinement` (mock provider) |
+| **Detail** | [docs/03-technical-design.md](docs/03-technical-design.md), [ARCHITECTURE.md](ARCHITECTURE.md) | Feature modules: `auth`, `user-stories`, `sprint-capacity`, `sprint-absences`, `sprint-analysis`, `refinement` (mock provider) |
 
 Clean/Hexagonal principles guide future slices; the running codebase prioritizes maintainable vertical delivery over full layered architecture.
 
@@ -235,7 +235,7 @@ The project follows an AI-assisted engineering workflow using:
 
 **Governance and traceability:**
 
-- [prompts.md](prompts.md) — prompt registry (P-001–P-022: foundation, vertical slices, Delivery 1 evidence)
+- [prompts.md](prompts.md) — prompt registry (P-001–P-024: foundation, vertical slices, Delivery 1 evidence, US-001 auth)
 - [AGENTS.md](AGENTS.md) — scope, prohibitions, and workflow rules for AI agents and developers
 - [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md) — full AI-first SDLC methodology
 
@@ -252,6 +252,9 @@ Business endpoints available today (local development):
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/health` | Service health check |
+| `POST` | `/api/auth/login` | Login with email/password; sets HttpOnly session cookie |
+| `POST` | `/api/auth/logout` | Clears session cookie |
+| `GET` | `/api/auth/me` | Current authenticated user (requires session cookie) |
 | `GET` | `/api/user-stories` | List imported User Stories |
 | `POST` | `/api/user-stories/import` | CSV import (multipart, per-row validation) |
 | `GET` | `/api/sprint-capacity` | List sprint capacity configurations |
@@ -269,6 +272,7 @@ Interactive contract: Swagger UI at `http://localhost:3000/api/docs` (with API r
 
 **Implemented in PostgreSQL (Prisma):**
 
+- `User` — authentication (US-001)
 - `UserStory` — CSV import (US-002)
 - `SprintCapacity` — sprint capacity configuration (US-003)
 - `SprintAbsence` — sprint absence records (US-004)
@@ -288,7 +292,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - **Technical backlog:** [docs/06-technical-backlog.md](docs/06-technical-backlog.md) (TB-xxx)
 - **GitHub backlog:** [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) (bootstrap strategy and traceability) — **GH-01–GH-14** materialized as GitHub Issues **#3–#16**
 
-**Slice coverage (implemented):** US-002 (CSV import), US-003 (sprint capacity), US-004 (sprint absences), US-005 (sprint analysis), US-006–008 (refinement MVP). **Planned:** US-001 (auth), US-009 (Excel export). Specs per slice in `docs/*-mvp.md`; traceability matrix in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md).
+**Slice coverage (implemented):** US-001 (auth), US-002 (CSV import), US-003 (sprint capacity), US-004 (sprint absences), US-005 (sprint analysis), US-006–008 (refinement MVP). **Planned:** US-009 (Excel export). Specs per slice in `docs/*-mvp.md`; traceability matrix in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md).
 
 ---
 
@@ -310,7 +314,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) — real repository state and handoff
 - [AGENTS.md](AGENTS.md) — AI agent and developer workflow rules
 - [ARCHITECTURE.md](ARCHITECTURE.md) — implemented architecture
-- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-022)
+- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-024)
 
 ---
 
@@ -336,7 +340,8 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) — US-004 sprint absences spec
 - [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) — US-005 sprint analysis spec
 - [refinement-mvp.md](docs/refinement-mvp.md) — US-006–008 refinement MVP spec
-- [DEMO.md](docs/DEMO.md) — E2E demo guide and checklist (Delivery 1 evidence)
+- [auth-mvp.md](docs/auth-mvp.md) — US-001 login JWT and protected routes spec
+- [DEMO.md](docs/DEMO.md) — E2E demo guide and checklist
 
 ---
 
@@ -374,6 +379,7 @@ AI4Devs-finalproject/
 - backend foundation (NestJS + ConfigModule + modular structure)
 - Prisma + PostgreSQL (local Docker database)
 - Swagger / OpenAPI (`/api/docs`)
+- **US-001:** Login JWT — HttpOnly cookie, protected routes, `AuthProvider` + `ProtectedRoute`
 - **US-002:** User Stories CSV import E2E
 - **US-003:** Sprint capacity configuration (Settings UI + API)
 - **US-004:** Sprint absences (Settings UI + API)
@@ -389,13 +395,12 @@ AI4Devs-finalproject/
 ## In Progress
 
 - Delivery 1 documentation closure (issues #3–#5)
-- Delivery 2 remaining scope: authentication (US-001), Excel export (US-009)
+- Delivery 2 remaining scope: Excel export (US-009)
 
 ---
 
 ## Planned
 
-- authentication (US-001 / GH-06)
 - Excel export (US-009 / GH-11)
 - public deployment (Vercel / Render / Neon)
 - extended E2E and UI test coverage
@@ -404,10 +409,11 @@ AI4Devs-finalproject/
 
 # Implemented Vertical Slices
 
-Five operational slices are implemented end-to-end in local development (PRs #23–#24 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
+Five operational slices plus authentication are implemented end-to-end in local development (PRs #23–#24 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
 
 | User Story | Slice | Spec | UI route |
 |------------|-------|------|----------|
+| US-001 | Login JWT | [auth-mvp.md](docs/auth-mvp.md) | `/login` · rutas protegidas |
 | US-002 | CSV import | [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | `/user-stories` |
 | US-003 | Sprint capacity | [sprint-capacity-mvp.md](docs/sprint-capacity-mvp.md) | `/settings` |
 | US-004 | Sprint absences | [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | `/settings` |
@@ -441,7 +447,20 @@ POST /api/refinement/analyze  →  mock provider
 Editable refined story, acceptance criteria, gaps (UI only — not persisted)
 ~~~
 
-**Still out of scope:** authentication (US-001), Excel export (US-009), production deployment, real LLM provider, persistence of refinement results.
+**Still out of scope:** production deployment, real LLM provider, persistence of refinement results.
+
+**Auth (US-001):** sesión vía cookie HttpOnly; el frontend no almacena JWT. Usuario demo local:
+
+| Campo | Valor |
+|-------|-------|
+| Email | `pm@deliveryops.local` |
+| Password | `DeliveryOps123!` |
+
+Crear o actualizar el usuario demo:
+
+```bash
+pnpm --filter api auth:create-demo-user
+```
 
 **E2E demo:** [docs/DEMO.md](docs/DEMO.md) · fixtures: [sample-user-stories.csv](fixtures/sample-user-stories.csv), [requirements.pdf](fixtures/requirements.pdf)
 
@@ -471,16 +490,27 @@ Database runs on `localhost:5433` (see `docker-compose.yml`).
 
 ### 3. Configure environment
 
-**API** — ensure `apps/api/.env` includes a valid `DATABASE_URL`, for example:
+**API** — ensure `apps/api/.env` includes a valid `DATABASE_URL` and auth variables (see `apps/api/.env.example`), for example:
 
 ```env
 DATABASE_URL=postgresql://deliveryops:deliveryops@localhost:5433/deliveryops_ai
+JWT_SECRET=change-me-in-local-dev
+JWT_EXPIRES_IN=30m
+AUTH_COOKIE_NAME=deliveryops_access_token
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_SAME_SITE=lax
 ```
 
 Apply Prisma migrations if needed:
 
 ```bash
 pnpm --filter api prisma migrate dev
+```
+
+Create the demo user (idempotent):
+
+```bash
+pnpm --filter api auth:create-demo-user
 ```
 
 **Web** — copy the example env and adjust if required:
@@ -515,13 +545,14 @@ Terminal 2 — Web:
 pnpm --filter web dev
 ```
 
-Open the URL shown by Vite (e.g. `http://localhost:5173`) and navigate to `/user-stories`.
+Open the URL shown by Vite (e.g. `http://localhost:5173`). Unauthenticated users are redirected to `/login`. After login, navigate to `/user-stories` or other protected routes.
 
 ### 5. Quick validation
 
 ```bash
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm test:e2e
 ```
 
 **Smoke test:** follow [docs/DEMO.md](docs/DEMO.md), import [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) (9 rows with `team_name` / `project_name`), and confirm rows appear in the table. For Sprint Analysis, configure matching capacity in Settings and verify demand on `/sprint-analysis`.
@@ -561,7 +592,7 @@ Includes:
 - backend
 - frontend
 - database
-- authentication *(planned — US-001)*
+- authentication *(implemented — US-001)*
 - CSV import *(implemented — US-002)*
 - sprint capacity, absences, and analysis *(implemented — US-003–005)*
 - AI refinement MVP *(implemented — US-006–008, mock provider)*

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { SprintAbsencesModule } from './sprint-absences/sprint-absences.module';
 import { RefinementModule } from './refinement/refinement.module';
@@ -13,6 +14,7 @@ import { UserStoriesModule } from './user-stories/user-stories.module';
   imports: [
     ConfigModule.forRoot(),
     PrismaModule,
+    AuthModule,
     UserStoriesModule,
     SprintCapacityModule,
     SprintAbsencesModule,

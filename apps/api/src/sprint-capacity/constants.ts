@@ -7,13 +7,11 @@ export const ALLOWED_TEAM_NAMES = [
 
 export type AllowedTeamName = (typeof ALLOWED_TEAM_NAMES)[number];
 
-export const PROJECTS_BY_TEAM_NAME: Record<
-  AllowedTeamName,
-  readonly string[]
-> = {
-  'Gerencia Riesgo': ['Riesgo'],
-  'Gerencia Ahorro': ['Ahorro', 'Pasarelas', 'Gestionados'],
-};
+export const PROJECTS_BY_TEAM_NAME: Record<AllowedTeamName, readonly string[]> =
+  {
+    'Gerencia Riesgo': ['Riesgo'],
+    'Gerencia Ahorro': ['Ahorro', 'Pasarelas', 'Gestionados'],
+  };
 
 export const DUPLICATE_CAPACITY_MESSAGE =
   'Capacity already configured for this sprint, team and project';

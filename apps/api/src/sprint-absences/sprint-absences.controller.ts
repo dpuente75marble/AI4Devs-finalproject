@@ -1,11 +1,21 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { DEFAULT_AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateSprintAbsenceDto } from './dto/create-sprint-absence.dto';
 import {
   ListSprintAbsenceResponseDto,
@@ -14,6 +24,8 @@ import {
 import { SprintAbsencesService } from './sprint-absences.service';
 
 @ApiTags('sprint-absences')
+@ApiCookieAuth(DEFAULT_AUTH_COOKIE_NAME)
+@UseGuards(JwtAuthGuard)
 @Controller('sprint-absences')
 export class SprintAbsencesController {
   constructor(private readonly sprintAbsencesService: SprintAbsencesService) {}

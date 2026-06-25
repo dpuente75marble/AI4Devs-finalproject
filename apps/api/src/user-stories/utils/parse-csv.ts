@@ -48,7 +48,7 @@ export function parseCsv(buffer: Buffer): { rows: CsvRow[] } {
       },
       skip_empty_lines: true,
       trim: true,
-    }) as CsvRow[];
+    });
   } catch (error) {
     if (error instanceof CsvParseError) {
       throw error;

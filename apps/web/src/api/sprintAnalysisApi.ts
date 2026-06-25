@@ -63,7 +63,9 @@ function parseContentDispositionFilename(
 }
 
 export async function fetchSprintAnalysis(): Promise<SprintAnalysisRow[]> {
-  const response = await fetch(apiUrl('/api/sprint-analysis'))
+  const response = await fetch(apiUrl('/api/sprint-analysis'), {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
@@ -76,7 +78,9 @@ export async function downloadSprintAnalysisExport(): Promise<{
   blob: Blob
   filename: string
 }> {
-  const response = await fetch(apiUrl('/api/sprint-analysis/export'))
+  const response = await fetch(apiUrl('/api/sprint-analysis/export'), {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))

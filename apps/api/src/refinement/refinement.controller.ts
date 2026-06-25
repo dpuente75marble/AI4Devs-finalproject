@@ -3,6 +3,7 @@ import {
   HttpCode,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -10,15 +11,20 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiConsumes,
+  ApiCookieAuth,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { DEFAULT_AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MAX_PDF_FILE_SIZE_BYTES } from './application/pdf-validator';
 import { RefinementService } from './application/refinement.service';
 import { RefinementAnalysisResponseDto } from './dto/refinement-analysis-response.dto';
 
 @ApiTags('refinement')
+@ApiCookieAuth(DEFAULT_AUTH_COOKIE_NAME)
+@UseGuards(JwtAuthGuard)
 @Controller('refinement')
 export class RefinementController {
   constructor(private readonly refinementService: RefinementService) {}

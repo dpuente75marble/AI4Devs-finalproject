@@ -78,15 +78,17 @@ describe('MockRefinementProvider', () => {
 
     expect(output.refinedStory.length).toBeGreaterThan(0);
     expect(output.gaps.length).toBeGreaterThanOrEqual(1);
-    expect(output.gaps.some((gap) => /insufficient|short|missing/i.test(gap))).toBe(
-      true,
-    );
+    expect(
+      output.gaps.some((gap) => /insufficient|short|missing/i.test(gap)),
+    ).toBe(true);
   });
 
   it('derives output from requirement keywords and first line', async () => {
     const output = await provider.refine({ sourceText: SAMPLE_SOURCE_TEXT });
 
     expect(output.refinedStory).toContain('payment');
-    expect(output.acceptanceCriteria.some((c) => c.includes('payment'))).toBe(true);
+    expect(output.acceptanceCriteria.some((c) => c.includes('payment'))).toBe(
+      true,
+    );
   });
 });

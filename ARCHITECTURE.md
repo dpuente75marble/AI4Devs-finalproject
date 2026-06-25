@@ -10,7 +10,7 @@ DeliveryOps AI es un **modular monolith**: frontend React y API NestJS desplegab
 
 Principios aplicados hoy:
 
-- Entrega por **vertical slices** — implementados: `user-stories`, `sprint-capacity`, `sprint-absences`, `sprint-analysis`, `refinement` (mock provider)
+- Entrega por **vertical slices** — implementados: `auth`, `user-stories`, `sprint-capacity`, `sprint-absences`, `sprint-analysis`, `refinement` (mock provider)
 - **Pragmatic modular monolith** en backend (módulo por feature, no capas hexagonales completas)
 - **OpenAPI-first** para contratos REST visibles
 - **Spec-first** con documentación viva en `docs/`
@@ -45,7 +45,8 @@ Scripts raíz (`package.json`):
 - **Framework:** NestJS 11
 - **Entry:** `apps/api/src/main.ts`
   - Prefijo global: `api`
-  - CORS: orígenes Vite locales `5173`–`5178`
+  - `cookie-parser` para lectura de sesión HttpOnly
+  - CORS: orígenes Vite locales `5173`–`5178`, `credentials: true`
   - Swagger: `/api/docs` (`DocumentBuilder` + `SwaggerModule`)
   - Puerto: `process.env.PORT ?? 3000`
 
@@ -55,6 +56,7 @@ Scripts raíz (`package.json`):
 AppModule
 ├── ConfigModule.forRoot()
 ├── PrismaModule              → PrismaService (infraestructura)
+├── AuthModule                → US-001 login JWT (cookie HttpOnly)
 ├── UserStoriesModule         → US-002 CSV import
 ├── SprintCapacityModule      → US-003 capacidad por sprint/gerencia/proyecto
 ├── SprintAbsencesModule      → US-004 ausencias
@@ -85,6 +87,9 @@ No hay capa de dominio rica ni repositorios abstractos: el servicio llama a `Pri
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/api/health` | Estado del API |
+| `POST` | `/api/auth/login` | Login; JWT en cookie HttpOnly (no en JSON) |
+| `POST` | `/api/auth/logout` | Limpia cookie de sesión |
+| `GET` | `/api/auth/me` | Usuario autenticado (`JwtAuthGuard`) |
 | `GET` | `/api/user-stories` | Lista `{ data, total }`, orden `createdAt desc` |
 | `POST` | `/api/user-stories/import` | `multipart/form-data`, campo `file`, HTTP 201 |
 | `GET` / `POST` | `/api/sprint-capacity` | Listar / crear configuración de capacidad |
@@ -103,6 +108,28 @@ No hay capa de dominio rica ni repositorios abstractos: el servicio llama a `Pri
 
 Errores de cabecera/formato → `400 Bad Request` vía `BadRequestException`.
 
+### Authentication flow (US-001)
+
+```text
+POST /api/auth/login (público)
+  → AuthService valida email/password (argon2)
+  → AuthController firma JWT { sub } y Set-Cookie HttpOnly
+  → JSON: { user, message } — sin token
+
+GET /api/auth/me (JwtAuthGuard)
+  → JwtStrategy lee JWT solo desde cookie
+  → AuthService carga usuario por sub desde PostgreSQL
+
+POST /api/auth/logout (público)
+  → AuthController limpia cookie
+
+Controllers de negocio (@UseGuards(JwtAuthGuard) explícito, sin APP_GUARD global)
+```
+
+**Frontend:** `AuthProvider` hidrata sesión solo vía `GET /api/auth/me`; `ProtectedRoute` redirige a `/login`; clientes `fetch` con `credentials: 'include'`. Sin `localStorage`, `sessionStorage` ni lectura de `document.cookie`.
+
+Spec: [docs/auth-mvp.md](docs/auth-mvp.md)
+
 ---
 
 ## Frontend architecture
@@ -119,9 +146,13 @@ Errores de cabecera/formato → `400 Bad Request` vía `BadRequestException`.
 ```text
 apps/web/src/
 ├── main.tsx
-├── App.tsx                 Rutas: /dashboard, /user-stories, /settings, /sprint-analysis, /refinement
-├── components/AppNav.tsx
+├── App.tsx                 AuthProvider; /login pública; rutas protegidas con layout
+├── auth/
+│   ├── AuthContext.tsx     Sesión vía /api/auth/me
+│   └── ProtectedRoute.tsx  Redirect /login si no autenticado
+├── components/AppNav.tsx   Usuario + logout
 ├── pages/
+│   ├── LoginPage.tsx           US-001
 │   ├── DashboardPage.tsx       Placeholder
 │   ├── UserStoriesPage.tsx     US-002 CSV import
 │   ├── SettingsPage.tsx        US-003 capacity + US-004 absences
@@ -133,16 +164,7 @@ apps/web/src/
 ### Estado y datos
 
 - **Sin** store global (Zustand planificado, no usado).
-- `UserStoriesPage`: estado local (`useState`) + `useEffect` para carga inicial.
-- API base: `import.meta.env.VITE_API_URL` con fallback `http://localhost:3000`.
-
-### Cliente HTTP
-
-`userStoriesApi.ts`:
-
-- `fetchUserStories()` → `GET /api/user-stories`
-- `importUserStoriesCsv(file)` → `POST /api/user-stories/import` con `FormData`
-- Tipos TypeScript duplicados respecto a DTOs Nest (sin `packages/shared`).
+- Clientes `fetch` por módulo con `credentials: 'include'` (sin TanStack Query)
 
 ---
 
@@ -155,6 +177,18 @@ Modelos **persistidos**:
 #### `HealthCheck`
 
 Tabla de validación inicial de Prisma/migraciones.
+
+#### `User`
+
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| `id` | `String` @id @default(cuid()) | PK |
+| `email` | `String` @unique | Login |
+| `name` | `String` | |
+| `passwordHash` | `String` | argon2 |
+| `createdAt` / `updatedAt` | `DateTime` | |
+
+Usuario demo: `pnpm --filter api auth:create-demo-user`
 
 #### `UserStory`
 
@@ -180,7 +214,7 @@ Capacidad disponible por combinación `(sprint, teamName, projectName)`; `@@uniq
 
 Días de ausencia agregados por combinación `(sprint, teamName, projectName)`; ajustan capacidad en análisis.
 
-**No implementado** respecto a `docs/04-data-model.md`: `User`, `Project`, `Sprint`, `TeamMember` como entidades relacionales, `RequirementDocument`, `RefinementResult`, `ExportJob`, FKs entre entidades. Refinement no persiste resultados.
+**No implementado** respecto a `docs/04-data-model.md`: `Project`, `Sprint`, `TeamMember` como entidades relacionales, `RequirementDocument`, `RefinementResult`, `ExportJob`, FKs entre entidades. Refinement no persiste resultados.
 
 ### Migraciones
 
@@ -296,7 +330,7 @@ pnpm --filter api prisma generate
 |-------|---------|-------------|
 | Unit (API) | Lógica pura: parsers, validators, utilidades sprint-analysis, refinement mock | Jest en `apps/api/src` |
 | API E2E | `GET /api/health` | Jest + Supertest (`apps/api/test/app.e2e-spec.ts`) |
-| Playwright smoke/E2E | Specs en `e2e/`: `user-stories`, `settings-sprint-absences`, `sprint-analysis`, `refinement` — UI smoke con API mockeada o sin backend según spec | Playwright (`@playwright/test`, `playwright.config.ts`) |
+| Playwright smoke/E2E | Specs en `e2e/`: auth, `user-stories`, `settings-sprint-absences`, `sprint-analysis`, `refinement` — UI smoke con API mockeada según spec | Playwright (`@playwright/test`, `playwright.config.ts`) |
 | Frontend unit | Solo compilación TypeScript en build | Sin Vitest / React Testing Library |
 
 Ejecutar:
@@ -321,7 +355,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 3. **Thin vertical proof** — Un flujo demuestra UI → API → DB sin esperar auth ni IA.
 4. **Test where logic is pure** — Parser/validator con Jest; UI deferida.
 5. **Prompt traceability** — `prompts.md` IDs P-013…P-016 documentan generación asistida.
-6. **Progressive complexity** — `packages/shared`, auth y dominio rico se posponen explícitamente.
+6. **Progressive complexity** — `packages/shared`, dominio rico y RBAC se posponen explícitamente.
 7. **Human validation gate** — Demo manual y revisión de límites antes de entrega máster.
 
 **No implementado aún:** proveedor IA real (OpenAI/Azure), RAG, workers async.
@@ -349,8 +383,8 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 
 ### Limitaciones actuales
 
-- Sin seguridad ni multi-tenant.
-- Modelo de datos: `UserStory`, `SprintCapacity`, `SprintAbsence`, `HealthCheck` (sin FKs ni entidades de refinamiento/export).
+- Sin RBAC, refresh token ni multi-tenant.
+- Modelo de datos: `User`, `UserStory`, `SprintCapacity`, `SprintAbsence`, `HealthCheck` (sin FKs ni entidades de refinamiento/export).
 - Dashboard sin funcionalidad.
 - Refinement usa mock provider; resultados no persistidos.
 - Re-importación genera duplicados.
@@ -365,11 +399,10 @@ Orden típico sugerido en specs y backlog:
 
 1. Deduplicación/upsert por `externalId`
 2. Entidad `Project` y FKs en `UserStory`
-3. Autenticación y aislamiento por workspace (US-001)
-4. Tipos en `packages/shared`
-5. Proveedor IA real (sustituir mock en `refinement`)
-6. Export operativo Excel (US-009)
-7. CI/CD con PostgreSQL en runner, despliegue (Vercel/Render), Neon PostgreSQL
+3. Tipos en `packages/shared`
+4. Proveedor IA real (sustituir mock en `refinement`)
+5. Export operativo Excel (US-009)
+6. CI/CD con PostgreSQL en runner, despliegue (Vercel/Render), Neon PostgreSQL
 
 Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README sección *Planned* para el roadmap completo del máster.
 
@@ -397,7 +430,8 @@ Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README se
 | Documento | Contenido |
 |-----------|-----------|
 | [docs/adr/README.md](docs/adr/README.md) | ADRs: decisiones arquitectónicas aceptadas (MVP) |
-| [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | Spec y BDD del slice implementado |
+| [docs/auth-mvp.md](docs/auth-mvp.md) | Spec US-001 authentication |
+| [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | Spec y BDD del slice CSV import |
 | [docs/04-data-model.md](docs/04-data-model.md) | Modelo objetivo completo (mayoría no migrada) |
 | [docs/03-technical-design.md](docs/03-technical-design.md) | Diseño objetivo y principios |
 | [docs/DEMO.md](docs/DEMO.md) | Pasos demo E2E |

@@ -241,7 +241,5 @@ export function buildSprintAnalysisRows(
         status: computeSprintStatus(demand, adjustedCapacity),
       };
     })
-    .sort((left, right) =>
-      compareCombinations(left, right),
-    );
+    .sort((left, right) => compareCombinations(left, right));
 }

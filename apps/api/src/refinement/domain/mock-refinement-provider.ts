@@ -13,7 +13,8 @@ function extractKeywords(normalizedText: string): string[] {
 }
 
 function extractFirstLine(normalizedText: string): string {
-  const firstSegment = normalizedText.split(/[.\n]/)[0]?.trim() ?? normalizedText;
+  const firstSegment =
+    normalizedText.split(/[.\n]/)[0]?.trim() ?? normalizedText;
   return firstSegment.length > 0 ? firstSegment : normalizedText;
 }
 

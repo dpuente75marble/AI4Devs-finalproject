@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { setupAuthenticatedAuthMocks } from './helpers/auth-api-mocks'
 
 const MOCK_SPRINT_ANALYSIS_RESPONSE = [
   {
@@ -79,6 +80,7 @@ test.describe('Sprint Analysis export', () => {
   }) => {
     await setupSprintAnalysisTableMock(page)
     await setupSprintAnalysisExportMock(page)
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/sprint-analysis')
 
     const exportButton = page.getByRole('button', { name: 'Export Excel' })
@@ -105,6 +107,7 @@ test.describe('Sprint Analysis export', () => {
       delayMs: 0,
       message: 'Export failed',
     })
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/sprint-analysis')
 
     await expect(page.getByText('Loading sprint analysis...')).toBeHidden()

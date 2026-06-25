@@ -62,8 +62,11 @@ Reglas aplicadas para este registro:
 | P-021 | AGENTS.md y ARCHITECTURE.md | Definir reglas operativas para agentes IA y arquitectura implementada real del repo | `AGENTS.md` y `ARCHITECTURE.md` alineados con slice CSV, límites MVP, workflow spec-first y human-in-the-loop |
 | P-022 | Alineación README y PROJECT_CONTEXT (Delivery 1) | Sincronizar overview y handoff operativo con el estado real del repositorio | `README.md` y `PROJECT_CONTEXT.md` actualizados (CI, DEMO, slice E2E, backlog GitHub issues #3–#16, governance) |
 | P-023 | US-009 Export Excel sprint analysis | Cerrar vertical slice spec-first: spec → TDD builder XLSX → service → endpoint → UI descarga → Playwright | `docs/export-sprint-analysis-mvp.md`; builder `buildSprintAnalysisWorkbook` con `exceljs` y tests unitarios; `SprintAnalysisService.exportToXlsx()`; `GET /api/sprint-analysis/export` (`StreamableFile` + Swagger); botón **Export Excel** en `/sprint-analysis`; `e2e/sprint-analysis-export.spec.ts`; validado: `pnpm --filter api test`, `pnpm --filter api build`, `pnpm --filter web build`, `pnpm test:e2e` (6 tests) |
+| P-024 | US-001 Login JWT y rutas protegidas | Spec-first + TDD: Prisma User, AuthService/Controller, JWT en cookie HttpOnly, JwtGuard explícito, AuthProvider/ProtectedRoute, Playwright auth | `docs/auth-mvp.md`; `AuthModule` + migración `User`; `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`; `pnpm --filter api auth:create-demo-user`; frontend sin JWT en cliente (`credentials: 'include'`); `e2e/auth-login.spec.ts` + `e2e/helpers/auth-api-mocks.ts`; validado: API **135/135**, E2E **9/9**, builds API/web OK; `pnpm lint` global con errores preexistentes fuera de US-001 |
 
 **Trazabilidad del vertical slice (Delivery 1):** P-013 → P-017 ↔ **US-002** ↔ **GH-04** ↔ [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) ↔ [docs/DEMO.md](docs/DEMO.md)
+
+**Trazabilidad US-001:** P-024 ↔ **US-001** ↔ **GH-06** / issue **#8** ↔ [docs/auth-mvp.md](docs/auth-mvp.md)
 
 **Trazabilidad US-009:** P-023 ↔ **US-009** ↔ **GH-11** / issue **#13** ↔ [docs/export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md)
 
@@ -76,7 +79,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 - Mantener alcance MVP y postergar Clean Architecture completa para fases posteriores.
 - No introducir Nx, Turborepo, Lerna ni tooling adicional en esta etapa.
 - Postergar modelos de negocio complejos (`Project`, `Sprint`, relaciones); `HealthCheck` como validación inicial de Prisma; primer modelo de dominio: `UserStory` plano sin FKs.
-- No incorporar aún shadcn/ui, TanStack Query, Zustand ni autenticación.
+- No incorporar aún shadcn/ui, TanStack Query ni Zustand (auth US-001 implementada con `AuthProvider` + `fetch`).
 - Se mantiene configuración mínima de Tailwind v4 para evitar complejidad innecesaria en fase foundation.
 - Se mantienen layouts y rutas simples; primer vertical slice E2E completado en User Stories Import; `Dashboard` y `Settings` permanecen placeholder.
 - Se prioriza vertical slice funcional end-to-end e integración E2E antes de state management avanzado o arquitectura enterprise prematura.
@@ -93,7 +96,7 @@ Decisiones de ingeniería tomadas con criterio humano durante la ejecución:
 
 ### Ya implementado o documentado en Delivery 1
 
-Registrado en la tabla anterior (P-001–P-022):
+Registrado en la tabla anterior (P-001–P-024):
 
 - Foundation técnica del monorepo, API, web, Prisma y OpenAPI (P-001–P-012).
 - Primer vertical slice User Stories CSV Import (P-013–P-017).
@@ -103,6 +106,10 @@ Registrado en la tabla anterior (P-001–P-022):
 - `AGENTS.md` y `ARCHITECTURE.md` operativos (P-021).
 - Alineación `README.md` y `PROJECT_CONTEXT.md` con estado real del repo (P-022).
 
+### Delivery 2 — slice US-001 (registrado)
+
+- Login JWT y rutas protegidas (P-024 ↔ US-001 / GH-06 / #8).
+
 ### Delivery 2 — slice US-009 (registrado)
 
 - Export Excel análisis sprint (P-023 ↔ US-009 / GH-11 / #13).
@@ -111,10 +118,8 @@ Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–
 
 ### Pendiente Delivery 2+ (registrar P-xxx al ejecutar)
 
-- Autenticación JWT y rutas protegidas (US-001 / GH-06).
-- Planificación sprint: capacidad, ausencias, análisis overload (US-003–005 / GH-07–09).
-- Refinamiento IA MVP: PDF, gaps, acceptance criteria (US-006–008 / GH-10).
-- Segundo vertical slice funcional con mini-spec previa en `docs/`.
+- Planificación sprint: capacidad, ausencias, análisis overload (US-003–005 / GH-07–09) — **implementado en repo**.
+- Refinamiento IA MVP: PDF, gaps, acceptance criteria (US-006–008 / GH-10) — **implementado en repo**.
 
 ### Pendiente Final Delivery (registrar P-xxx al ejecutar)
 

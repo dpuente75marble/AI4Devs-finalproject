@@ -41,9 +41,7 @@ describe('RefinementController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RefinementController],
-      providers: [
-        { provide: RefinementService, useValue: refinementService },
-      ],
+      providers: [{ provide: RefinementService, useValue: refinementService }],
     }).compile();
 
     controller = module.get(RefinementController);

@@ -4,7 +4,7 @@
 
 > Describe **qué existe hoy** en el repo. Setup → [README.md](README.md). Reglas agente → [AGENTS.md](AGENTS.md). Arquitectura → [ARCHITECTURE.md](ARCHITECTURE.md).
 
-**Última alineación:** 14 jun 2026 · MVP LIDR · slices US-002–US-008 implementados (PRs #23–#24 y slices previos)
+**Última alineación:** 25 jun 2026 · MVP LIDR · slices US-001–US-008 implementados (auth + PRs #23–#24 y slices previos)
 
 ### Referencia rápida (local)
 
@@ -12,10 +12,12 @@
 |---------|-----------|
 | API + Swagger | `http://localhost:3000` · `/api/docs` |
 | Health | `GET /api/health` |
-| Slice UI | `/user-stories` · `/settings` · `/sprint-analysis` · `/refinement` |
+| Login | `/login` |
+| Slice UI | `/dashboard` · `/user-stories` · `/settings` · `/sprint-analysis` · `/refinement` |
 | PostgreSQL | Docker `5433` (`docker-compose.yml`) |
 | Demo E2E | [docs/DEMO.md](docs/DEMO.md) |
-| Validación | `pnpm --filter api build && pnpm --filter api test` · `pnpm --filter web build` |
+| Usuario demo | `pm@deliveryops.local` / `DeliveryOps123!` · `pnpm --filter api auth:create-demo-user` |
+| Validación | `pnpm --filter api build && pnpm --filter api test` · `pnpm --filter web build` · `pnpm test:e2e` |
 
 ---
 
@@ -36,32 +38,33 @@
 | Área | Detalle |
 |------|---------|
 | **Monorepo** | `pnpm` workspaces: `apps/api`, `apps/web`, `packages/shared` (vacío) |
-| **Backend** | NestJS 11, `ConfigModule`, prefijo `/api`, módulos: `UserStories`, `SprintCapacity`, `SprintAbsences`, `SprintAnalysis`, `Refinement` (mock provider), `GET /api/health` |
-| **Persistencia** | Prisma 7 + PostgreSQL 16 (`docker-compose.yml`, puerto `5433`); modelos `UserStory`, `SprintCapacity`, `SprintAbsence`, `HealthCheck` |
-| **API docs** | Swagger en `/api/docs` |
+| **Backend** | NestJS 11, `ConfigModule`, prefijo `/api`, módulos: `Auth`, `UserStories`, `SprintCapacity`, `SprintAbsences`, `SprintAnalysis`, `Refinement` (mock provider), `GET /api/health` |
+| **Persistencia** | Prisma 7 + PostgreSQL 16 (`docker-compose.yml`, puerto `5433`); modelos `User`, `UserStory`, `SprintCapacity`, `SprintAbsence`, `HealthCheck` |
+| **API docs** | Swagger en `/api/docs` (CookieAuth para sesión) |
 | **Frontend** | React 19, Vite 8, TypeScript, Tailwind 4, React Router 7 |
-| **Rutas web** | `/` → `/dashboard`, `/user-stories`, `/settings` (capacidad + ausencias), `/sprint-analysis`, `/refinement` |
-| **Vertical slices E2E** | **US-002** CSV import · **US-003** sprint capacity · **US-004** sprint absences · **US-005** sprint analysis · **US-006–008** refinement MVP — §3 |
-| **Tests API** | Jest unit: parser/validator CSV, sprint capacity/absences/analysis utils, refinement mock provider; e2e Supertest: health |
-| **Docs producto** | `docs/01`–`docs/08`, specs `docs/*-mvp.md`, [DEMO.md](docs/DEMO.md) |
-| **Governance IA** | `AGENTS.md`, `ARCHITECTURE.md`, `docs/adr/` (ADR-001–005), `.cursor/rules/` (6 reglas), `prompts.md` (P-001–P-022) |
+| **Auth web** | `AuthProvider`, `ProtectedRoute`, `LoginPage`, `AppNav` logout; sesión vía `GET /api/auth/me`; `credentials: 'include'`; sin `localStorage` / `sessionStorage` / `document.cookie` |
+| **Rutas web** | `/login` pública · `/` → `/dashboard`, `/user-stories`, `/settings`, `/sprint-analysis`, `/refinement` protegidas |
+| **Vertical slices E2E** | **US-001** auth JWT cookie HttpOnly · **US-002** CSV import · **US-003** sprint capacity · **US-004** sprint absences · **US-005** sprint analysis · **US-006–008** refinement MVP — §3 |
+| **Tests API** | Jest unit + auth protection specs; e2e Supertest: health |
+| **Tests E2E** | Playwright `e2e/` — 9 specs (incl. `auth-login.spec.ts`) |
+| **Docs producto** | `docs/01`–`docs/08`, specs `docs/*-mvp.md` (incl. `auth-mvp.md`), [DEMO.md](docs/DEMO.md) |
+| **Governance IA** | `AGENTS.md`, `ARCHITECTURE.md`, `docs/adr/` (ADR-001–005), `.cursor/rules/` (6 reglas), `prompts.md` (P-001–P-024) |
 | **GitHub** | `workflows/ci.yml`, issue `feature-request`, PR template |
 
 ### Planificado (documentado en `docs/`, no en código)
 
-- Autenticación / autorización (US-001)
 - Export Excel/PDF (US-009)
 - `Project`, `Sprint`, `TeamMember` como entidades relacionales completas
 - `packages/shared` con tipos/contratos
-- Deploy cloud, CI con PostgreSQL en runner, e2e import
-- Tests frontend ampliados (Vitest / RTL / Playwright)
+- Deploy cloud, CI con PostgreSQL en runner
+- Tests frontend unitarios (Vitest / RTL)
 - shadcn/ui, TanStack Query, Zustand, React Hook Form, Zod
 - Proveedor IA real (OpenAI / Azure) — hoy solo mock en refinement
 
 ### En curso (según README)
 
 - Cierre Delivery 1 documental (issues GitHub #3–#5)
-- Delivery 2 pendiente: auth (US-001), export Excel (US-009)
+- Delivery 2 pendiente: export Excel (US-009)
 
 ---
 
@@ -69,6 +72,7 @@
 
 | US | Slice | Spec | Rutas / endpoints |
 |----|-------|------|-------------------|
+| US-001 | Auth JWT | [auth-mvp.md](docs/auth-mvp.md) | `/login` · `POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` |
 | US-002 | CSV import | [user-stories-import-mvp.md](docs/user-stories-import-mvp.md) | `/user-stories` · `GET/POST /api/user-stories` |
 | US-003 | Sprint capacity | [sprint-capacity-mvp.md](docs/sprint-capacity-mvp.md) | `/settings` · `GET/POST /api/sprint-capacity` |
 | US-004 | Sprint absences | [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | `/settings` · `GET/POST /api/sprint-absences` |
@@ -93,7 +97,7 @@ PDF → POST /api/refinement/analyze → mock provider
 | Aspecto | Detalle |
 |---------|---------|
 | **Demo** | [docs/DEMO.md](docs/DEMO.md) · [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) · [fixtures/requirements.pdf](fixtures/requirements.pdf) |
-| **Límites** | Sin auth; re-import CSV duplica filas; refinement sin LLM real ni persistencia; análisis sin calendario laboral por persona |
+| **Límites** | Sin RBAC ni refresh token; re-import CSV duplica filas; refinement sin LLM real ni persistencia; análisis sin calendario laboral por persona; `pnpm lint` global con errores preexistentes fuera de US-001 |
 
 ---
 
@@ -104,10 +108,10 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 | Entrega | Fecha objetivo | Estado respecto al repo |
 |---------|----------------|-------------------------|
 | **Delivery 1** — Documentación técnica | 27 may 2026 | **Cerrada / en cierre:** docs 01–08, ADRs, AGENTS, ARCHITECTURE, workflow IA, backlog, DEMO + checklist, prompts P-001–P-022, matriz trazabilidad (#5), slices E2E US-002–US-008 como evidencia. |
-| **Delivery 2** — MVP funcional | 24 jun 2026 | **Avanzada:** foundation + US-002–US-008 implementados; **pendiente** US-001 (auth), US-009 (export Excel), deploy básico, tests ampliados. |
+| **Delivery 2** — MVP funcional | 24 jun 2026 | **Avanzada:** foundation + US-001–US-008 implementados; **pendiente** US-009 (export Excel), deploy básico, lint gate global. |
 | **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público, E2E/CI robusto, tests UI, evidencia completa de workflow IA y PRs. |
 
-**Regla:** el MVP **objetivo** del máster incluye auth y export aún no implementados. No asumir US-001 ni US-009 como hechos.
+**Regla:** el MVP **objetivo** del máster incluye export y deploy aún no completados en todos los entornos. No asumir US-009 ni deploy público como hechos.
 
 ---
 
@@ -142,14 +146,16 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 | API | NestJS 11, Prisma 7, `csv-parse`, Swagger |
 | DB | PostgreSQL 16 Docker local, migraciones Prisma |
 | Web | React 19, Vite 8, Tailwind 4, `fetch` nativo (sin TanStack Query) |
-| Integración | `VITE_API_URL`, CORS dev puertos Vite `5173`–`5178` |
+| Integración | `VITE_API_URL`, CORS dev puertos Vite `5173`–`5178`, `credentials: true` |
 
-**Modelos Prisma:** `HealthCheck`, `UserStory`, `SprintCapacity`, `SprintAbsence` (`apps/api/prisma/schema.prisma`).  
+**Auth (US-001):** JWT en cookie HttpOnly (`deliveryops_access_token`); payload `{ sub }`; `AuthService` sin JWT/cookies; `AuthController` firma y gestiona cookie; `JwtStrategy` lee solo cookie; `JwtAuthGuard` explícito en controllers de negocio (sin `APP_GUARD` global).
+
+**Modelos Prisma:** `HealthCheck`, `User`, `UserStory`, `SprintCapacity`, `SprintAbsence` (`apps/api/prisma/schema.prisma`).  
 **Modelo en** [docs/04-data-model.md](docs/04-data-model.md) = diseño **objetivo**, no estado DB completo.
 
-**Endpoints de negocio hoy:** `GET /api/health`, `GET/POST /api/user-stories`, `GET/POST /api/sprint-capacity`, `GET/POST /api/sprint-absences`, `GET /api/sprint-analysis`, `POST /api/refinement/analyze`.
+**Endpoints de negocio hoy:** `GET /api/health`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET/POST /api/user-stories`, `GET/POST /api/sprint-capacity`, `GET/POST /api/sprint-absences`, `GET /api/sprint-analysis`, `POST /api/refinement/analyze`.
 
-**Estructura API relevante:** `apps/api/src/user-stories/`, `sprint-capacity/`, `sprint-absences/`, `sprint-analysis/`, `refinement/`, `infrastructure/prisma/`.
+**Estructura API relevante:** `apps/api/src/auth/`, `user-stories/`, `sprint-capacity/`, `sprint-absences/`, `sprint-analysis/`, `refinement/`, `infrastructure/prisma/`.
 
 ---
 
@@ -165,10 +171,10 @@ Spec (docs/) → revisión humana → issue (opcional) → PR
 | Práctica | Detalle |
 |----------|---------|
 | **PR-driven** | Un vertical slice por PR cuando sea posible; usar PR template |
-| **Validación local** | `pnpm --filter api build\|test`, `pnpm --filter web build`, demo [DEMO.md](docs/DEMO.md) |
+| **Validación local** | `pnpm --filter api build\|test`, `pnpm --filter web build`, `pnpm test:e2e`, demo [DEMO.md](docs/DEMO.md) |
 | **Validación humana** | Aprobar spec y comportamiento E2E antes de dar slice por cerrado |
 | **CI** | `pnpm install` → `prisma generate` → build API → test API → build web |
-| **CI límites** | Sin PostgreSQL en runner; sin lint gate; sin e2e browser |
+| **CI límites** | Sin PostgreSQL en runner; sin lint gate en CI; Playwright no en CI; sin e2e browser en GitHub Actions |
 
 Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md).
 
@@ -176,9 +182,9 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 
 ## 8. Estado del repositorio
 
-| Aspecto | Estado (14 jun 2026) |
+| Aspecto | Estado (25 jun 2026) |
 |---------|----------------------|
-| **Rama principal** | `main` (slices US-002–US-008 mergeados vía PRs incl. #23, #24) |
+| **Rama principal** | `main` (slices US-001–US-008 mergeados o en rama feature US-001) |
 | **CI** | `.github/workflows/ci.yml`: `push` en `main`/`master`; `pull_request` en cualquier rama |
 | **Issues Delivery 1** | #3 (GH-01), #4 (GH-02), #5 (GH-03) — cierre documental en curso |
 
@@ -194,6 +200,7 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 | [docs/sprint-capacity-mvp.md](docs/sprint-capacity-mvp.md) | Spec US-003 |
 | [docs/sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | Spec US-004 |
 | [docs/sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) | Spec US-005 |
+| [docs/auth-mvp.md](docs/auth-mvp.md) | Spec US-001 |
 | [docs/refinement-mvp.md](docs/refinement-mvp.md) | Spec US-006–008 |
 | [docs/DEMO.md](docs/DEMO.md) | Guion demo local + checklist |
 | [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) | Matriz trazabilidad US/TB ↔ issues |
@@ -209,10 +216,9 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 Alineados con Delivery 2, [docs/06-technical-backlog.md](docs/06-technical-backlog.md) y módulos 10+ del máster (testing, CI/CD, deploy, E2E) — **priorizar spec-first**:
 
 1. **Cerrar Delivery 1** — issues #3–#5 (coherencia docs, evidencia DEMO/prompts/ADRs, matriz trazabilidad).
-2. **US-001 auth** — mini-spec `docs/auth-mvp.md` (pendiente) → GH-06 / issue #8.
-3. **US-009 export Excel** — mini-spec → GH-11 / issue #13.
-4. **CI evolutiva** — job con PostgreSQL cuando existan tests de integración; después lint opcional.
-5. **Final Delivery prep** — deploy (Vercel + Render/Neon), Playwright ampliado, historial PRs.
+2. **US-009 export Excel** — mini-spec → GH-11 / issue #13.
+3. **CI evolutiva** — job con PostgreSQL cuando existan tests de integración; lint gate opcional (resolver errores preexistentes fuera de US-001).
+4. **Final Delivery prep** — deploy (Vercel + Render/Neon), Playwright en CI, historial PRs.
 
 Candidatos de trazabilidad en [prompts.md](prompts.md) §6: demo/CI ya cubiertos parcialmente; pendientes naturales — segundo slice, e2e import, deploy.
 
@@ -222,10 +228,11 @@ Candidatos de trazabilidad en [prompts.md](prompts.md) §6: demo/CI ya cubiertos
 
 | Límite | Impacto |
 |--------|---------|
-| Sin autenticación | API local abierta en dev |
+| Sin deploy público | Demo solo local |
 | CI sin DB | No valida import Prisma ni e2e de negocio en GitHub |
-| Sin deploy | Demo solo local |
-| Sin tests frontend | Solo compilación Vite/TS |
+| CI sin Playwright | E2E browser solo local (`pnpm test:e2e`) |
+| `pnpm lint` global | Errores preexistentes en web (Settings/SprintAnalysis/UserStories) y API (refinement, user-stories.service, prisma.service); no bloquean build/test |
+| Sin tests frontend unitarios | Solo compilación Vite/TS + Playwright smoke |
 | Import parcial | Filas válidas persisten si otras fallan |
 | Re-import duplica | Mismo `externalId` → nuevos registros |
 | `packages/shared` vacío | Contratos duplicados FE/BE |

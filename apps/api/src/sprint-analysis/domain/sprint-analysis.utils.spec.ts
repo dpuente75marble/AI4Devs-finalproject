@@ -85,9 +85,7 @@ describe('sprint-analysis domain utils', () => {
       ]);
 
       expect(
-        demandByCombination.get(
-          `Sprint 1|${TEAM_AHORRO}|${PROJECT_PASARELAS}`,
-        ),
+        demandByCombination.get(`Sprint 1|${TEAM_AHORRO}|${PROJECT_PASARELAS}`),
       ).toBe(8);
       expect(demandByCombination.size).toBe(1);
     });
@@ -410,7 +408,9 @@ describe('sprint-analysis domain utils', () => {
         ],
       );
 
-      expect(rows.map((row) => `${row.sprint}|${row.teamName}|${row.projectName}`)).toEqual([
+      expect(
+        rows.map((row) => `${row.sprint}|${row.teamName}|${row.projectName}`),
+      ).toEqual([
         `Sprint A|${TEAM_RIESGO}|${PROJECT_RIESGO}`,
         `Sprint B|${TEAM_AHORRO}|Ahorro`,
         `Sprint C|${TEAM_AHORRO}|${PROJECT_PASARELAS}`,
