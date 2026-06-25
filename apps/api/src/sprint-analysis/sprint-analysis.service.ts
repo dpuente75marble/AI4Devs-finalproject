@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../infrastructure/prisma/prisma.service';
+import { buildSprintAnalysisWorkbook } from './domain/build-sprint-analysis-workbook';
 import { buildSprintAnalysisRows } from './domain/sprint-analysis.utils';
 import type { SprintAnalysisRow } from './domain/sprint-analysis.types';
 
@@ -45,5 +46,11 @@ export class SprintAnalysisService {
       capacities,
       absences,
     );
+  }
+
+  async exportToXlsx(): Promise<Buffer> {
+    const rows = await this.findAll();
+
+    return buildSprintAnalysisWorkbook(rows);
   }
 }

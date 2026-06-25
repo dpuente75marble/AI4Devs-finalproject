@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  downloadSprintAnalysisExport,
   fetchSprintAnalysis,
   formatUtilization,
   type SprintAnalysisRow,
@@ -26,6 +27,10 @@ export default function SprintAnalysisPage() {
   const [rows, setRows] = useState<SprintAnalysisRow[]>([])
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [exportLoading, setExportLoading] = useState(false)
+  const [exportErrorMessage, setExportErrorMessage] = useState<string | null>(
+    null,
+  )
 
   const loadAnalysis = useCallback(async () => {
     setLoading(true)
@@ -50,14 +55,52 @@ export default function SprintAnalysisPage() {
     void loadAnalysis()
   }, [loadAnalysis])
 
+  const handleExport = useCallback(async () => {
+    setExportLoading(true)
+    setExportErrorMessage(null)
+
+    try {
+      const { blob, filename } = await downloadSprintAnalysisExport()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 0)
+    } catch (error) {
+      setExportErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Failed to export sprint analysis. Please try again.',
+      )
+    } finally {
+      setExportLoading(false)
+    }
+  }, [])
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-        Sprint Analysis
-      </h1>
-      <p className="mt-2 text-gray-600">
-        Compare sprint demand against adjusted team capacity.
-      </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+            Sprint Analysis
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Compare sprint demand against adjusted team capacity.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => void handleExport()}
+          disabled={exportLoading}
+          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          {exportLoading ? 'Exporting…' : 'Export Excel'}
+        </button>
+      </div>
 
       {errorMessage && (
         <div
@@ -65,6 +108,15 @@ export default function SprintAnalysisPage() {
           className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
         >
           {errorMessage}
+        </div>
+      )}
+
+      {exportErrorMessage && (
+        <div
+          role="alert"
+          className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        >
+          {exportErrorMessage}
         </div>
       )}
 

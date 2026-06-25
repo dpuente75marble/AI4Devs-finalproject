@@ -61,8 +61,11 @@ Reglas aplicadas para este registro:
 | P-020 | ADRs de arquitectura y governance IA | Registrar decisiones estructurales del enfoque AI-first, monorepo, stack y vertical slices | `docs/adr/ADR-001` a `ADR-005` y `docs/adr/README.md`; ADR-005 documenta foundation de `.cursor/rules/` |
 | P-021 | AGENTS.md y ARCHITECTURE.md | Definir reglas operativas para agentes IA y arquitectura implementada real del repo | `AGENTS.md` y `ARCHITECTURE.md` alineados con slice CSV, límites MVP, workflow spec-first y human-in-the-loop |
 | P-022 | Alineación README y PROJECT_CONTEXT (Delivery 1) | Sincronizar overview y handoff operativo con el estado real del repositorio | `README.md` y `PROJECT_CONTEXT.md` actualizados (CI, DEMO, slice E2E, backlog GitHub issues #3–#16, governance) |
+| P-023 | US-009 Export Excel sprint analysis | Cerrar vertical slice spec-first: spec → TDD builder XLSX → service → endpoint → UI descarga → Playwright | `docs/export-sprint-analysis-mvp.md`; builder `buildSprintAnalysisWorkbook` con `exceljs` y tests unitarios; `SprintAnalysisService.exportToXlsx()`; `GET /api/sprint-analysis/export` (`StreamableFile` + Swagger); botón **Export Excel** en `/sprint-analysis`; `e2e/sprint-analysis-export.spec.ts`; validado: `pnpm --filter api test`, `pnpm --filter api build`, `pnpm --filter web build`, `pnpm test:e2e` (6 tests) |
 
 **Trazabilidad del vertical slice (Delivery 1):** P-013 → P-017 ↔ **US-002** ↔ **GH-04** ↔ [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) ↔ [docs/DEMO.md](docs/DEMO.md)
+
+**Trazabilidad US-009:** P-023 ↔ **US-009** ↔ **GH-11** / issue **#13** ↔ [docs/export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md)
 
 ---
 
@@ -100,6 +103,10 @@ Registrado en la tabla anterior (P-001–P-022):
 - `AGENTS.md` y `ARCHITECTURE.md` operativos (P-021).
 - Alineación `README.md` y `PROJECT_CONTEXT.md` con estado real del repo (P-022).
 
+### Delivery 2 — slice US-009 (registrado)
+
+- Export Excel análisis sprint (P-023 ↔ US-009 / GH-11 / #13).
+
 Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–GH-14 → issues #3–#16) vía script y revisión humana; matriz US/TB ↔ issues pendiente de cierre en **GH-03**.
 
 ### Pendiente Delivery 2+ (registrar P-xxx al ejecutar)
@@ -107,7 +114,6 @@ Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–
 - Autenticación JWT y rutas protegidas (US-001 / GH-06).
 - Planificación sprint: capacidad, ausencias, análisis overload (US-003–005 / GH-07–09).
 - Refinamiento IA MVP: PDF, gaps, acceptance criteria (US-006–008 / GH-10).
-- Export Excel operativo (US-009 / GH-11).
 - Segundo vertical slice funcional con mini-spec previa en `docs/`.
 
 ### Pendiente Final Delivery (registrar P-xxx al ejecutar)
@@ -119,5 +125,5 @@ Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–
 
 ---
 
-**Última actualización:** 2026-05-20  
-**Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado.
+**Última actualización:** 2026-06-25  
+**Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado; US-009 Export Excel P-023.

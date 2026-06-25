@@ -8,6 +8,7 @@ Guías breves para demostrar los vertical slices E2E en local.
 | Sprint Capacity (US-003) | [sprint-capacity-mvp.md](sprint-capacity-mvp.md) |
 | Sprint Absences (US-004) | [sprint-absences-mvp.md](sprint-absences-mvp.md) |
 | Sprint Analysis (US-005) | [sprint-analysis-mvp.md](sprint-analysis-mvp.md) |
+| Export Excel (US-009) | [export-sprint-analysis-mvp.md](export-sprint-analysis-mvp.md) |
 | Refinement MVP (US-006–008) | [refinement-mvp.md](refinement-mvp.md) |
 
 **Evidencia académica (issue #4 / GH-02):**
@@ -171,6 +172,7 @@ After importing the sample CSV:
 3. Open **Sprint Analysis**.
 4. Locate the row for `Sprint 2` / `Gerencia Riesgo` / `Riesgo`.
 5. Confirm **demand 21** (US-201 + US-202 + US-203 = 5 + 8 + 8) vs capacity **20** → status **OVERLOADED** (~105% utilization).
+6. Click **Export Excel** → the browser downloads the sprint analysis workbook (`.xlsx`).
 
 Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Sprint 2) appear when capacity or absences exist for that triple; otherwise demand may show with zero capacity depending on seeded data.
 
@@ -178,6 +180,7 @@ Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Spri
 
 - `GET /api/sprint-analysis` returns rows with `demand`, `capacity`, `adjustedCapacity`, `utilization`, and `status` (`HEALTHY`, `WARNING`, or `OVERLOADED`).
 - UI table matches API data for the configured triple.
+- `GET /api/sprint-analysis/export` returns an Excel file; filename pattern `sprint-analysis-YYYY-MM-DD.xlsx` (UTC date).
 
 ---
 
@@ -221,7 +224,7 @@ Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Spri
 Not shown in this demo (planned for later deliveries):
 
 - Authentication and multi-tenant workspaces (US-001)
-- Excel/PDF export (US-009)
+- PDF export
 - Real LLM provider (OpenAI / Azure) — mock only today
 - Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import

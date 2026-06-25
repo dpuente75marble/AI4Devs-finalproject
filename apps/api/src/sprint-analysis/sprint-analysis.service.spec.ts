@@ -1,6 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../infrastructure/prisma/prisma.service';
+import { buildSprintAnalysisWorkbook } from './domain/build-sprint-analysis-workbook';
+import type { SprintAnalysisRow } from './domain/sprint-analysis.types';
 import { SprintAnalysisService } from './sprint-analysis.service';
+
+jest.mock('./domain/build-sprint-analysis-workbook');
+
+const mockBuildSprintAnalysisWorkbook =
+  buildSprintAnalysisWorkbook as jest.MockedFunction<
+    typeof buildSprintAnalysisWorkbook
+  >;
 
 describe('SprintAnalysisService', () => {
   let service: SprintAnalysisService;
@@ -25,6 +34,7 @@ describe('SprintAnalysisService', () => {
     }).compile();
 
     service = module.get(SprintAnalysisService);
+    mockBuildSprintAnalysisWorkbook.mockReset();
   });
 
   it('reads user stories, capacities and absences and returns aggregated rows', async () => {
@@ -136,5 +146,38 @@ describe('SprintAnalysisService', () => {
         status: 'HEALTHY',
       },
     ]);
+  });
+
+  describe('exportToXlsx', () => {
+    const sampleRows: SprintAnalysisRow[] = [
+      {
+        sprint: 'Sprint 2',
+        teamName: 'Gerencia Riesgo',
+        projectName: 'Riesgo',
+        demand: 21,
+        capacity: 20,
+        absences: 0,
+        adjustedCapacity: 20,
+        utilization: 105,
+        status: 'OVERLOADED',
+      },
+    ];
+
+    it('calls findAll, delegates to buildSprintAnalysisWorkbook and returns the buffer', async () => {
+      const buffer = Buffer.from('mock-xlsx');
+      const findAllSpy = jest
+        .spyOn(service, 'findAll')
+        .mockResolvedValue(sampleRows);
+      mockBuildSprintAnalysisWorkbook.mockResolvedValue(buffer);
+
+      const result = await service.exportToXlsx();
+
+      expect(findAllSpy).toHaveBeenCalledTimes(1);
+      expect(mockBuildSprintAnalysisWorkbook).toHaveBeenCalledWith(sampleRows);
+      expect(mockBuildSprintAnalysisWorkbook).toHaveBeenCalledTimes(1);
+      expect(result).toBe(buffer);
+
+      findAllSpy.mockRestore();
+    });
   });
 });
