@@ -54,13 +54,13 @@ Scripts raíz (`package.json`):
 
 ```text
 AppModule
-├── ConfigModule.forRoot()
+├── ConfigModule.forRoot({ isGlobal: true })
 ├── PrismaModule              → PrismaService (infraestructura)
 ├── AuthModule                → US-001 login JWT (cookie HttpOnly)
 ├── UserStoriesModule         → US-002 CSV import
 ├── SprintCapacityModule      → US-003 capacidad por sprint/gerencia/proyecto
 ├── SprintAbsencesModule      → US-004 ausencias
-├── SprintAnalysisModule      → US-005 análisis demanda vs capacidad ajustada
+├── SprintAnalysisModule      → US-005 análisis + US-009 export Excel (`GET /api/sprint-analysis/export`)
 ├── RefinementModule          → US-006–008 refinamiento PDF (mock provider)
 └── AppController             → GET /api/health
 ```
@@ -401,8 +401,7 @@ Orden típico sugerido en specs y backlog:
 2. Entidad `Project` y FKs en `UserStory`
 3. Tipos en `packages/shared`
 4. Proveedor IA real (sustituir mock en `refinement`)
-5. Export operativo Excel (US-009)
-6. CI/CD con PostgreSQL en runner, despliegue (Vercel/Render), Neon PostgreSQL
+5. CI/CD con PostgreSQL en runner, despliegue (Vercel/Render), Neon PostgreSQL
 
 Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README sección *Planned* para el roadmap completo del máster.
 

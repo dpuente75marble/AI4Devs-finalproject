@@ -4,7 +4,7 @@
 
 > Describe **qué existe hoy** en el repo. Setup → [README.md](README.md). Reglas agente → [AGENTS.md](AGENTS.md). Arquitectura → [ARCHITECTURE.md](ARCHITECTURE.md).
 
-**Última alineación:** 25 jun 2026 · MVP LIDR · slices US-001–US-008 implementados (auth + PRs #23–#24 y slices previos)
+**Última alineación:** 26 jun 2026 · MVP LIDR · Delivery 2 funcionalmente completo · slices US-001–US-009 implementados
 
 ### Referencia rápida (local)
 
@@ -44,27 +44,23 @@
 | **Frontend** | React 19, Vite 8, TypeScript, Tailwind 4, React Router 7 |
 | **Auth web** | `AuthProvider`, `ProtectedRoute`, `LoginPage`, `AppNav` logout; sesión vía `GET /api/auth/me`; `credentials: 'include'`; sin `localStorage` / `sessionStorage` / `document.cookie` |
 | **Rutas web** | `/login` pública · `/` → `/dashboard`, `/user-stories`, `/settings`, `/sprint-analysis`, `/refinement` protegidas |
-| **Vertical slices E2E** | **US-001** auth JWT cookie HttpOnly · **US-002** CSV import · **US-003** sprint capacity · **US-004** sprint absences · **US-005** sprint analysis · **US-006–008** refinement MVP — §3 |
+| **Vertical slices E2E** | **US-001** auth JWT cookie HttpOnly · **US-002** CSV import · **US-003** sprint capacity · **US-004** sprint absences · **US-005** sprint analysis · **US-006–008** refinement MVP · **US-009** Excel export — §3 |
 | **Tests API** | Jest unit + auth protection specs; e2e Supertest: health |
 | **Tests E2E** | Playwright `e2e/` — 9 specs (incl. `auth-login.spec.ts`) |
 | **Docs producto** | `docs/01`–`docs/08`, specs `docs/*-mvp.md` (incl. `auth-mvp.md`), [DEMO.md](docs/DEMO.md) |
-| **Governance IA** | `AGENTS.md`, `ARCHITECTURE.md`, `docs/adr/` (ADR-001–005), `.cursor/rules/` (6 reglas), `prompts.md` (P-001–P-024) |
+| **Governance IA** | `AGENTS.md`, `ARCHITECTURE.md`, `docs/adr/` (ADR-001–005), `.cursor/rules/` (6 reglas), `prompts.md` (P-001–P-025) |
 | **GitHub** | `workflows/ci.yml`, issue `feature-request`, PR template |
 
 ### Planificado (documentado en `docs/`, no en código)
 
-- Export Excel/PDF (US-009)
+- Export PDF / reporting avanzado (fuera de US-009 Excel)
 - `Project`, `Sprint`, `TeamMember` como entidades relacionales completas
 - `packages/shared` con tipos/contratos
-- Deploy cloud, CI con PostgreSQL en runner
+- Deploy cloud (#14), CI con PostgreSQL en runner (#15)
 - Tests frontend unitarios (Vitest / RTL)
 - shadcn/ui, TanStack Query, Zustand, React Hook Form, Zod
 - Proveedor IA real (OpenAI / Azure) — hoy solo mock en refinement
-
-### En curso (según README)
-
-- Cierre Delivery 1 documental (issues GitHub #3–#5)
-- Delivery 2 pendiente: export Excel (US-009)
+- Playwright en GitHub Actions (Final Delivery)
 
 ---
 
@@ -78,6 +74,7 @@
 | US-004 | Sprint absences | [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | `/settings` · `GET/POST /api/sprint-absences` |
 | US-005 | Sprint analysis | [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) | `/sprint-analysis` · `GET /api/sprint-analysis` |
 | US-006–008 | Refinement MVP | [refinement-mvp.md](docs/refinement-mvp.md) | `/refinement` · `POST /api/refinement/analyze` |
+| US-009 | Excel export | [export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md) | `/sprint-analysis` · `GET /api/sprint-analysis/export` |
 
 **Flujo planificación (US-002 → US-005):**
 
@@ -107,11 +104,11 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 
 | Entrega | Fecha objetivo | Estado respecto al repo |
 |---------|----------------|-------------------------|
-| **Delivery 1** — Documentación técnica | 27 may 2026 | **Cerrada / en cierre:** docs 01–08, ADRs, AGENTS, ARCHITECTURE, workflow IA, backlog, DEMO + checklist, prompts P-001–P-022, matriz trazabilidad (#5), slices E2E US-002–US-008 como evidencia. |
-| **Delivery 2** — MVP funcional | 24 jun 2026 | **Avanzada:** foundation + US-001–US-008 implementados; **pendiente** US-009 (export Excel), deploy básico, lint gate global. |
-| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público, E2E/CI robusto, tests UI, evidencia completa de workflow IA y PRs. |
+| **Delivery 1** — Documentación técnica | 27 may 2026 | **Cerrada:** docs 01–08, ADRs, AGENTS, ARCHITECTURE, workflow IA, backlog, DEMO + checklist, prompts P-001–P-022, matriz trazabilidad (#5). |
+| **Delivery 2** — MVP funcional | 24 jun 2026 | **Funcionalmente completa:** foundation + US-001–US-009 implementados y validados en local; CI básica OK; deploy básico y lint gate global → Final Delivery. |
+| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público (#14), PostgreSQL CI (#15), Playwright en CI, evidencia completa de workflow IA y PRs. |
 
-**Regla:** el MVP **objetivo** del máster incluye export y deploy aún no completados en todos los entornos. No asumir US-009 ni deploy público como hechos.
+**Regla:** deploy público y CI con PostgreSQL **no** están completados; no asumirlos como hechos. US-009 (export Excel) **sí** está implementada en el repo.
 
 ---
 
@@ -153,7 +150,7 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 **Modelos Prisma:** `HealthCheck`, `User`, `UserStory`, `SprintCapacity`, `SprintAbsence` (`apps/api/prisma/schema.prisma`).  
 **Modelo en** [docs/04-data-model.md](docs/04-data-model.md) = diseño **objetivo**, no estado DB completo.
 
-**Endpoints de negocio hoy:** `GET /api/health`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET/POST /api/user-stories`, `GET/POST /api/sprint-capacity`, `GET/POST /api/sprint-absences`, `GET /api/sprint-analysis`, `POST /api/refinement/analyze`.
+**Endpoints de negocio hoy:** `GET /api/health`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET/POST /api/user-stories`, `GET/POST /api/sprint-capacity`, `GET/POST /api/sprint-absences`, `GET /api/sprint-analysis`, `GET /api/sprint-analysis/export`, `POST /api/refinement/analyze`.
 
 **Estructura API relevante:** `apps/api/src/auth/`, `user-stories/`, `sprint-capacity/`, `sprint-absences/`, `sprint-analysis/`, `refinement/`, `infrastructure/prisma/`.
 
@@ -182,11 +179,11 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 
 ## 8. Estado del repositorio
 
-| Aspecto | Estado (25 jun 2026) |
+| Aspecto | Estado (26 jun 2026) |
 |---------|----------------------|
-| **Rama principal** | `main` (slices US-001–US-008 mergeados o en rama feature US-001) |
+| **Rama principal** | `main` (slices US-001–US-009 mergeados; fix ConfigModule global en `d1222d4`) |
 | **CI** | `.github/workflows/ci.yml`: `push` en `main`/`master`; `pull_request` en cualquier rama |
-| **Issues Delivery 1** | #3 (GH-01), #4 (GH-02), #5 (GH-03) — cierre documental en curso |
+| **Issues Delivery 2** | #8–#13 cerradas (US-001, US-003–US-009) |
 
 ### Mapa de documentación (no duplicar contenido)
 
@@ -202,6 +199,7 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 | [docs/sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) | Spec US-005 |
 | [docs/auth-mvp.md](docs/auth-mvp.md) | Spec US-001 |
 | [docs/refinement-mvp.md](docs/refinement-mvp.md) | Spec US-006–008 |
+| [docs/export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md) | Spec US-009 |
 | [docs/DEMO.md](docs/DEMO.md) | Guion demo local + checklist |
 | [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) | Matriz trazabilidad US/TB ↔ issues |
 | [docs/08-delivery-plan.md](docs/08-delivery-plan.md) | Hitos y alcance por entrega |
@@ -213,14 +211,13 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 
 ## 9. Próximos pasos recomendados
 
-Alineados con Delivery 2, [docs/06-technical-backlog.md](docs/06-technical-backlog.md) y módulos 10+ del máster (testing, CI/CD, deploy, E2E) — **priorizar spec-first**:
+Alineados con **Final Delivery**, [docs/06-technical-backlog.md](docs/06-technical-backlog.md) y módulos 10+ del máster (testing, CI/CD, deploy, E2E):
 
-1. **Cerrar Delivery 1** — issues #3–#5 (coherencia docs, evidencia DEMO/prompts/ADRs, matriz trazabilidad).
-2. **US-009 export Excel** — mini-spec → GH-11 / issue #13.
-3. **CI evolutiva** — job con PostgreSQL cuando existan tests de integración; lint gate opcional (resolver errores preexistentes fuera de US-001).
-4. **Final Delivery prep** — deploy (Vercel + Render/Neon), Playwright en CI, historial PRs.
+1. **Deploy MVP público** — issue #14 (web + API + PostgreSQL gestionado).
+2. **CI con PostgreSQL** — issue #15 (tests de integración / import API en runner).
+3. **Final Delivery prep** — Playwright en GitHub Actions, lint gate opcional, historial PRs y evidencia IA ampliada.
 
-Candidatos de trazabilidad en [prompts.md](prompts.md) §6: demo/CI ya cubiertos parcialmente; pendientes naturales — segundo slice, e2e import, deploy.
+Candidatos de trazabilidad en [prompts.md](prompts.md) §6: deploy, CI PostgreSQL, E2E en CI.
 
 ---
 
@@ -247,7 +244,7 @@ Candidatos de trazabilidad en [prompts.md](prompts.md) §6: demo/CI ya cubiertos
 - Clean/hexagonal architecture completa sin necesidad del slice
 - TanStack Query, Zustand, shadcn, Zod sin spec que lo exija
 - Inventar endpoints, campos Prisma o pantallas no especificadas
-- Deploy o pipelines complejos antes de slices funcionales clave de Delivery 2
+- Deploy o pipelines complejos antes de cerrar evidencia de Final Delivery
 - Modificar `prompts.md` o **commits** sin petición explícita del usuario
 - Migrar todo [docs/04-data-model.md](docs/04-data-model.md) de una vez
 

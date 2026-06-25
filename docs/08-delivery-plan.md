@@ -203,10 +203,10 @@ Main Deliverables:
 | Sprint absences | US-004 | **Implemented** |
 | Sprint analysis | US-005 | **Implemented** |
 | AI refinement MVP (mock provider) | US-006–008 | **Implemented** |
-| Authentication | US-001 | Planned |
-| Excel export | US-009 | Planned |
-| Basic deployment | — | Planned |
-| Initial tests + CI | — | CI **implemented**; extended tests planned |
+| Authentication | US-001 | **Implemented** |
+| Excel export | US-009 | **Implemented** |
+| Basic deployment | — | Planned *(Final Delivery — issue #14)* |
+| Initial tests + CI | — | CI **implemented**; Playwright local OK (9 tests); CI PostgreSQL/E2E → Final Delivery (#15) |
 
 ---
 
@@ -295,16 +295,16 @@ The project will follow an incremental implementation strategy.
 1. Monorepo setup                    ✅
 2. Frontend and backend initialization ✅
 3. Database setup                    ✅
-4. Authentication                    ○ planned (US-001)
+4. Authentication                    ✅ (US-001)
 5. Project and sprint entities       ○ partial (flat sprint/team/project fields)
 6. CSV import                        ✅ (US-002)
 7. Sprint analysis engine            ✅ (US-005)
 8. Team capacity management          ✅ (US-003)
 9. Absence management                ✅ (US-004)
 10. PDF processing + AI refinement   ✅ mock (US-006–008)
-11. Export generation                ○ planned (US-009)
-12. Testing                          ○ partial (unit tests; E2E planned)
-13. Deployment                       ○ planned (Final Delivery)
+11. Export generation                ✅ (US-009)
+12. Testing                          ○ partial (unit + Playwright local; E2E in CI → Final Delivery)
+13. Deployment                       ○ planned (Final Delivery — issue #14)
 ~~~
 
 Legend: ✅ implemented · ○ planned or partial

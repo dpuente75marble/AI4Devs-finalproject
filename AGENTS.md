@@ -59,11 +59,20 @@ El MVP académico (LIDR) prioriza un producto **realista y mantenible**, no comp
 - Guía E2E: [docs/DEMO.md](docs/DEMO.md)
 - Prompts registrados en `prompts.md` (P-013 a P-016)
 
+### Vertical slice US-009 — Sprint analysis Excel export (funcional)
+
+**Export Excel de análisis de sprint** — especificación: [docs/export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md)
+
+- `GET /api/sprint-analysis/export` — descarga XLSX (`StreamableFile`, `exceljs`)
+- UI: botón **Export Excel** en `/sprint-analysis`
+- Playwright: `e2e/sprint-analysis-export.spec.ts`
+- Prompt registrado en `prompts.md` (P-023)
+
 ### No implementado (no inventar ni asumir)
 
 - RBAC, refresh tokens, registro de usuarios, OAuth
 - Entidades `Project`, `Sprint`, `TeamMember` como modelo relacional completo
-- Export Excel/PDF fuera de slices ya especificados
+- Export PDF o reporting avanzado fuera de US-009 Excel
 - `packages/shared` con tipos compartidos (directorio vacío)
 - Despliegue cloud público
 - CI con PostgreSQL en runner; Playwright en GitHub Actions
@@ -77,7 +86,7 @@ El MVP académico (LIDR) prioriza un producto **realista y mantenible**, no comp
 | Capa | Tecnologías (implementadas) |
 |------|----------------------------|
 | Monorepo | pnpm 10+, workspaces |
-| API | Node.js, NestJS 11, Prisma 7, PostgreSQL 16, `argon2`, `@nestjs/jwt`, `passport-jwt`, `cookie-parser`, `csv-parse`, Swagger |
+| API | Node.js, NestJS 11, Prisma 7, PostgreSQL 16, `argon2`, `@nestjs/jwt`, `passport-jwt`, `cookie-parser`, `csv-parse`, `exceljs`, Swagger |
 | Web | React 19, Vite 8, TypeScript, Tailwind CSS 4, React Router 7 |
 | DB local | Docker `postgres:16-alpine` |
 | Tests API | Jest (unit + auth protection specs), Supertest e2e (`/api/health`) |

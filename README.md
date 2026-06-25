@@ -13,7 +13,7 @@ AI-assisted SaaS platform for sprint planning, capacity analysis, requirement re
 | Field | Value |
 |-------|-------|
 | **Program** | AI4Devs / LIDR — Final Master Project 2026 |
-| **Delivery** | Delivery 1 — Technical Documentation (target: 27 May 2026) |
+| **Delivery** | Delivery 2 — Functional MVP (target: 24 Jun 2026) · Delivery 1 closed |
 | **Author** | David de la Puente |
 | **Repository** | [github.com/dpuente75marble/AI4Devs-finalproject](https://github.com/dpuente75marble/AI4Devs-finalproject) |
 | **Approach** | AI-first SDLC · spec-first · vertical slices · human-in-the-loop |
@@ -22,15 +22,18 @@ Operational handoff and **real repository state:** [PROJECT_CONTEXT.md](PROJECT_
 
 ---
 
-# Delivery 1 Status
+# Delivery Status
 
 | Category | Status |
 |----------|--------|
-| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-024), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
-| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-001–US-008** (auth, CSV import, sprint capacity, absences, analysis, refinement MVP) — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
-| **Planned** (Delivery 2+) | Excel export (US-009), **public deployment** |
+| **Delivery 1** | Closed — product/architecture package, ADRs, governance, CI, DEMO evidence |
+| **Delivery 2** | **Functionally complete** — vertical slices **US-001–US-009** (auth, CSV import, sprint planning, refinement MVP, Excel export) — [docs/DEMO.md](docs/DEMO.md) |
+| **Final Delivery** | Planned — public deployment (#14), PostgreSQL CI (#15), extended E2E in GitHub Actions |
 
-> Delivery 1 originally scoped documentation only; the repository already includes a working local E2E slice and CI as evidence of the AI-first workflow.
+| **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-025), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
+| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-001–US-009** — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
+
+> Delivery 1 originally scoped documentation only; the repository already includes working local E2E slices and CI as evidence of the AI-first workflow.
 
 ---
 
@@ -74,7 +77,7 @@ The MVP aims to deliver a complete end-to-end operational workflow including:
 - absence management *(implemented — US-004)*
 - sprint overload analysis *(implemented — US-005)*
 - AI-assisted User Story refinement *(implemented — US-006–008, mock provider)*
-- Excel export generation *(planned — US-009)*
+- Excel export generation *(implemented — US-009)*
 
 The project intentionally prioritizes a realistic and maintainable MVP over excessive enterprise scope.
 
@@ -104,9 +107,9 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 ## Operational Reporting
 
-- Excel export generation
-- sprint operational summaries
-- refinement export support
+- Excel export of sprint analysis *(implemented — US-009)*
+- sprint operational summaries *(via sprint analysis view)*
+- refinement export support *(planned — PDF/export beyond US-009)*
 
 ---
 
@@ -292,7 +295,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - **Technical backlog:** [docs/06-technical-backlog.md](docs/06-technical-backlog.md) (TB-xxx)
 - **GitHub backlog:** [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) (bootstrap strategy and traceability) — **GH-01–GH-14** materialized as GitHub Issues **#3–#16**
 
-**Slice coverage (implemented):** US-001 (auth), US-002 (CSV import), US-003 (sprint capacity), US-004 (sprint absences), US-005 (sprint analysis), US-006–008 (refinement MVP). **Planned:** US-009 (Excel export). Specs per slice in `docs/*-mvp.md`; traceability matrix in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md).
+**Slice coverage (implemented):** US-001 (auth), US-002 (CSV import), US-003 (sprint capacity), US-004 (sprint absences), US-005 (sprint analysis), US-006–008 (refinement MVP), US-009 (Excel export). Specs per slice in `docs/*-mvp.md`; traceability matrix in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md).
 
 ---
 
@@ -314,7 +317,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) — real repository state and handoff
 - [AGENTS.md](AGENTS.md) — AI agent and developer workflow rules
 - [ARCHITECTURE.md](ARCHITECTURE.md) — implemented architecture
-- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-024)
+- [prompts.md](prompts.md) — AI prompt traceability (P-001–P-025)
 
 ---
 
@@ -341,6 +344,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) — US-005 sprint analysis spec
 - [refinement-mvp.md](docs/refinement-mvp.md) — US-006–008 refinement MVP spec
 - [auth-mvp.md](docs/auth-mvp.md) — US-001 login JWT and protected routes spec
+- [export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md) — US-009 Excel export spec
 - [DEMO.md](docs/DEMO.md) — E2E demo guide and checklist
 
 ---
@@ -385,6 +389,7 @@ AI4Devs-finalproject/
 - **US-004:** Sprint absences (Settings UI + API)
 - **US-005:** Sprint analysis — demand vs adjusted capacity (`/sprint-analysis`)
 - **US-006–008:** Refinement MVP — PDF upload, mock provider, editable output (`/refinement`)
+- **US-009:** Sprint analysis Excel export — `GET /api/sprint-analysis/export`, **Export Excel** button on `/sprint-analysis`
 - frontend/backend integration (`VITE_API_URL`, local CORS for Vite dev ports)
 - Docker local database (`postgres:16-alpine` on port `5433`)
 - GitHub Actions CI (build + API tests + web build on push/PR)
@@ -392,24 +397,17 @@ AI4Devs-finalproject/
 
 ---
 
-## In Progress
+## Planned (Final Delivery)
 
-- Delivery 1 documentation closure (issues #3–#5)
-- Delivery 2 remaining scope: Excel export (US-009)
-
----
-
-## Planned
-
-- Excel export (US-009 / GH-11)
-- public deployment (Vercel / Render / Neon)
-- extended E2E and UI test coverage
+- public deployment (Vercel / Render / Neon) — issue #14
+- CI with PostgreSQL service on runner — issue #15
+- extended E2E and UI test coverage (Playwright in GitHub Actions)
 
 ---
 
 # Implemented Vertical Slices
 
-Five operational slices plus authentication are implemented end-to-end in local development (PRs #23–#24 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
+Six operational slices plus authentication and Excel export are implemented end-to-end in local development (PRs #27–#28 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
 
 | User Story | Slice | Spec | UI route |
 |------------|-------|------|----------|
@@ -419,6 +417,7 @@ Five operational slices plus authentication are implemented end-to-end in local 
 | US-004 | Sprint absences | [sprint-absences-mvp.md](docs/sprint-absences-mvp.md) | `/settings` |
 | US-005 | Sprint analysis | [sprint-analysis-mvp.md](docs/sprint-analysis-mvp.md) | `/sprint-analysis` |
 | US-006–008 | Refinement MVP | [refinement-mvp.md](docs/refinement-mvp.md) | `/refinement` |
+| US-009 | Excel export | [export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md) | `/sprint-analysis` (Export Excel) |
 
 **Planning flow (US-002 → US-005):**
 
@@ -433,6 +432,9 @@ Settings: Sprint Capacity + Absences (/settings)
       |
       v
 GET /api/sprint-analysis  →  demand vs adjusted capacity (/sprint-analysis)
+      |
+      v
+GET /api/sprint-analysis/export  →  Excel download (US-009)
 ~~~
 
 **Refinement flow (US-006–008):**
@@ -587,6 +589,8 @@ Target:
 24 June 2026
 ~~~
 
+Status: **functionally complete** (local MVP validated).
+
 Includes:
 
 - backend
@@ -596,9 +600,9 @@ Includes:
 - CSV import *(implemented — US-002)*
 - sprint capacity, absences, and analysis *(implemented — US-003–005)*
 - AI refinement MVP *(implemented — US-006–008, mock provider)*
-- Excel export *(planned — US-009)*
+- Excel export *(implemented — US-009)*
 - initial testing
-- CI/CD setup *(CI implemented; deploy planned)*
+- CI/CD setup *(CI implemented; deploy deferred to Final Delivery)*
 
 ---
 
