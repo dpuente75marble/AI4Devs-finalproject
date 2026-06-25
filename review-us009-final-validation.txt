@@ -1,0 +1,73 @@
+==============================
+API TEST
+==============================
+
+> api@0.0.1 test /Users/marbleinteractivesl/Cursos/IA4Devs/proyecto final/AI4Devs-finalproject/apps/api
+> jest
+
+PASS src/sprint-analysis/sprint-analysis.controller.spec.ts
+PASS src/refinement/refinement.controller.spec.ts
+PASS src/sprint-analysis/domain/build-sprint-analysis-workbook.spec.ts
+PASS src/sprint-analysis/sprint-analysis.service.spec.ts
+PASS src/user-stories/user-stories.service.spec.ts
+PASS src/app.controller.spec.ts
+PASS src/refinement/application/mock-text-extractor.spec.ts
+PASS src/user-stories/utils/parse-csv.spec.ts
+PASS src/refinement/domain/mock-refinement-provider.spec.ts
+PASS src/sprint-analysis/domain/sprint-analysis.utils.spec.ts
+PASS src/refinement/application/pdf-validator.spec.ts
+PASS src/refinement/application/refinement.service.spec.ts
+PASS src/sprint-capacity/utils/validate-sprint-capacity-input.spec.ts
+PASS src/sprint-absences/utils/validate-sprint-absence-input.spec.ts
+PASS src/user-stories/utils/validate-user-story-row.spec.ts
+PASS src/sprint-absences/utils/compute-adjusted-capacity.spec.ts
+
+Test Suites: 16 passed, 16 total
+Tests:       108 passed, 108 total
+Snapshots:   0 total
+Time:        1.997 s
+Ran all test suites.
+
+==============================
+API BUILD
+==============================
+
+> api@0.0.1 build /Users/marbleinteractivesl/Cursos/IA4Devs/proyecto final/AI4Devs-finalproject/apps/api
+> nest build
+
+
+==============================
+WEB BUILD
+==============================
+
+> web@0.0.0 build /Users/marbleinteractivesl/Cursos/IA4Devs/proyecto final/AI4Devs-finalproject/apps/web
+> tsc -b && vite build
+
+vite v8.0.11 building client environment for production...
+[2Ktransforming...✓ 35 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.45 kB │ gzip:  0.29 kB
+dist/assets/index-ByjHJ3T0.css   16.52 kB │ gzip:  4.02 kB
+dist/assets/index-D0AupT2d.js   264.61 kB │ gzip: 80.01 kB
+
+✓ built in 130ms
+
+==============================
+E2E
+==============================
+
+> ai4devs-finalproject@0.1.0 test:e2e /Users/marbleinteractivesl/Cursos/IA4Devs/proyecto final/AI4Devs-finalproject
+> playwright test
+
+
+Running 6 tests using 5 workers
+
+  ✓  2 [chromium] › e2e/sprint-analysis.spec.ts:33:7 › Sprint Analysis page › shows overloaded sprint analysis from mocked API (736ms)
+  ✓  5 [chromium] › e2e/sprint-analysis-export.spec.ts:99:7 › Sprint Analysis export › shows export error banner when export API returns 500 (808ms)
+  ✓  4 [chromium] › e2e/refinement.spec.ts:35:7 › Refinement page › shows refinement analysis results from mocked API (895ms)
+  ✓  6 [chromium] › e2e/user-stories.spec.ts:4:7 › User Stories page › renders the CSV import smoke UI without backend (166ms)
+  ✓  3 [chromium] › e2e/sprint-analysis-export.spec.ts:77:7 › Sprint Analysis export › exports Excel from mocked API with loading state and no error (1.1s)
+  ✓  1 [chromium] › e2e/settings-sprint-absences.spec.ts:117:7 › Settings Sprint Absences › registers absences and calculates adjusted capacity without backend (1.1s)
+
+  6 passed (3.1s)

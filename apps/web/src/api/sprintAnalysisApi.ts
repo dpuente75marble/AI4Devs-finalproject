@@ -34,6 +34,34 @@ async function parseErrorMessage(response: Response): Promise<string> {
   return `Request failed with status ${response.status}`
 }
 
+function parseContentDispositionFilename(
+  contentDisposition: string | null,
+  fallback = 'sprint-analysis.xlsx',
+): string {
+  if (!contentDisposition) {
+    return fallback
+  }
+
+  const filenameStarMatch = contentDisposition.match(
+    /filename\*=UTF-8''([^;]+)/i,
+  )
+  if (filenameStarMatch?.[1]) {
+    return decodeURIComponent(filenameStarMatch[1])
+  }
+
+  const quotedFilenameMatch = contentDisposition.match(/filename="([^"]+)"/i)
+  if (quotedFilenameMatch?.[1]) {
+    return quotedFilenameMatch[1]
+  }
+
+  const unquotedFilenameMatch = contentDisposition.match(/filename=([^;]+)/i)
+  if (unquotedFilenameMatch?.[1]) {
+    return unquotedFilenameMatch[1].trim()
+  }
+
+  return fallback
+}
+
 export async function fetchSprintAnalysis(): Promise<SprintAnalysisRow[]> {
   const response = await fetch(apiUrl('/api/sprint-analysis'))
 
@@ -42,6 +70,24 @@ export async function fetchSprintAnalysis(): Promise<SprintAnalysisRow[]> {
   }
 
   return response.json() as Promise<SprintAnalysisRow[]>
+}
+
+export async function downloadSprintAnalysisExport(): Promise<{
+  blob: Blob
+  filename: string
+}> {
+  const response = await fetch(apiUrl('/api/sprint-analysis/export'))
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response))
+  }
+
+  const blob = await response.blob()
+  const filename = parseContentDispositionFilename(
+    response.headers.get('Content-Disposition'),
+  )
+
+  return { blob, filename }
 }
 
 export function formatUtilization(utilization: number | null): string {
