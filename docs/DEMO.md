@@ -4,6 +4,7 @@ Guías breves para demostrar los vertical slices E2E en local.
 
 | Slice | Spec |
 |-------|------|
+| Authentication (US-001) | [auth-mvp.md](auth-mvp.md) |
 | User Stories CSV import (US-002) | [user-stories-import-mvp.md](user-stories-import-mvp.md) |
 | Sprint Capacity (US-003) | [sprint-capacity-mvp.md](sprint-capacity-mvp.md) |
 | Sprint Absences (US-004) | [sprint-absences-mvp.md](sprint-absences-mvp.md) |
@@ -24,6 +25,7 @@ Use this checklist to validate the local demo before closing Delivery 1 evidence
 
 | # | Check | Expected outcome |
 |---|-------|------------------|
+| 0 | **Auth validated** | Demo user created; `/login` works; protected routes redirect without session; logout returns to `/login` |
 | 1 | **API starts successfully** | `pnpm --filter api start:dev` → `GET /api/health` returns `{ "status": "ok" }` |
 | 2 | **Web starts successfully** | `pnpm --filter web dev` → Vite URL loads; navigation renders without errors |
 | 3 | **CSV import validated** | Import `fixtures/sample-user-stories.csv` → **9 imported**, **0 failed**; table shows 9 rows |
@@ -38,6 +40,7 @@ Use this checklist to validate the local demo before closing Delivery 1 evidence
 ```bash
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm test:e2e
 ```
 
 ---
@@ -46,6 +49,7 @@ pnpm --filter web build
 
 Show that DeliveryOps AI supports the **operational planning and refinement workflow** end-to-end in local development:
 
+0. **Authenticate** with demo credentials (HttpOnly session cookie)
 1. **Import User Stories from CSV** (with optional team/project)
 2. **Configure sprint capacity** and **register absences** in Settings
 3. **Run sprint analysis** — demand vs adjusted capacity grouped by `(sprint, teamName, projectName)`
@@ -61,8 +65,21 @@ Show that DeliveryOps AI supports the **operational planning and refinement work
 
 Environment:
 
-- `apps/api/.env` with `DATABASE_URL` pointing to `localhost:5433`
+- `apps/api/.env` with `DATABASE_URL` pointing to `localhost:5433` and auth vars (see `apps/api/.env.example`)
 - `apps/web/.env` with `VITE_API_URL=http://localhost:3000`
+
+**Demo credentials (local only):**
+
+| Field | Value |
+|-------|-------|
+| Email | `pm@deliveryops.local` |
+| Password | `DeliveryOps123!` |
+
+Create or refresh the demo user:
+
+```bash
+pnpm --filter api auth:create-demo-user
+```
 
 Sample files:
 
@@ -90,6 +107,7 @@ Optional — apply migrations if the database is fresh:
 
 ```bash
 pnpm --filter api prisma migrate dev
+pnpm --filter api auth:create-demo-user
 ```
 
 ---
@@ -99,12 +117,34 @@ pnpm --filter api prisma migrate dev
 | Service | URL |
 |---------|-----|
 | Web app | URL shown by Vite (e.g. `http://localhost:5173`) |
+| Login | `/login` |
+| Dashboard | `/dashboard` |
 | User Stories page | `/user-stories` |
 | Settings (capacity / absences) | `/settings` |
 | Sprint Analysis | `/sprint-analysis` |
 | Refinement | `/refinement` |
 | API health | http://localhost:3000/api/health |
 | Swagger | http://localhost:3000/api/docs |
+
+---
+
+## E2E demo steps — Authentication (US-001)
+
+1. Ensure migrations are applied and the demo user exists (`pnpm --filter api auth:create-demo-user`).
+2. Open the Vite URL while logged out (or use a private window).
+3. Navigate to `/settings` or `/user-stories` — confirm redirect to `/login`.
+4. Sign in with `pm@deliveryops.local` / `DeliveryOps123!`.
+5. Confirm redirect to `/dashboard` and user label in the navigation (e.g. `Demo PM`).
+6. Open **User Stories**, **Settings**, **Sprint Analysis**, and **Refinement** — all load without redirect to login.
+7. Click **Log out** — confirm redirect to `/login` and protected routes redirect again without session.
+
+### Expected result (auth)
+
+- `POST /api/auth/login` returns `{ user, message }` without JWT in JSON; `Set-Cookie` HttpOnly present.
+- `GET /api/auth/me` returns `{ user }` with a valid session cookie; `401` without cookie.
+- `POST /api/auth/logout` clears the session cookie.
+- Frontend never stores JWT in `localStorage`, `sessionStorage`, or `document.cookie`.
+- Playwright smoke: `pnpm test:e2e e2e/auth-login.spec.ts` (3 tests).
 
 ---
 
@@ -207,9 +247,10 @@ Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Spri
 
 ## What these slices demonstrate (technical)
 
+- **Authentication (US-001):** JWT in HttpOnly cookie, protected API and routes, `AuthProvider` session hydration
 - **Spec-first delivery** aligned with slice specs in `docs/*-mvp.md`
 - **Monorepo** with independent `apps/api` and `apps/web`
-- **NestJS modules** per feature: user-stories, sprint-capacity, sprint-absences, sprint-analysis, refinement
+- **NestJS modules** per feature: auth, user-stories, sprint-capacity, sprint-absences, sprint-analysis, refinement
 - **Partial CSV import**: invalid rows reported without blocking valid ones
 - **Sprint planning chain**: capacity → absences → demand vs adjusted capacity analysis
 - **Refinement MVP**: PDF upload, text extraction, mock `RefinementProvider`, editable UI output
@@ -223,14 +264,14 @@ Other combinations in the sample file (e.g. `Gerencia Ahorro` + `Ahorro` on Spri
 
 Not shown in this demo (planned for later deliveries):
 
-- Authentication and multi-tenant workspaces (US-001)
 - PDF export
 - Real LLM provider (OpenAI / Azure) — mock only today
 - Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import
 - Production deployment
+- CI with PostgreSQL runner or Playwright in GitHub Actions
 
-Smoke E2E (Playwright): `pnpm test:e2e` from repo root.
+Smoke E2E (Playwright): `pnpm test:e2e` from repo root (9 tests, incl. auth).
 
 ---
 

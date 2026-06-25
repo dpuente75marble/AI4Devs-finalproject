@@ -2,7 +2,7 @@
 
 Guía de contexto persistente para agentes de IA (Cursor, LLMs) y desarrolladores humanos. Describe **qué existe hoy** en el repositorio y **cómo trabajar** sin desviarse del alcance real.
 
-**Referencias complementarias:** [README.md](README.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) · [prompts.md](prompts.md) · [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)
+**Referencias complementarias:** [README.md](README.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [docs/auth-mvp.md](docs/auth-mvp.md) · [docs/user-stories-import-mvp.md](docs/user-stories-import-mvp.md) · [prompts.md](prompts.md) · [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)
 
 ---
 
@@ -30,7 +30,21 @@ El MVP académico (LIDR) prioriza un producto **realista y mantenible**, no comp
 | Health endpoint `GET /api/health` | Implementado |
 | React + Vite + TypeScript + Tailwind + React Router | Implementado |
 | Páginas shell: `/dashboard`, `/settings` (placeholders) | Implementado |
-| CORS dev para puertos Vite (`5173`–`5178`) | Implementado |
+| CORS dev para puertos Vite (`5173`–`5178`), `credentials: true` | Implementado |
+| Autenticación US-001 — JWT en cookie HttpOnly, `JwtAuthGuard` explícito | Implementado |
+
+### Vertical slice US-001 — Authentication (funcional)
+
+**Login JWT y rutas protegidas** — especificación: [docs/auth-mvp.md](docs/auth-mvp.md)
+
+- `POST /api/auth/login` — valida credenciales; JWT `{ sub }` en cookie HttpOnly (no en JSON)
+- `POST /api/auth/logout` — limpia cookie de sesión
+- `GET /api/auth/me` — usuario autenticado desde PostgreSQL (`JwtAuthGuard`)
+- Modelo Prisma `User`; migración; `pnpm --filter api auth:create-demo-user`
+- Frontend: `AuthProvider`, `ProtectedRoute`, `LoginPage`, `AppNav` logout; `credentials: 'include'`; sin `localStorage` / `sessionStorage` / `document.cookie`
+- Controllers de negocio protegidos con `@UseGuards(JwtAuthGuard)` (sin `APP_GUARD` global)
+- Playwright: `e2e/auth-login.spec.ts`
+- Prompt registrado en `prompts.md` (P-024)
 
 ### Primer vertical slice E2E (funcional)
 
@@ -47,14 +61,13 @@ El MVP académico (LIDR) prioriza un producto **realista y mantenible**, no comp
 
 ### No implementado (no inventar ni asumir)
 
-- Autenticación / autorización
-- Entidades `Project`, `Sprint`, `TeamMember`, capacity, absences
-- Refinamiento con IA (PDF, gaps, acceptance criteria)
-- Export Excel/PDF
+- RBAC, refresh tokens, registro de usuarios, OAuth
+- Entidades `Project`, `Sprint`, `TeamMember` como modelo relacional completo
+- Export Excel/PDF fuera de slices ya especificados
 - `packages/shared` con tipos compartidos (directorio vacío)
-- CI/CD, despliegue cloud
-- Tests E2E del slice user-stories (solo health e2e base)
-- Tests frontend (Vitest/RTL/Playwright planificados, no presentes)
+- Despliegue cloud público
+- CI con PostgreSQL en runner; Playwright en GitHub Actions
+- Tests frontend unitarios (Vitest/RTL)
 - shadcn/ui, TanStack Query, Zustand, React Hook Form, Zod en web
 
 ---
@@ -64,14 +77,15 @@ El MVP académico (LIDR) prioriza un producto **realista y mantenible**, no comp
 | Capa | Tecnologías (implementadas) |
 |------|----------------------------|
 | Monorepo | pnpm 10+, workspaces |
-| API | Node.js, NestJS 11, Prisma 7, PostgreSQL 16, `csv-parse`, Swagger |
+| API | Node.js, NestJS 11, Prisma 7, PostgreSQL 16, `argon2`, `@nestjs/jwt`, `passport-jwt`, `cookie-parser`, `csv-parse`, Swagger |
 | Web | React 19, Vite 8, TypeScript, Tailwind CSS 4, React Router 7 |
 | DB local | Docker `postgres:16-alpine` |
-| Tests API | Jest (unit en `src/**/*.spec.ts`), Supertest e2e mínimo (`/api/health`) |
+| Tests API | Jest (unit + auth protection specs), Supertest e2e (`/api/health`) |
+| Tests E2E | Playwright (`e2e/`, smoke local — no en CI) |
 
 Variables de entorno relevantes:
 
-- API: `DATABASE_URL`, `PORT` (default `3000`) en `apps/api/.env`
+- API: `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `AUTH_COOKIE_*`, `PORT` (default `3000`) en `apps/api/.env`
 - Web: `VITE_API_URL` (default implícito `http://localhost:3000`) en `apps/web/.env`
 
 ---
@@ -89,13 +103,13 @@ AI4Devs-finalproject/
 ├── fixtures/
 ├── docs/                  ← producto, arquitectura, backlog, workflow AI
 ├── apps/
-│   ├── api/               ← NestJS, Prisma, módulo user-stories
-│   └── web/               ← React, UserStoriesPage, API client fetch
+│   ├── api/               ← NestJS, Prisma, módulos auth + negocio
+│   └── web/               ← React, AuthProvider, páginas protegidas, clientes fetch
 └── packages/
     └── shared/            ← vacío; reservado para tipos/DTOs compartidos
 ```
 
-Documentación numerada en `docs/01-` … `docs/08-` describe visión de producto y diseño objetivo; **la fuente de verdad del slice implementado** es `docs/user-stories-import-mvp.md` + código + Swagger.
+Documentación numerada en `docs/01-` … `docs/08-` describe visión de producto y diseño objetivo; **la fuente de verdad por slice** son las specs `docs/*-mvp.md` (p. ej. `auth-mvp.md`, `user-stories-import-mvp.md`) + código + Swagger.
 
 ---
 
@@ -147,6 +161,7 @@ docker compose up -d
 pnpm --filter api prisma migrate dev   # si hay migraciones nuevas
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm test:e2e
 # Smoke manual según docs/DEMO.md o checklist BDD de la spec
 ```
 
@@ -179,10 +194,11 @@ Mantener coherencia: si la spec dice "implementado", el estado en cabecera debe 
 
 ### Implementado hoy
 
-- **Unit (API):** `parse-csv.spec.ts`, `validate-user-story-row.spec.ts`
-- **E2E (API):** solo `GET /api/health` en `test/app.e2e-spec.ts`
+- **Unit (API):** parsers, validators, sprint utils, refinement mock, auth (service, controller, guard, strategy, cookies)
+- **E2E (API):** `GET /api/health` en `test/app.e2e-spec.ts`; protección auth en `auth-protection.spec.ts`
+- **E2E (Playwright):** `e2e/` — 9 specs locales (incl. auth); no ejecutado en CI
 - **Build:** `pnpm --filter api build`, `pnpm --filter web build`
-- **Manual:** escenarios BDD en `user-stories-import-mvp.md`, guía [docs/DEMO.md](docs/DEMO.md)
+- **Manual:** [docs/DEMO.md](docs/DEMO.md), escenarios BDD en specs `docs/*-mvp.md`
 
 ### Expectativas para nuevos cambios
 
@@ -217,7 +233,7 @@ Mantener coherencia: si la spec dice "implementado", el estado en cabecera debe 
 
 - Inventar endpoints, campos Prisma o pantallas no especificadas.
 - Añadir dependencias npm sin justificación en spec o comentario de PR.
-- Implementar auth, multi-tenant o IA en slices que no lo incluyan.
+- Implementar RBAC, refresh tokens, registro u OAuth sin spec explícita.
 - Refactorizar a Clean Architecture completa sin necesidad del slice actual.
 - Modificar `prompts.md` retroactivamente para "encajar" código ya escrito sin registro honesto.
 - Actualizar solo README tras implementar omitiendo la spec del slice.
@@ -231,7 +247,7 @@ Mantener coherencia: si la spec dice "implementado", el estado en cabecera debe 
 
 | Limitación | Impacto |
 |------------|---------|
-| Sin autenticación | Cualquier cliente con acceso a la API en local puede importar/listar |
+| Sin RBAC / refresh token | Todos los usuarios autenticados comparten el mismo nivel de acceso |
 | Sin `projectId` / `Sprint` entity | `sprint` en CSV es texto libre |
 | Re-import duplica filas | Mismo `external_id` crea nuevos registros |
 | Import parcial | Filas válidas se insertan; inválidas se reportan sin rollback de las válidas |
@@ -240,7 +256,8 @@ Mantener coherencia: si la spec dice "implementado", el estado en cabecera debe 
 | Tipos FE/BE duplicados | Sin `packages/shared` aún |
 | Dashboard/Settings | Placeholders sin lógica de negocio |
 | CORS | Configurado para dev local, no producción |
-| Tests UI/E2E slice | No automatizados |
+| CI sin PostgreSQL / Playwright | E2E browser y tests de integración solo local |
+| `pnpm lint` global | Errores preexistentes fuera de US-001; no bloquean build/test |
 
 ---
 
@@ -253,10 +270,12 @@ pnpm --filter api start:dev
 pnpm --filter web dev
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm test:e2e
+pnpm --filter api auth:create-demo-user   # usuario demo local (US-001)
 ```
 
 **Smoke del slice actual:** [docs/DEMO.md](docs/DEMO.md)
 
 ---
 
-*Última revisión alineada con el repositorio: mayo 2026.*
+*Última revisión alineada con el repositorio: junio 2026 (US-001 auth implementada).*

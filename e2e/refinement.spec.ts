@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { expect, test, type Page } from '@playwright/test'
+import { setupAuthenticatedAuthMocks } from './helpers/auth-api-mocks'
 
 const PDF_FIXTURE = path.join(process.cwd(), 'fixtures/requirements.pdf')
 
@@ -34,6 +35,7 @@ async function setupRefinementApiMocks(page: Page) {
 test.describe('Refinement page', () => {
   test('shows refinement analysis results from mocked API', async ({ page }) => {
     await setupRefinementApiMocks(page)
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/refinement')
 
     await expect(

@@ -1,4 +1,7 @@
-import { MockTextExtractor, buildMockExtractedText } from './mock-text-extractor';
+import {
+  MockTextExtractor,
+  buildMockExtractedText,
+} from './mock-text-extractor';
 
 function pdfFile(
   overrides: Partial<Express.Multer.File> & Pick<Express.Multer.File, 'size'>,

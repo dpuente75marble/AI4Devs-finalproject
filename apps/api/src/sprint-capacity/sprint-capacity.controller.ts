@@ -1,12 +1,22 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { DEFAULT_AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateSprintCapacityDto } from './dto/create-sprint-capacity.dto';
 import {
   ListSprintCapacityResponseDto,
@@ -15,6 +25,8 @@ import {
 import { SprintCapacityService } from './sprint-capacity.service';
 
 @ApiTags('sprint-capacity')
+@ApiCookieAuth(DEFAULT_AUTH_COOKIE_NAME)
+@UseGuards(JwtAuthGuard)
 @Controller('sprint-capacity')
 export class SprintCapacityController {
   constructor(private readonly sprintCapacityService: SprintCapacityService) {}

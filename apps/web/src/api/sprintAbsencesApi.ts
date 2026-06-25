@@ -45,7 +45,9 @@ async function parseErrorMessage(response: Response): Promise<string> {
 }
 
 export async function fetchSprintAbsences(): Promise<ListSprintAbsencesResponse> {
-  const response = await fetch(apiUrl('/api/sprint-absences'))
+  const response = await fetch(apiUrl('/api/sprint-absences'), {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
@@ -62,6 +64,7 @@ export async function createSprintAbsence(
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify(payload),
   })
 

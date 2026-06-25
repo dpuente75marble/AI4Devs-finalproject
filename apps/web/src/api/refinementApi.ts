@@ -36,6 +36,7 @@ export async function analyzePdf(
 
   const response = await fetch(apiUrl('/api/refinement/analyze'), {
     method: 'POST',
+    credentials: 'include',
     body: formData,
   })
 

@@ -4,6 +4,7 @@ import {
   HttpCode,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -11,17 +12,22 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiConsumes,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { DEFAULT_AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MAX_CSV_FILE_SIZE_BYTES } from './constants';
 import { ImportUserStoriesResponseDto } from './dto/import-user-stories-response.dto';
 import { ListUserStoriesResponseDto } from './dto/user-story-response.dto';
 import { UserStoriesService } from './user-stories.service';
 
 @ApiTags('user-stories')
+@ApiCookieAuth(DEFAULT_AUTH_COOKIE_NAME)
+@UseGuards(JwtAuthGuard)
 @Controller('user-stories')
 export class UserStoriesController {
   constructor(private readonly userStoriesService: UserStoriesService) {}

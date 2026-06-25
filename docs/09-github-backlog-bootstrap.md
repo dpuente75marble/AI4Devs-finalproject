@@ -145,12 +145,12 @@ Conjunto **mínimo pero completo** para filtrar, priorizar y trazar sin ruido.
 
 | ID | Título | Milestone | Objetivo corto | Estado esperado |
 |----|--------|-----------|----------------|-----------------|
-| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (slices US-002–US-008, sin auth/export) | **#3** — Cerrar en D1 |
+| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (slices US-001–US-008) | **#3** — Cerrar en D1 |
 | GH-02 | Paquete evidencia: DEMO, prompts P-001–P-022, ADRs | Delivery 1 | Evidencia académica workflow AI-first verificable | **#4** — Cerrar en D1 |
 | GH-03 | Matriz trazabilidad US/TB ↔ issues GitHub | Delivery 1 | Tabla US-xxx / TB-xxx / Issue / Milestone / Estado | **#5** — Cerrar en D1 |
 | GH-04 | Cerrar slice US-002 (spec, DoD, límites MVP) | Delivery 1 | Verificación documental del slice CSV import | **#6** — Implementado |
 | GH-05 | Checklist entrega Delivery 1 (PR, rama, tutor) | Delivery 1 | Cierre formal entrega: PR doc-only, builds documentados | **#7** — Abierto |
-| GH-06 | US-001: Login JWT y rutas protegidas | Delivery 2 | Autenticación mínima spec-first | **#8** — Planificado |
+| GH-06 | US-001: Login JWT y rutas protegidas | Delivery 2 | Autenticación mínima spec-first | **#8** — **Implementado** |
 | GH-07 | US-003: Configurar capacidad de sprint | Delivery 2 | Capacidad persistida + UI Settings | **#9** — **Implementado** |
 | GH-08 | US-004: Registrar ausencias | Delivery 2 | Ausencias ajustan capacidad disponible | **#10** — **Implementado** |
 | GH-09 | US-005: Análisis capacidad vs demanda | Delivery 2 | Motor overload + vista análisis | **#11** — **Implementado** |
@@ -186,7 +186,7 @@ docs/01–08 (visión, diseño, plan)
 
 | Artefacto | Rol respecto al backlog GitHub |
 |-----------|--------------------------------|
-| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). US-002–US-008 **implementadas**; US-001 y US-009 planificadas. |
+| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). US-001–US-008 **implementadas**; US-009 planificada. |
 | [06-technical-backlog.md](06-technical-backlog.md) | **Cómo** descomponer técnicamente (TB-xxx). GH-03 enlaza TB con issues. TB foundation y slices sprint/refinement reflejan trabajo **hecho** en repo. |
 | [08-delivery-plan.md](08-delivery-plan.md) | **Cuándo** — milestones y alcance por entrega. |
 | [user-stories-import-mvp.md](user-stories-import-mvp.md) | Spec US-002; referencia GH-04, DEMO. |
@@ -194,6 +194,7 @@ docs/01–08 (visión, diseño, plan)
 | [sprint-absences-mvp.md](sprint-absences-mvp.md) | Spec US-004; referencia GH-08. |
 | [sprint-analysis-mvp.md](sprint-analysis-mvp.md) | Spec US-005; referencia GH-09. |
 | [refinement-mvp.md](refinement-mvp.md) | Spec US-006–008; referencia GH-10. |
+| [auth-mvp.md](auth-mvp.md) | Spec US-001; referencia GH-06. |
 | [DEMO.md](DEMO.md) | Guion de validación humana + checklist; evidencia Delivery 1 (GH-02). |
 | Milestones GitHub | Agrupación temporal académica; no sustituyen epics ni specs. |
 | PRs | Unidad de entrega y revisión; enlace obligatorio a spec + prompt ID cuando aplique. |
@@ -214,26 +215,27 @@ El backlog GitHub describe el **roadmap del MVP máster**, incluyendo trabajo fu
 | NestJS + Prisma + PostgreSQL local (Docker `5433`) | ✅ |
 | Swagger `/api/docs`, health `GET /api/health` | ✅ |
 | React + Vite + Tailwind + Router; rutas operativas | ✅ |
+| **US-001:** Login JWT — cookie HttpOnly, rutas protegidas, AuthProvider | ✅ |
 | **US-002:** CSV import + listado User Stories | ✅ |
 | **US-003:** Sprint capacity (Settings + API) | ✅ |
 | **US-004:** Sprint absences (Settings + API) | ✅ |
 | **US-005:** Sprint analysis (`/sprint-analysis`) | ✅ |
 | **US-006–008:** Refinement MVP (`/refinement`, mock provider) | ✅ |
-| Tests API unitarios (parser, validator, sprint utils, refinement mock) | ✅ |
+| Tests API unitarios (parser, validator, sprint utils, refinement mock, auth) | ✅ |
+| Playwright E2E local (`e2e/`, 9 tests incl. auth) | ✅ |
 | CI GitHub Actions: build + test API + build web (PR/push) | ✅ |
-| Documentación 01–08, ADRs, AGENTS, ARCHITECTURE, prompts P-001–P-022 | ✅ |
+| Documentación 01–08, ADRs, AGENTS, ARCHITECTURE, prompts P-001–P-024 | ✅ |
 | DEMO + fixtures (`sample-user-stories.csv`, `requirements.pdf`) | ✅ |
 
-### Planificado — Delivery 2 (issues GH-06, GH-11)
+### Planificado — Delivery 2 (issue GH-11)
 
-- Autenticación JWT (US-001 / GH-06 / #8)
 - Export Excel (US-009 / GH-11 / #13)
 
 ### Planificado — Final Delivery (issues GH-12–14)
 
 - Deploy público (web + API + PostgreSQL gestionado)
 - CI con servicio PostgreSQL y tests e2e de import
-- Playwright u otro E2E UI del flujo operativo principal
+- Playwright E2E en GitHub Actions (hoy solo local)
 - Paquete evidencia final ampliado (`prompts.md`, historial PRs)
 
 ### Delivery 1 (issues GH-01–05)
@@ -301,7 +303,7 @@ Los comandos para crear labels, milestones e issues se mantendrán en un anexo o
 | US-004 (implementada) | TB-012 | GH-08 / #10 |
 | US-005 (implementada) | TB-014, TB-026, TB-035 | GH-09 / #11 |
 | US-006–008 (implementada) | TB-015–019, TB-027–028, TB-030–031 | GH-10 / #12 |
-| US-001 | TB-008, TB-009, TB-022 | GH-06 / #8 |
+| US-001 (implementada) | TB-008, TB-009, TB-022 | GH-06 / #8 |
 | US-009 | TB-020, TB-029 | GH-11 / #13 |
 | — (deploy/CI/E2E) | TB-038–043, TB-045–046 | GH-12–14 / #14–16 |
 
@@ -318,7 +320,7 @@ Matriz autoritativa alineada con el estado del repositorio tras PR #23 y PR #24.
 | — (matriz trazabilidad) | — | GH-03 / **#5** | Delivery 1 — Technical Documentation | En cierre (este documento) |
 | US-002 | TB-013, TB-024, TB-036 | GH-04 / **#6** | Delivery 1 — Technical Documentation | **Implementado** |
 | — (checklist entrega D1) | — | GH-05 / **#7** | Delivery 1 — Technical Documentation | Abierto |
-| US-001 | TB-008, TB-009, TB-022 | GH-06 / **#8** | Delivery 2 — Functional MVP | Planificado |
+| US-001 | TB-008, TB-009, TB-022 | GH-06 / **#8** | Delivery 2 — Functional MVP | **Implementado** |
 | US-003 | TB-010, TB-011, TB-025 | GH-07 / **#9** | Delivery 2 — Functional MVP | **Implementado** |
 | US-004 | TB-012 | GH-08 / **#10** | Delivery 2 — Functional MVP | **Implementado** |
 | US-005 | TB-014, TB-026, TB-035 | GH-09 / **#11** | Delivery 2 — Functional MVP | **Implementado** |

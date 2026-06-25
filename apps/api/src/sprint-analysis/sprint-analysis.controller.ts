@@ -1,10 +1,13 @@
-import { Controller, Get, StreamableFile } from '@nestjs/common';
+import { Controller, Get, StreamableFile, UseGuards } from '@nestjs/common';
 import {
+  ApiCookieAuth,
   ApiOkResponse,
   ApiOperation,
   ApiProduces,
   ApiTags,
 } from '@nestjs/swagger';
+import { DEFAULT_AUTH_COOKIE_NAME } from '../auth/auth.constants';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { buildSprintAnalysisExportFilename } from './domain/sprint-analysis-export-filename';
 import { SprintAnalysisRowDto } from './dto/sprint-analysis-response.dto';
 import { SprintAnalysisService } from './sprint-analysis.service';
@@ -13,6 +16,8 @@ const SPRINT_ANALYSIS_EXPORT_CONTENT_TYPE =
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
 @ApiTags('sprint-analysis')
+@ApiCookieAuth(DEFAULT_AUTH_COOKIE_NAME)
+@UseGuards(JwtAuthGuard)
 @Controller('sprint-analysis')
 export class SprintAnalysisController {
   constructor(private readonly sprintAnalysisService: SprintAnalysisService) {}

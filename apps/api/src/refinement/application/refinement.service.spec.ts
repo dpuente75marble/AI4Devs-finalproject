@@ -82,7 +82,9 @@ describe('RefinementService', () => {
   it('returns acceptanceCriteria in the analysis result', async () => {
     const result = await service.analyze(pdfFile());
 
-    expect(result.acceptanceCriteria).toEqual(refinementOutput.acceptanceCriteria);
+    expect(result.acceptanceCriteria).toEqual(
+      refinementOutput.acceptanceCriteria,
+    );
   });
 
   it('returns gaps in the analysis result', async () => {

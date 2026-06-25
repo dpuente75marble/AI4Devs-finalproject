@@ -43,7 +43,9 @@ async function parseErrorMessage(response: Response): Promise<string> {
 }
 
 export async function fetchSprintCapacities(): Promise<ListSprintCapacityResponse> {
-  const response = await fetch(apiUrl('/api/sprint-capacity'))
+  const response = await fetch(apiUrl('/api/sprint-capacity'), {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
@@ -60,6 +62,7 @@ export async function createSprintCapacity(
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify(payload),
   })
 

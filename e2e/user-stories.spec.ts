@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test'
+import { setupAuthenticatedAuthMocks } from './helpers/auth-api-mocks'
 
 test.describe('User Stories page', () => {
   test('renders the CSV import smoke UI without backend', async ({ page }) => {
+    await setupAuthenticatedAuthMocks(page)
     await page.goto('/user-stories')
 
     await expect(
