@@ -189,6 +189,8 @@ Expected output
 - Integration validation
 - Green pipeline
 
+**Status (VS-02):** PostgreSQL service container + `prisma migrate deploy` in `.github/workflows/ci.yml`. API integration tests in CI pending (GH-13).
+
 ---
 
 ## WP3

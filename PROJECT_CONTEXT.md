@@ -106,9 +106,9 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 |---------|----------------|-------------------------|
 | **Delivery 1** — Documentación técnica | 27 may 2026 | **Cerrada:** docs 01–08, ADRs, AGENTS, ARCHITECTURE, workflow IA, backlog, DEMO + checklist, prompts P-001–P-022, matriz trazabilidad (#5). |
 | **Delivery 2** — MVP funcional | 24 jun 2026 | **Funcionalmente completa:** foundation + US-001–US-009 implementados y validados en local; CI básica OK; deploy básico y lint gate global → Final Delivery. |
-| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público (#14), PostgreSQL CI (#15), Playwright en CI, evidencia completa de workflow IA y PRs. |
+| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público (#14), tests integración API en CI (#15), Playwright en CI, evidencia completa de workflow IA y PRs. |
 
-**Regla:** deploy público y CI con PostgreSQL **no** están completados; no asumirlos como hechos. US-009 (export Excel) **sí** está implementada en el repo.
+**Regla:** deploy público **no** está completado; no asumirlo como hecho. CI incluye PostgreSQL service + `migrate deploy` (VS-02); tests integración API en runner → #15. US-009 (export Excel) **sí** está implementada en el repo.
 
 ---
 
@@ -170,8 +170,8 @@ Spec (docs/) → revisión humana → issue (opcional) → PR
 | **PR-driven** | Un vertical slice por PR cuando sea posible; usar PR template |
 | **Validación local** | `pnpm --filter api build\|test`, `pnpm --filter web build`, `pnpm test:e2e`, demo [DEMO.md](docs/DEMO.md) |
 | **Validación humana** | Aprobar spec y comportamiento E2E antes de dar slice por cerrado |
-| **CI** | `pnpm install` → `prisma generate` → build API → test API → build web |
-| **CI límites** | Sin PostgreSQL en runner; sin lint gate en CI; Playwright no en CI; sin e2e browser en GitHub Actions |
+| **CI** | `pnpm install` → `prisma generate` → `prisma migrate deploy` → build API → test API → build web (PostgreSQL service container en runner) |
+| **CI límites** | Sin tests de integración API con DB en CI; sin lint gate en CI; Playwright no en CI; sin e2e browser en GitHub Actions |
 
 Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md).
 
@@ -226,7 +226,7 @@ Candidatos de trazabilidad en [prompts.md](prompts.md) §6: deploy, CI PostgreSQ
 | Límite | Impacto |
 |--------|---------|
 | Sin deploy público | Demo solo local |
-| CI sin DB | No valida import Prisma ni e2e de negocio en GitHub |
+| CI sin tests integración API | `migrate deploy` validado en runner; import/e2e API de negocio aún solo local (#15) |
 | CI sin Playwright | E2E browser solo local (`pnpm test:e2e`) |
 | `pnpm lint` global | Errores preexistentes en web (Settings/SprintAnalysis/UserStories) y API (refinement, user-stories.service, prisma.service); no bloquean build/test |
 | Sin tests frontend unitarios | Solo compilación Vite/TS + Playwright smoke |

@@ -1,6 +1,6 @@
 # DeliveryOps AI — MVP CI
-# Validates install, API build + unit tests, and web build on push/PR.
-# No deploy, Docker, DB, lint gates, or E2E browser tests.
+# Validates install, Prisma migrations against PostgreSQL, API build + unit tests, and web build on push/PR.
+# No deploy, lint gates, or E2E browser tests.
 
 name: CI
 
@@ -18,6 +18,24 @@ jobs:
     name: Build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: deliveryops
+          POSTGRES_PASSWORD: deliveryops
+          POSTGRES_DB: deliveryops_ai
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U deliveryops -d deliveryops_ai"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://deliveryops:deliveryops@localhost:5432/deliveryops_ai?schema=public
 
     steps:
       - name: Checkout
@@ -41,6 +59,9 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm --filter api prisma generate
+
+      - name: Apply Prisma migrations
+        run: pnpm --filter api prisma migrate deploy
 
       - name: Build API
         run: pnpm --filter api build

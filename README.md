@@ -302,7 +302,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 # GitHub Workflow
 
 - **PR-driven development** — prefer one vertical slice per PR; [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
-- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): `pnpm install` → Prisma generate → API build/test → web build (no PostgreSQL service on runner, no deploy)
+- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): `pnpm install` → Prisma generate → `migrate deploy` (PostgreSQL service on runner) → API build/test → web build (no deploy)
 - **Milestones (created):** Delivery 1 — Technical Documentation · Delivery 2 — Functional MVP · Final Delivery — Deployed MVP (aligned with [docs/08-delivery-plan.md](docs/08-delivery-plan.md))
 - **Labels (created):** `area:*`, `epic:*`, `type:*`, `status:*`, plus `testing`, `devops`, `documentation`
 - **Issues (created):** GH-01–GH-14 → GitHub Issues **#3–#16**; bootstrap strategy and US/TB mapping in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md)
@@ -401,7 +401,7 @@ AI4Devs-finalproject/
 ## Planned (Final Delivery)
 
 - public deployment (Vercel + Railway + Railway PostgreSQL) — issue #14; configuration prep done in VS-01, deploy pending
-- CI with PostgreSQL service on runner — issue #15
+- CI API integration tests on runner — issue #15 (PostgreSQL service + `migrate deploy` done in VS-02)
 - extended E2E and UI test coverage (Playwright in GitHub Actions)
 
 ---

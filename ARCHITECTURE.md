@@ -392,7 +392,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 - Re-importación genera duplicados.
 - Sin paginación, filtros ni edición/borrado de stories.
 - Sin colas ni procesamiento async de imports grandes.
-- Tests E2E del import no en CI.
+- CI ejecuta `prisma migrate deploy` contra PostgreSQL service container; tests E2E del import no en CI.
 - Despliegue público no ejecutado; configuración de producción (CORS, cookies, `VITE_API_URL`) documentada en VS-01.
 
 ### Evolución prevista (documentada, no en código)
