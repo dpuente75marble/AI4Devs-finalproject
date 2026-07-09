@@ -46,7 +46,7 @@ Scripts raíz (`package.json`):
 - **Entry:** `apps/api/src/main.ts`
   - Prefijo global: `api`
   - `cookie-parser` para lectura de sesión HttpOnly
-  - CORS: orígenes Vite locales `5173`–`5178`, `credentials: true`
+  - CORS: `CORS_ORIGINS` (lista separada por comas); si no se define, orígenes Vite locales `5173`–`5178`; `credentials: true`
   - Swagger: `/api/docs` (`DocumentBuilder` + `SwaggerModule`)
   - Puerto: `process.env.PORT ?? 3000`
 
@@ -121,10 +121,12 @@ GET /api/auth/me (JwtAuthGuard)
   → AuthService carga usuario por sub desde PostgreSQL
 
 POST /api/auth/logout (público)
-  → AuthController limpia cookie
+  → AuthController limpia cookie (mismos atributos que login)
 
 Controllers de negocio (@UseGuards(JwtAuthGuard) explícito, sin APP_GUARD global)
 ```
+
+Atributos de cookie configurables vía env: `AUTH_COOKIE_NAME`, `AUTH_COOKIE_SECURE`, `AUTH_COOKIE_SAME_SITE` (TTL alineado con `JWT_EXPIRES_IN`). Local: `secure=false`, `sameSite=lax`. Producción cross-site (Vercel + Railway, preparado, sin despliegue): `secure=true`, `sameSite=none` — ver `apps/api/.env.example`.
 
 **Frontend:** `AuthProvider` hidrata sesión solo vía `GET /api/auth/me`; `ProtectedRoute` redirige a `/login`; clientes `fetch` con `credentials: 'include'`. Sin `localStorage`, `sessionStorage` ni lectura de `document.cookie`.
 
@@ -373,7 +375,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 | Sin dedup `externalId` | Aceptado | Slice futuro |
 | fetch nativo en web | Sin TanStack Query | Menos dependencias en slice 1 |
 | Estado local React | Suficiente para una página | Sin Zustand aún |
-| CORS lista fija | Solo dev Vite | Producción fuera de scope |
+| CORS vía `CORS_ORIGINS` | Env con fallback local `5173`–`5178` | Producción: origen Vercel explícito; despliegue pendiente |
 | `packages/shared` vacío | Tipos duplicados FE/BE | Evitar premature abstraction |
 | Prisma sin enums DB para `status` | String + validación app | Flexibilidad CSV |
 
@@ -391,7 +393,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 - Sin paginación, filtros ni edición/borrado de stories.
 - Sin colas ni procesamiento async de imports grandes.
 - Tests E2E del import no en CI.
-- CORS y `VITE_API_URL` orientados a desarrollo local.
+- Despliegue público no ejecutado; configuración de producción (CORS, cookies, `VITE_API_URL`) documentada en VS-01.
 
 ### Evolución prevista (documentada, no en código)
 
@@ -401,7 +403,7 @@ Orden típico sugerido en specs y backlog:
 2. Entidad `Project` y FKs en `UserStory`
 3. Tipos en `packages/shared`
 4. Proveedor IA real (sustituir mock en `refinement`)
-5. CI/CD con PostgreSQL en runner, despliegue (Vercel/Render), Neon PostgreSQL
+5. CI/CD con PostgreSQL en runner, despliegue público (Vercel + Railway + Railway PostgreSQL)
 
 Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README sección *Planned* para el roadmap completo del máster.
 

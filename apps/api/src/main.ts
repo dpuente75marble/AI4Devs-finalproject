@@ -3,20 +3,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { DEFAULT_AUTH_COOKIE_NAME } from './auth/auth.constants';
+import { resolveCorsOrigins } from './config/cors-origins.utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:5176',
-      'http://localhost:5177',
-      'http://localhost:5178',
-    ],
+    origin: resolveCorsOrigins(process.env.CORS_ORIGINS),
     credentials: true,
   });
 

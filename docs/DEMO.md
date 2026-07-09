@@ -2,6 +2,8 @@
 
 Guías breves para demostrar los vertical slices E2E en local.
 
+> **Alcance:** esta guía describe la demo en desarrollo local. La preparación de configuración para producción (VS-01: `CORS_ORIGINS`, cookies, `VITE_API_URL`) está documentada en `apps/*/.env.example` y [public-deployment-spec.md](public-deployment-spec.md); el despliegue público **aún no se ha ejecutado**.
+
 | Slice | Spec |
 |-------|------|
 | Authentication (US-001) | [auth-mvp.md](auth-mvp.md) |
@@ -268,7 +270,7 @@ Not shown in this demo (planned for later deliveries):
 - Real LLM provider (OpenAI / Azure) — mock only today
 - Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import
-- Production deployment
+- Public production deployment (configuration prepared in VS-01; no public URLs yet)
 - CI with PostgreSQL runner or Playwright in GitHub Actions
 
 Smoke E2E (Playwright): `pnpm test:e2e` from repo root (9 tests, incl. auth).

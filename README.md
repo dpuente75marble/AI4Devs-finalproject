@@ -168,7 +168,7 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 
 **Planned for upcoming iterations:**
 
-- Public deployment (Vercel, Render, Neon PostgreSQL)
+- Public deployment (Vercel + Railway + Railway PostgreSQL) — production configuration prepared in VS-01; deploy not executed yet
 
 ---
 
@@ -390,7 +390,8 @@ AI4Devs-finalproject/
 - **US-005:** Sprint analysis — demand vs adjusted capacity (`/sprint-analysis`)
 - **US-006–008:** Refinement MVP — PDF upload, mock provider, editable output (`/refinement`)
 - **US-009:** Sprint analysis Excel export — `GET /api/sprint-analysis/export`, **Export Excel** button on `/sprint-analysis`
-- frontend/backend integration (`VITE_API_URL`, local CORS for Vite dev ports)
+- frontend/backend integration (`VITE_API_URL`, CORS via `CORS_ORIGINS` with local Vite defaults `5173`–`5178`)
+- production readiness configuration (VS-01): env-based CORS and cookie settings documented in `apps/api/.env.example` and `apps/web/.env.example` — **not deployed yet**
 - Docker local database (`postgres:16-alpine` on port `5433`)
 - GitHub Actions CI (build + API tests + web build on push/PR)
 - product, architecture, and AI-assisted traceability documentation (`docs/`, `prompts.md`)
@@ -399,7 +400,7 @@ AI4Devs-finalproject/
 
 ## Planned (Final Delivery)
 
-- public deployment (Vercel / Render / Neon) — issue #14
+- public deployment (Vercel + Railway + Railway PostgreSQL) — issue #14; configuration prep done in VS-01, deploy pending
 - CI with PostgreSQL service on runner — issue #15
 - extended E2E and UI test coverage (Playwright in GitHub Actions)
 
@@ -449,7 +450,9 @@ POST /api/refinement/analyze  →  mock provider
 Editable refined story, acceptance criteria, gaps (UI only — not persisted)
 ~~~
 
-**Still out of scope:** production deployment, real LLM provider, persistence of refinement results.
+**Still out of scope:** public production deployment (URLs not live yet), real LLM provider, persistence of refinement results.
+
+**Production readiness (VS-01, preparación sin despliegue):** CORS configurable (`CORS_ORIGINS`), cookies vía `AUTH_COOKIE_SECURE` / `AUTH_COOKIE_SAME_SITE`. Valores recomendados para Vercel + Railway documentados en `apps/api/.env.example` y `apps/web/.env.example`. Ver [docs/public-deployment-spec.md](docs/public-deployment-spec.md).
 
 **Auth (US-001):** sesión vía cookie HttpOnly; el frontend no almacena JWT. Usuario demo local:
 
@@ -501,7 +504,10 @@ JWT_EXPIRES_IN=30m
 AUTH_COOKIE_NAME=deliveryops_access_token
 AUTH_COOKIE_SECURE=false
 AUTH_COOKIE_SAME_SITE=lax
+# CORS_ORIGINS optional locally — omit to allow Vite ports 5173–5178 (see apps/api/.env.example)
 ```
+
+For recommended production values (Vercel + Railway), see commented blocks in `apps/api/.env.example`.
 
 Apply Prisma migrations if needed:
 
@@ -526,6 +532,8 @@ cp apps/web/.env.example apps/web/.env
 ```env
 VITE_API_URL=http://localhost:3000
 ```
+
+Production build-time value documented (commented) in `apps/web/.env.example`. Changing it requires a new Vercel deployment.
 
 > Restart the Vite dev server after changing `VITE_*` variables.
 
