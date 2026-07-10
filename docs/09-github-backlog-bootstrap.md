@@ -2,7 +2,7 @@
 
 **Proyecto:** DeliveryOps AI · AI4Devs / LIDR Final Master Project  
 **Estado del documento:** Estrategia ejecutada — **issues GitHub #3–#16 creados** (GH-01–GH-14)  
-**Última alineación:** Junio 2026 (post PR #23, #24)  
+**Última alineación:** Julio 2026 (Final Delivery)
 **Referencias:** [05-user-stories.md](05-user-stories.md) · [06-technical-backlog.md](06-technical-backlog.md) · [08-delivery-plan.md](08-delivery-plan.md) · [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md)
 
 ---
@@ -62,7 +62,7 @@ Ningún issue de Delivery 2 o Final Delivery con cambio de código debe iniciars
 
 - Un vertical slice por PR cuando sea posible.
 - Plantilla PR: Summary + Test plan + referencia a spec / prompt ID.
-- CI actual (`.github/workflows/ci.yml`): `pnpm install` → Prisma generate → build API → test API → build web. **Sin PostgreSQL en runner** ni E2E browser hoy.
+- CI actual (`.github/workflows/ci.yml`): `pnpm install` → Prisma generate → `migrate deploy` (PostgreSQL service + readiness check) → build API → test API → build web. **PostgreSQL service + readiness + migrate deploy: Implementado.** Tests de integración API con DB en CI: **Pendiente (#15).** Playwright en GitHub Actions: **Pendiente.**
 
 ### Sin automatización autónoma completa
 
@@ -145,20 +145,20 @@ Conjunto **mínimo pero completo** para filtrar, priorizar y trazar sin ruido.
 
 | ID | Título | Milestone | Objetivo corto | Estado esperado |
 |----|--------|-----------|----------------|-----------------|
-| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (slices US-001–US-008) | **#3** — Cerrar en D1 |
-| GH-02 | Paquete evidencia: DEMO, prompts P-001–P-022, ADRs | Delivery 1 | Evidencia académica workflow AI-first verificable | **#4** — Cerrar en D1 |
-| GH-03 | Matriz trazabilidad US/TB ↔ issues GitHub | Delivery 1 | Tabla US-xxx / TB-xxx / Issue / Milestone / Estado | **#5** — Cerrar en D1 |
+| GH-01 | Coherencia documental docs 01–08, PROJECT_CONTEXT, README, ARCHITECTURE | Delivery 1 | Alinear docs con estado real del repo (slices US-001–US-008) | **#3** — Cerrado |
+| GH-02 | Paquete evidencia: DEMO, prompts P-001–P-022, ADRs | Delivery 1 | Evidencia académica workflow AI-first verificable | **#4** — Cerrado |
+| GH-03 | Matriz trazabilidad US/TB ↔ issues GitHub | Delivery 1 | Tabla US-xxx / TB-xxx / Issue / Milestone / Estado | **#5** — Cerrado |
 | GH-04 | Cerrar slice US-002 (spec, DoD, límites MVP) | Delivery 1 | Verificación documental del slice CSV import | **#6** — Implementado |
-| GH-05 | Checklist entrega Delivery 1 (PR, rama, tutor) | Delivery 1 | Cierre formal entrega: PR doc-only, builds documentados | **#7** — Abierto |
+| GH-05 | Checklist entrega Delivery 1 (PR, rama, tutor) | Delivery 1 | Cierre formal entrega: PR doc-only, builds documentados | **#7** — Cerrado |
 | GH-06 | US-001: Login JWT y rutas protegidas | Delivery 2 | Autenticación mínima spec-first | **#8** — **Implementado** |
 | GH-07 | US-003: Configurar capacidad de sprint | Delivery 2 | Capacidad persistida + UI Settings | **#9** — **Implementado** |
 | GH-08 | US-004: Registrar ausencias | Delivery 2 | Ausencias ajustan capacidad disponible | **#10** — **Implementado** |
 | GH-09 | US-005: Análisis capacidad vs demanda | Delivery 2 | Motor overload + vista análisis | **#11** — **Implementado** |
 | GH-10 | US-006–008: Refinamiento IA MVP | Delivery 2 | PDF, mock provider, AC y gaps | **#12** — **Implementado** |
-| GH-11 | US-009: Export Excel análisis sprint | Delivery 2 | Reporting descargable | **#13** — Planificado |
-| GH-12 | Deploy MVP público (web + API + PG) | Final Delivery | Vercel / Render / Neon (según plan) | **#14** — Planificado |
-| GH-13 | CI: PostgreSQL + tests e2e API import | Final Delivery | Validar Prisma/import en GitHub Actions | **#15** — Planificado |
-| GH-14 | Playwright E2E + evidencia final prompts/PRs | Final Delivery | Flujo automatizado + paquete entrega final | **#16** — Planificado |
+| GH-11 | US-009: Export Excel análisis sprint | Delivery 2 | Reporting descargable | **#13** — **Implementado** |
+| GH-12 | Deploy MVP público (web + API + PG) | Final Delivery | Vercel / Render / Neon (según plan) | **#14** — **Implementado y validado en producción** (cierre administrativo del issue pendiente de revisión) |
+| GH-13 | CI: PostgreSQL + tests e2e API import | Final Delivery | Validar Prisma/import en GitHub Actions | **#15** — **Parcial** (PostgreSQL CI implementado; tests integración API con DB pendientes) |
+| GH-14 | Playwright E2E + evidencia final prompts/PRs | Final Delivery | Flujo automatizado + paquete entrega final | **#16** — **Cerrado** |
 
 **Fuera del backlog inicial (Should-Have / opcional):** US-010, US-011; deduplicación CSV por `externalId`; lint gate (TB-006); `packages/shared`.
 
@@ -186,7 +186,7 @@ docs/01–08 (visión, diseño, plan)
 
 | Artefacto | Rol respecto al backlog GitHub |
 |-----------|--------------------------------|
-| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). US-001–US-008 **implementadas**; US-009 planificada. |
+| [05-user-stories.md](05-user-stories.md) | **Qué** debe lograr el usuario (BDD, Must/Should-Have). US-001–US-009 **implementadas**. |
 | [06-technical-backlog.md](06-technical-backlog.md) | **Cómo** descomponer técnicamente (TB-xxx). GH-03 enlaza TB con issues. TB foundation y slices sprint/refinement reflejan trabajo **hecho** en repo. |
 | [08-delivery-plan.md](08-delivery-plan.md) | **Cuándo** — milestones y alcance por entrega. |
 | [user-stories-import-mvp.md](user-stories-import-mvp.md) | Spec US-002; referencia GH-04, DEMO. |
@@ -221,22 +221,18 @@ El backlog GitHub describe el **roadmap del MVP máster**, incluyendo trabajo fu
 | **US-004:** Sprint absences (Settings + API) | ✅ |
 | **US-005:** Sprint analysis (`/sprint-analysis`) | ✅ |
 | **US-006–008:** Refinement MVP (`/refinement`, mock provider) | ✅ |
+| **US-009:** Excel export (`/sprint-analysis`) | ✅ |
 | Tests API unitarios (parser, validator, sprint utils, refinement mock, auth) | ✅ |
 | Playwright E2E local (`e2e/`, 9 tests incl. auth) | ✅ |
-| CI GitHub Actions: build + test API + build web (PR/push) | ✅ |
+| CI GitHub Actions: PostgreSQL service + readiness + `migrate deploy` + build + test API + build web (PR/push) | ✅ |
+| Deploy público: Vercel (frontend) + Railway (API) + Railway PostgreSQL | ✅ |
 | Documentación 01–08, ADRs, AGENTS, ARCHITECTURE, prompts P-001–P-024 | ✅ |
 | DEMO + fixtures (`sample-user-stories.csv`, `requirements.pdf`) | ✅ |
 
-### Planificado — Delivery 2 (issue GH-11)
+### Planificado — Final Delivery (issues GH-13–14)
 
-- Export Excel (US-009 / GH-11 / #13)
-
-### Planificado — Final Delivery (issues GH-12–14)
-
-- Deploy público (web + API + PostgreSQL gestionado)
-- CI con servicio PostgreSQL y tests e2e de import
+- Tests integración API con DB en CI (#15)
 - Playwright E2E en GitHub Actions (hoy solo local)
-- Paquete evidencia final ampliado (`prompts.md`, historial PRs)
 
 ### Delivery 1 (issues GH-01–05)
 
@@ -304,31 +300,31 @@ Los comandos para crear labels, milestones e issues se mantendrán en un anexo o
 | US-005 (implementada) | TB-014, TB-026, TB-035 | GH-09 / #11 |
 | US-006–008 (implementada) | TB-015–019, TB-027–028, TB-030–031 | GH-10 / #12 |
 | US-001 (implementada) | TB-008, TB-009, TB-022 | GH-06 / #8 |
-| US-009 | TB-020, TB-029 | GH-11 / #13 |
+| US-009 (implementada) | TB-020, TB-029 | GH-11 / #13 |
 | — (deploy/CI/E2E) | TB-038–043, TB-045–046 | GH-12–14 / #14–16 |
 
 ---
 
 ## 10. Matriz de trazabilidad (GH-03 / issue #5)
 
-Matriz autoritativa alineada con el estado del repositorio tras PR #23 y PR #24.
+Matriz autoritativa alineada con el estado del repositorio en julio de 2026 (Final Delivery).
 
 | User Story | Technical Backlog | GitHub Issue | Milestone | Status |
 |------------|-------------------|--------------|-----------|--------|
-| — (coherencia docs) | TB-001–007, TB-007A | GH-01 / **#3** | Delivery 1 — Technical Documentation | En cierre (doc-only) |
-| — (evidencia AI-first) | TB-045 (parcial) | GH-02 / **#4** | Delivery 1 — Technical Documentation | En cierre (doc-only) |
-| — (matriz trazabilidad) | — | GH-03 / **#5** | Delivery 1 — Technical Documentation | En cierre (este documento) |
+| — (coherencia docs) | TB-001–007, TB-007A | GH-01 / **#3** | Delivery 1 — Technical Documentation | Cerrado |
+| — (evidencia AI-first) | TB-045 (parcial) | GH-02 / **#4** | Delivery 1 — Technical Documentation | Cerrado |
+| — (matriz trazabilidad) | — | GH-03 / **#5** | Delivery 1 — Technical Documentation | Cerrado |
 | US-002 | TB-013, TB-024, TB-036 | GH-04 / **#6** | Delivery 1 — Technical Documentation | **Implementado** |
-| — (checklist entrega D1) | — | GH-05 / **#7** | Delivery 1 — Technical Documentation | Abierto |
+| — (checklist entrega D1) | — | GH-05 / **#7** | Delivery 1 — Technical Documentation | Cerrado |
 | US-001 | TB-008, TB-009, TB-022 | GH-06 / **#8** | Delivery 2 — Functional MVP | **Implementado** |
 | US-003 | TB-010, TB-011, TB-025 | GH-07 / **#9** | Delivery 2 — Functional MVP | **Implementado** |
 | US-004 | TB-012 | GH-08 / **#10** | Delivery 2 — Functional MVP | **Implementado** |
 | US-005 | TB-014, TB-026, TB-035 | GH-09 / **#11** | Delivery 2 — Functional MVP | **Implementado** |
 | US-006–008 | TB-015–019, TB-027–028, TB-030–031 | GH-10 / **#12** | Delivery 2 — Functional MVP | **Implementado** |
-| US-009 | TB-020, TB-029 | GH-11 / **#13** | Delivery 2 — Functional MVP | Planificado |
-| — (deploy) | TB-038–040 | GH-12 / **#14** | Final Delivery — Deployed MVP | Planificado |
-| — (CI + e2e API) | TB-041–042 | GH-13 / **#15** | Final Delivery — Deployed MVP | Planificado |
-| — (Playwright + evidencia) | TB-043, TB-046 | GH-14 / **#16** | Final Delivery — Deployed MVP | Planificado |
+| US-009 | TB-020, TB-029 | GH-11 / **#13** | Delivery 2 — Functional MVP | **Implementado** |
+| — (deploy) | TB-038–040 | GH-12 / **#14** | Final Delivery — Deployed MVP | **Implementado y validado en producción** (cierre administrativo del issue pendiente de revisión) |
+| — (CI + e2e API) | TB-041–042 | GH-13 / **#15** | Final Delivery — Deployed MVP | **Parcial** (PostgreSQL CI implementado; tests integración API con DB pendientes) |
+| — (Playwright + evidencia) | TB-043, TB-046 | GH-14 / **#16** | Final Delivery — Deployed MVP | **Cerrado** |
 
 **Convención:** `GH-0N` = backlog interno; `#N` = número de issue en GitHub (`GH-01` → `#3`, …, `GH-14` → `#16`).
 

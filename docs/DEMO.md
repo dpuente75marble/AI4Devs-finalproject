@@ -1,6 +1,8 @@
 # DeliveryOps AI — Demo Guide
 
-Guías breves para demostrar los vertical slices E2E en local.
+Guías breves para demostrar los vertical slices E2E en local y en producción.
+
+> **Alcance:** esta guía describe la demo en desarrollo local y su equivalente en producción. La configuración de producción (`CORS_ORIGINS`, cookies, `VITE_API_URL`) está documentada en `apps/*/.env.example` y [public-deployment-spec.md](public-deployment-spec.md).
 
 | Slice | Spec |
 |-------|------|
@@ -125,6 +127,19 @@ pnpm --filter api auth:create-demo-user
 | Refinement | `/refinement` |
 | API health | http://localhost:3000/api/health |
 | Swagger | http://localhost:3000/api/docs |
+
+---
+
+## Production Demo
+
+El mismo flujo funcional de esta guía puede ejecutarse en producción usando:
+
+- Frontend: `https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app`
+- API base: `https://api-production-e119.up.railway.app`
+- Health: `https://api-production-e119.up.railway.app/api/health`
+- Swagger: `https://api-production-e119.up.railway.app/api/docs`
+
+La validación funcional completa en producción ya fue realizada para login, sesión con cookie HttpOnly, User Stories, Sprint Capacity, Sprint Absences, Sprint Analysis y Export Excel.
 
 ---
 
@@ -268,7 +283,6 @@ Not shown in this demo (planned for later deliveries):
 - Real LLM provider (OpenAI / Azure) — mock only today
 - Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import
-- Production deployment
 - CI with PostgreSQL runner or Playwright in GitHub Actions
 
 Smoke E2E (Playwright): `pnpm test:e2e` from repo root (9 tests, incl. auth).

@@ -4,7 +4,7 @@
 
 > Describe **qué existe hoy** en el repo. Setup → [README.md](README.md). Reglas agente → [AGENTS.md](AGENTS.md). Arquitectura → [ARCHITECTURE.md](ARCHITECTURE.md).
 
-**Última alineación:** 26 jun 2026 · MVP LIDR · Delivery 2 funcionalmente completo · slices US-001–US-009 implementados
+**Última alineación:** 10 jul 2026 · MVP LIDR · Final Delivery en curso · deploy público validado · slices US-001–US-009 implementados
 
 ### Referencia rápida (local)
 
@@ -18,6 +18,15 @@
 | Demo E2E | [docs/DEMO.md](docs/DEMO.md) |
 | Usuario demo | `pm@deliveryops.local` / `DeliveryOps123!` · `pnpm --filter api auth:create-demo-user` |
 | Validación | `pnpm --filter api build && pnpm --filter api test` · `pnpm --filter web build` · `pnpm test:e2e` |
+
+### Referencia rápida (producción)
+
+| Recurso | Ubicación |
+|---------|-----------|
+| Frontend | `https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app` |
+| API | `https://api-production-e119.up.railway.app` |
+| Health | `https://api-production-e119.up.railway.app/api/health` |
+| Swagger | `https://api-production-e119.up.railway.app/api/docs` |
 
 ---
 
@@ -56,7 +65,7 @@
 - Export PDF / reporting avanzado (fuera de US-009 Excel)
 - `Project`, `Sprint`, `TeamMember` como entidades relacionales completas
 - `packages/shared` con tipos/contratos
-- Deploy cloud (#14), CI con PostgreSQL en runner (#15)
+- CI con PostgreSQL en runner (#15)
 - Tests frontend unitarios (Vitest / RTL)
 - shadcn/ui, TanStack Query, Zustand, React Hook Form, Zod
 - Proveedor IA real (OpenAI / Azure) — hoy solo mock en refinement
@@ -106,9 +115,9 @@ Fuente de fechas y alcance objetivo: [docs/08-delivery-plan.md](docs/08-delivery
 |---------|----------------|-------------------------|
 | **Delivery 1** — Documentación técnica | 27 may 2026 | **Cerrada:** docs 01–08, ADRs, AGENTS, ARCHITECTURE, workflow IA, backlog, DEMO + checklist, prompts P-001–P-022, matriz trazabilidad (#5). |
 | **Delivery 2** — MVP funcional | 24 jun 2026 | **Funcionalmente completa:** foundation + US-001–US-009 implementados y validados en local; CI básica OK; deploy básico y lint gate global → Final Delivery. |
-| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **Pendiente:** deploy público (#14), PostgreSQL CI (#15), Playwright en CI, evidencia completa de workflow IA y PRs. |
+| **Final Delivery** — MVP desplegado + evidencia | 14 jul 2026 | **En curso:** deploy público validado en producción; tests integración API en CI (#15), Playwright en CI y cierre de evidencia aún en progreso. |
 
-**Regla:** deploy público y CI con PostgreSQL **no** están completados; no asumirlos como hechos. US-009 (export Excel) **sí** está implementada en el repo.
+**Regla:** deploy público **sí** está completado y validado en producción (Vercel + Railway + Railway PostgreSQL). CI incluye PostgreSQL service + `migrate deploy` (VS-02); tests integración API en runner → #15. US-009 (export Excel) **sí** está implementada en el repo.
 
 ---
 
@@ -170,8 +179,8 @@ Spec (docs/) → revisión humana → issue (opcional) → PR
 | **PR-driven** | Un vertical slice por PR cuando sea posible; usar PR template |
 | **Validación local** | `pnpm --filter api build\|test`, `pnpm --filter web build`, `pnpm test:e2e`, demo [DEMO.md](docs/DEMO.md) |
 | **Validación humana** | Aprobar spec y comportamiento E2E antes de dar slice por cerrado |
-| **CI** | `pnpm install` → `prisma generate` → build API → test API → build web |
-| **CI límites** | Sin PostgreSQL en runner; sin lint gate en CI; Playwright no en CI; sin e2e browser en GitHub Actions |
+| **CI** | `pnpm install` → `prisma generate` → `prisma migrate deploy` → build API → test API → build web (PostgreSQL service container en runner) |
+| **CI límites** | Sin tests de integración API con DB en CI; sin lint gate en CI; Playwright no en CI; sin e2e browser en GitHub Actions |
 
 Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md).
 
@@ -179,11 +188,12 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 
 ## 8. Estado del repositorio
 
-| Aspecto | Estado (26 jun 2026) |
+| Aspecto | Estado (10 jul 2026) |
 |---------|----------------------|
 | **Rama principal** | `main` (slices US-001–US-009 mergeados; fix ConfigModule global en `d1222d4`) |
 | **CI** | `.github/workflows/ci.yml`: `push` en `main`/`master`; `pull_request` en cualquier rama |
 | **Issues Delivery 2** | #8–#13 cerradas (US-001, US-003–US-009) |
+| **Deploy público** | Frontend Vercel + API Railway + PostgreSQL Railway, validado funcionalmente en producción |
 
 ### Mapa de documentación (no duplicar contenido)
 
@@ -213,9 +223,8 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 
 Alineados con **Final Delivery**, [docs/06-technical-backlog.md](docs/06-technical-backlog.md) y módulos 10+ del máster (testing, CI/CD, deploy, E2E):
 
-1. **Deploy MVP público** — issue #14 (web + API + PostgreSQL gestionado).
-2. **CI con PostgreSQL** — issue #15 (tests de integración / import API en runner).
-3. **Final Delivery prep** — Playwright en GitHub Actions, lint gate opcional, historial PRs y evidencia IA ampliada.
+1. **CI con PostgreSQL** — issue #15 (tests de integración / import API en runner).
+2. **Final Delivery prep** — Playwright en GitHub Actions, lint gate opcional, historial PRs y evidencia IA ampliada.
 
 Candidatos de trazabilidad en [prompts.md](prompts.md) §6: deploy, CI PostgreSQL, E2E en CI.
 
@@ -225,8 +234,7 @@ Candidatos de trazabilidad en [prompts.md](prompts.md) §6: deploy, CI PostgreSQ
 
 | Límite | Impacto |
 |--------|---------|
-| Sin deploy público | Demo solo local |
-| CI sin DB | No valida import Prisma ni e2e de negocio en GitHub |
+| CI sin tests integración API | `migrate deploy` validado en runner; import/e2e API de negocio aún solo local (#15) |
 | CI sin Playwright | E2E browser solo local (`pnpm test:e2e`) |
 | `pnpm lint` global | Errores preexistentes en web (Settings/SprintAnalysis/UserStories) y API (refinement, user-stories.service, prisma.service); no bloquean build/test |
 | Sin tests frontend unitarios | Solo compilación Vite/TS + Playwright smoke |
@@ -244,7 +252,7 @@ Candidatos de trazabilidad en [prompts.md](prompts.md) §6: deploy, CI PostgreSQ
 - Clean/hexagonal architecture completa sin necesidad del slice
 - TanStack Query, Zustand, shadcn, Zod sin spec que lo exija
 - Inventar endpoints, campos Prisma o pantallas no especificadas
-- Deploy o pipelines complejos antes de cerrar evidencia de Final Delivery
+- Cerrar Final Delivery sin evidencia mínima de CI/E2E pendiente
 - Modificar `prompts.md` o **commits** sin petición explícita del usuario
 - Migrar todo [docs/04-data-model.md](docs/04-data-model.md) de una vez
 
