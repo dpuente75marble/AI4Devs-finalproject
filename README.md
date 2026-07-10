@@ -13,7 +13,7 @@ AI-assisted SaaS platform for sprint planning, capacity analysis, requirement re
 | Field | Value |
 |-------|-------|
 | **Program** | AI4Devs / LIDR — Final Master Project 2026 |
-| **Delivery** | Delivery 2 — Functional MVP (target: 24 Jun 2026) · Delivery 1 closed |
+| **Delivery** | Final Delivery — Deployed MVP (target: 14 Jul 2026, in progress) · Delivery 2 closed · Delivery 1 closed |
 | **Author** | David de la Puente |
 | **Repository** | [github.com/dpuente75marble/AI4Devs-finalproject](https://github.com/dpuente75marble/AI4Devs-finalproject) |
 | **Approach** | AI-first SDLC · spec-first · vertical slices · human-in-the-loop |
@@ -28,10 +28,10 @@ Operational handoff and **real repository state:** [PROJECT_CONTEXT.md](PROJECT_
 |----------|--------|
 | **Delivery 1** | Closed — product/architecture package, ADRs, governance, CI, DEMO evidence |
 | **Delivery 2** | **Functionally complete** — vertical slices **US-001–US-009** (auth, CSV import, sprint planning, refinement MVP, Excel export) — [docs/DEMO.md](docs/DEMO.md) |
-| **Final Delivery** | Planned — public deployment (#14), PostgreSQL CI (#15), extended E2E in GitHub Actions |
+| **Final Delivery** | **In progress** — public deployment validated in production; GitHub Actions includes PostgreSQL service with readiness check; Playwright E2E in CI not yet in workflow |
 
 | **Documented** | Product and architecture package (`docs/01`–`08`), ADRs, [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [prompts.md](prompts.md) (P-001–P-025), [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md) |
-| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI**, vertical slices **US-001–US-009** — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
+| **Implemented** | Monorepo foundation, local PostgreSQL (Docker), **GitHub Actions CI** (PostgreSQL service with readiness check), public deployment (Vercel frontend, Railway API, Railway PostgreSQL), vertical slices **US-001–US-009** validated in production — [docs/DEMO.md](docs/DEMO.md); GitHub backlog bootstrapped (issues #3–#16, milestones, labels) |
 
 > Delivery 1 originally scoped documentation only; the repository already includes working local E2E slices and CI as evidence of the AI-first workflow.
 
@@ -164,11 +164,15 @@ The project intentionally prioritizes a realistic and maintainable MVP over exce
 **Implemented in current MVP:**
 
 - Docker (local PostgreSQL via `docker-compose.yml`)
-- GitHub Actions CI (`.github/workflows/ci.yml` — build and test on push/PR)
+- GitHub Actions CI (`.github/workflows/ci.yml` — build and test on push/PR; PostgreSQL service with readiness check)
+- Public deployment: Vercel (frontend), Railway (API), Railway PostgreSQL (database)
 
-**Planned for upcoming iterations:**
+## Public Deployment
 
-- Public deployment (Vercel + Railway + Railway PostgreSQL) — production configuration prepared in VS-01; deploy not executed yet
+- Frontend: https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app
+- Backend: https://api-production-e119.up.railway.app
+- Health: https://api-production-e119.up.railway.app/api/health
+- Swagger: https://api-production-e119.up.railway.app/api/docs
 
 ---
 
@@ -238,7 +242,7 @@ The project follows an AI-assisted engineering workflow using:
 
 **Governance and traceability:**
 
-- [prompts.md](prompts.md) — prompt registry (P-001–P-024: foundation, vertical slices, Delivery 1 evidence, US-001 auth)
+- [prompts.md](prompts.md) — prompt registry (P-001–P-025: foundation, vertical slices, Delivery 1 evidence, US-001 auth)
 - [AGENTS.md](AGENTS.md) — scope, prohibitions, and workflow rules for AI agents and developers
 - [docs/07-ai-development-workflow.md](docs/07-ai-development-workflow.md) — full AI-first SDLC methodology
 
@@ -250,7 +254,7 @@ AI is used throughout the full software lifecycle: product definition, architect
 
 # Implemented API
 
-Business endpoints available today (local development):
+Business endpoints available today (local development and production):
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -265,9 +269,15 @@ Business endpoints available today (local development):
 | `GET` | `/api/sprint-absences` | List sprint absence records |
 | `POST` | `/api/sprint-absences` | Create sprint absence record |
 | `GET` | `/api/sprint-analysis` | Demand vs adjusted capacity analysis |
+| `GET` | `/api/sprint-analysis/export` | Export sprint analysis as Excel |
 | `POST` | `/api/refinement/analyze` | PDF refinement analysis (mock provider) |
 
-Interactive contract: Swagger UI at `http://localhost:3000/api/docs` (with API running).
+Interactive contract:
+
+- **Local:** Swagger UI at `http://localhost:3000/api/docs` (with API running)
+- **Production frontend:** https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app
+- **Production API health:** https://api-production-e119.up.railway.app/api/health
+- **Production Swagger:** https://api-production-e119.up.railway.app/api/docs
 
 ---
 
@@ -302,7 +312,7 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 # GitHub Workflow
 
 - **PR-driven development** — prefer one vertical slice per PR; [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
-- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): `pnpm install` → Prisma generate → `migrate deploy` (PostgreSQL service on runner) → API build/test → web build (no deploy)
+- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml): `pnpm install` → Prisma generate → `migrate deploy` (PostgreSQL service on runner with readiness check) → API build/test → web build (no deploy; Playwright E2E not in workflow)
 - **Milestones (created):** Delivery 1 — Technical Documentation · Delivery 2 — Functional MVP · Final Delivery — Deployed MVP (aligned with [docs/08-delivery-plan.md](docs/08-delivery-plan.md))
 - **Labels (created):** `area:*`, `epic:*`, `type:*`, `status:*`, plus `testing`, `devops`, `documentation`
 - **Issues (created):** GH-01–GH-14 → GitHub Issues **#3–#16**; bootstrap strategy and US/TB mapping in [docs/09-github-backlog-bootstrap.md](docs/09-github-backlog-bootstrap.md)
@@ -345,6 +355,8 @@ Full MVP design in [docs/04-data-model.md](docs/04-data-model.md) — `User`, `P
 - [refinement-mvp.md](docs/refinement-mvp.md) — US-006–008 refinement MVP spec
 - [auth-mvp.md](docs/auth-mvp.md) — US-001 login JWT and protected routes spec
 - [export-sprint-analysis-mvp.md](docs/export-sprint-analysis-mvp.md) — US-009 Excel export spec
+- [final-delivery-mvp.md](docs/final-delivery-mvp.md) — Final Delivery scope and validation
+- [public-deployment-spec.md](docs/public-deployment-spec.md) — public deployment specification
 - [DEMO.md](docs/DEMO.md) — E2E demo guide and checklist
 
 ---
@@ -391,24 +403,23 @@ AI4Devs-finalproject/
 - **US-006–008:** Refinement MVP — PDF upload, mock provider, editable output (`/refinement`)
 - **US-009:** Sprint analysis Excel export — `GET /api/sprint-analysis/export`, **Export Excel** button on `/sprint-analysis`
 - frontend/backend integration (`VITE_API_URL`, CORS via `CORS_ORIGINS` with local Vite defaults `5173`–`5178`)
-- production readiness configuration (VS-01): env-based CORS and cookie settings documented in `apps/api/.env.example` and `apps/web/.env.example` — **not deployed yet**
+- production configuration (VS-01): CORS, cookies, and `VITE_API_URL` applied in Vercel and Railway; functional validation completed in production (login, protected routes, CSV import, sprint planning, Excel export)
+- public deployment: frontend on Vercel (https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app), API on Railway (https://api-production-e119.up.railway.app), PostgreSQL on Railway
 - Docker local database (`postgres:16-alpine` on port `5433`)
-- GitHub Actions CI (build + API tests + web build on push/PR)
+- GitHub Actions CI (build + API tests + web build on push/PR; PostgreSQL service with readiness check)
 - product, architecture, and AI-assisted traceability documentation (`docs/`, `prompts.md`)
 
 ---
 
 ## Planned (Final Delivery)
 
-- public deployment (Vercel + Railway + Railway PostgreSQL) — issue #14; configuration prep done in VS-01, deploy pending
-- CI API integration tests on runner — issue #15 (PostgreSQL service + `migrate deploy` done in VS-02)
 - extended E2E and UI test coverage (Playwright in GitHub Actions)
 
 ---
 
 # Implemented Vertical Slices
 
-Six operational slices plus authentication and Excel export are implemented end-to-end in local development (PRs #27–#28 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
+Six operational slices plus authentication and Excel export are implemented end-to-end in local development and validated in production (PRs #27–#28 and prior slice PRs). Full walkthrough: [docs/DEMO.md](docs/DEMO.md).
 
 | User Story | Slice | Spec | UI route |
 |------------|-------|------|----------|
@@ -450,11 +461,11 @@ POST /api/refinement/analyze  →  mock provider
 Editable refined story, acceptance criteria, gaps (UI only — not persisted)
 ~~~
 
-**Still out of scope:** public production deployment (URLs not live yet), real LLM provider, persistence of refinement results.
+**Still out of scope:** real LLM provider, persistence of refinement results.
 
-**Production readiness (VS-01, preparación sin despliegue):** CORS configurable (`CORS_ORIGINS`), cookies vía `AUTH_COOKIE_SECURE` / `AUTH_COOKIE_SAME_SITE`. Valores recomendados para Vercel + Railway documentados en `apps/api/.env.example` y `apps/web/.env.example`. Ver [docs/public-deployment-spec.md](docs/public-deployment-spec.md).
+**Production deployment:** Frontend https://ai-4-devs-finalproject-gl29whagg-david-dlp.vercel.app · API https://api-production-e119.up.railway.app · Health https://api-production-e119.up.railway.app/api/health · Swagger https://api-production-e119.up.railway.app/api/docs. CORS (`CORS_ORIGINS`) and cookies (`AUTH_COOKIE_SECURE`, `AUTH_COOKIE_SAME_SITE`) configured for Vercel + Railway cross-site. See [docs/public-deployment-spec.md](docs/public-deployment-spec.md).
 
-**Auth (US-001):** sesión vía cookie HttpOnly; el frontend no almacena JWT. Usuario demo local:
+**Auth (US-001):** sesión vía cookie HttpOnly; el frontend no almacena JWT. Usuario demo:
 
 | Campo | Valor |
 |-------|-------|
@@ -610,7 +621,7 @@ Includes:
 - AI refinement MVP *(implemented — US-006–008, mock provider)*
 - Excel export *(implemented — US-009)*
 - initial testing
-- CI/CD setup *(CI implemented; deploy deferred to Final Delivery)*
+- CI/CD setup *(CI implemented; public deployment completed)*
 
 ---
 
@@ -621,6 +632,8 @@ Target:
 ~~~text
 14 July 2026
 ~~~
+
+Status: **in progress** — public deployment and production functional validation completed; Final Delivery closure pending (e.g. Playwright E2E in GitHub Actions, remaining documentation alignment).
 
 Includes:
 
