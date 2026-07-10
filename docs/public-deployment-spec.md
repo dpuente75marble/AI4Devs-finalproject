@@ -2,7 +2,7 @@
 
 Version: 1.0
 
-Status: Draft — production configuration prepared in repository (VS-01); **public deploy not executed yet**
+Status: Draft — production configuration prepared in repository (VS-01); **public deployment executed and validated in July 2026**
 
 Owner: DeliveryOps AI Team
 
@@ -101,7 +101,7 @@ Cambios documentales y de configuración de despliegue esperables para completar
 
 No se contemplan cambios funcionales de negocio ni ampliación de alcance del MVP.
 
-### Estado actual (VS-01 — preparación, sin despliegue)
+### Estado actual (VS-01 — post-deploy, julio 2026)
 
 Ya implementado en el repositorio:
 
@@ -110,11 +110,25 @@ Ya implementado en el repositorio:
 - Variables documentadas en `apps/api/.env.example` y `apps/web/.env.example`.
 - Frontend apunta al backend vía `VITE_API_URL` (build-time en Vercel).
 
-Pendiente de ejecutar (Issue #14):
+### Ejecución completada / Evidence (Issue #14)
 
-- Provisionar y publicar servicios en Vercel y Railway.
-- Configurar variables de entorno en las plataformas.
-- Ejecutar migraciones y validación post-deploy.
+Realizado:
+
+- Frontend Vercel
+- Backend Railway
+- PostgreSQL Railway
+- Variables de entorno
+- Migraciones
+- Login
+- Cookies HttpOnly
+- Protected routes
+- CSV import
+- Capacity
+- Absences
+- Sprint analysis
+- Excel export
+
+Issue #14 se mantiene como trazabilidad; su cierre administrativo en GitHub se revisará aparte.
 
 ---
 

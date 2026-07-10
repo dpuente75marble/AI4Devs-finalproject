@@ -131,7 +131,7 @@ GitHub Actions
 
 # 6. Target Architecture
 
-The production architecture extends the current one. **Hosting (decided, not deployed):**
+The production architecture extends the current one. **Hosting (deployed):** Vercel + Railway + Railway PostgreSQL.
 
 - Frontend: Vercel
 - Backend: Railway
@@ -175,7 +175,7 @@ Expected output
 - Environment variables
 - CORS validation
 
-**Status (VS-01):** implemented in repository — `CORS_ORIGINS`, cookie env vars, `.env.example` updates, documentation alignment. Public deploy not executed.
+**Status (VS-01):** implemented in repository — `CORS_ORIGINS`, cookie env vars, `.env.example` updates, documentation alignment. Public deployment executed and validated in production.
 
 ---
 
@@ -226,7 +226,7 @@ Cross-origin cookies may fail in production.
 
 Mitigation
 
-Environment-specific cookie configuration (`AUTH_COOKIE_SECURE=true`, `AUTH_COOKIE_SAME_SITE=none` for Vercel + Railway cross-site). Documented in `apps/api/.env.example`; deploy validation pending.
+Environment-specific cookie configuration (`AUTH_COOKIE_SECURE=true`, `AUTH_COOKIE_SAME_SITE=none` for Vercel + Railway cross-site). Documented in `apps/api/.env.example`; validated in production for cross-site login, HttpOnly cookie, protected routes and session persistence.
 
 ---
 
