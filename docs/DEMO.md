@@ -42,6 +42,7 @@ Use this checklist to validate the local demo before closing Delivery 1 evidence
 ```bash
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
@@ -159,7 +160,7 @@ La validación funcional completa en producción ya fue realizada para login, se
 - `GET /api/auth/me` returns `{ user }` with a valid session cookie; `401` without cookie.
 - `POST /api/auth/logout` clears the session cookie.
 - Frontend never stores JWT in `localStorage`, `sessionStorage`, or `document.cookie`.
-- Playwright smoke: `pnpm test:e2e e2e/auth-login.spec.ts` (3 tests).
+- Playwright smoke: `pnpm exec playwright install chromium` (once on a clean clone), then `pnpm test:e2e e2e/auth-login.spec.ts` (3 tests).
 
 ---
 
@@ -283,9 +284,9 @@ Not shown in this demo (planned for later deliveries):
 - Real LLM provider (OpenAI / Azure) — mock only today
 - Persistence of refinement results
 - Edit/delete User Stories, deduplication on re-import
-- CI with PostgreSQL runner or Playwright in GitHub Actions
+- Playwright execution in GitHub Actions.
 
-Smoke E2E (Playwright): `pnpm test:e2e` from repo root (9 tests, incl. auth).
+Smoke E2E (Playwright): `pnpm exec playwright install chromium` (once on a clean clone), then `pnpm test:e2e` from repo root (9 tests, incl. auth).
 
 ---
 

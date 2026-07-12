@@ -119,21 +119,30 @@ Registrado en la tabla anterior (P-001–P-025):
 
 - Validación manual Delivery 2 y fix `ConfigModule.forRoot({ isGlobal: true })` (P-025).
 
-Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–GH-14 → issues #3–#16) vía script y revisión humana; matriz US/TB ↔ issues pendiente de cierre en **GH-03**.
+Fuera de `prompts.md` pero parte del cierre Delivery 1: backlog GitHub (GH-01–GH-14 → issues #3–#16) vía script y revisión humana; matriz US/TB ↔ issues (**GH-03**) **cerrada**.
 
 ### Pendiente Delivery 2+ (registrar P-xxx al ejecutar)
 
 - Planificación sprint: capacidad, ausencias, análisis overload (US-003–005 / GH-07–09) — **implementado en repo**.
 - Refinamiento IA MVP: PDF, gaps, acceptance criteria (US-006–008 / GH-10) — **implementado en repo**.
 
+### Estado actual Final Delivery (jul 2026)
+
+- Deploy público (frontend Vercel + API Railway + PostgreSQL Railway): **completado** y validado en producción.
+- PostgreSQL service + `migrate deploy` en GitHub Actions: **completado**.
+- Tests de integración API con DB en CI (#15): **pendientes**.
+- Playwright en GitHub Actions: **pendiente**.
+- Matriz trazabilidad GH-03: **cerrada**.
+- Tests API vigentes: **140/140** (`pnpm --filter api test`).
+
 ### Pendiente Final Delivery (registrar P-xxx al ejecutar)
 
-- Deploy público (web + API + PostgreSQL gestionado).
-- CI con servicio PostgreSQL y tests e2e del import API.
-- Playwright u otro E2E del flujo UI principal.
+- Tests integración API con DB en CI (#15).
+- Playwright E2E en GitHub Actions.
 - Paquete evidencia final ampliado (historial PRs y prompts de iteraciones finales).
 
 ---
 
-**Última actualización:** 2026-06-26  
+**Última actualización:** 2026-07-12
+
 **Alcance cubierto:** Foundation P-001–P-012; vertical slice User Stories Import P-013–P-017; evidencia Delivery 1 P-018–P-022 (DEMO, CI, ADRs, AGENTS/ARCHITECTURE, README/PROJECT_CONTEXT); smoke E2E manual del import CSV validado; US-009 Export Excel P-023; US-001 Login JWT P-024; validación local Delivery 2 y fix arranque API P-025.
