@@ -95,6 +95,7 @@ No hay capa de dominio rica ni repositorios abstractos: el servicio llama a `Pri
 | `GET` / `POST` | `/api/sprint-capacity` | Listar / crear configuración de capacidad |
 | `GET` / `POST` | `/api/sprint-absences` | Listar / crear ausencias |
 | `GET` | `/api/sprint-analysis` | Análisis demanda vs capacidad ajustada (`utilization`, `status`: `HEALTHY` / `WARNING` / `OVERLOADED`) |
+| `GET` | `/api/sprint-analysis/export` | Export sprint analysis as Excel (US-009) |
 | `POST` | `/api/refinement/analyze` | Análisis PDF con mock provider (sin persistencia) |
 
 ### Import CSV — comportamiento
@@ -126,7 +127,7 @@ POST /api/auth/logout (público)
 Controllers de negocio (@UseGuards(JwtAuthGuard) explícito, sin APP_GUARD global)
 ```
 
-Atributos de cookie configurables vía env: `AUTH_COOKIE_NAME`, `AUTH_COOKIE_SECURE`, `AUTH_COOKIE_SAME_SITE` (TTL alineado con `JWT_EXPIRES_IN`). Local: `secure=false`, `sameSite=lax`. Producción cross-site (Vercel + Railway, preparado, sin despliegue): `secure=true`, `sameSite=none` — ver `apps/api/.env.example`.
+Atributos de cookie configurables vía env: `AUTH_COOKIE_NAME`, `AUTH_COOKIE_SECURE`, `AUTH_COOKIE_SAME_SITE` (TTL alineado con `JWT_EXPIRES_IN`). Local: `secure=false`, `sameSite=lax`. Producción cross-site (frontend Vercel + API Railway, deploy validado): `secure=true`, `sameSite=none` — ver `apps/api/.env.example`.
 
 **Frontend:** `AuthProvider` hidrata sesión solo vía `GET /api/auth/me`; `ProtectedRoute` redirige a `/login`; clientes `fetch` con `credentials: 'include'`. Sin `localStorage`, `sessionStorage` ni lectura de `document.cookie`.
 
@@ -375,7 +376,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 | Sin dedup `externalId` | Aceptado | Slice futuro |
 | fetch nativo en web | Sin TanStack Query | Menos dependencias en slice 1 |
 | Estado local React | Suficiente para una página | Sin Zustand aún |
-| CORS vía `CORS_ORIGINS` | Env con fallback local `5173`–`5178` | Producción: origen Vercel explícito; despliegue pendiente |
+| CORS vía `CORS_ORIGINS` | Env con fallback local `5173`–`5178` | Producción: origen Vercel explícito; deploy validado (Vercel + Railway) |
 | `packages/shared` vacío | Tipos duplicados FE/BE | Evitar premature abstraction |
 | Prisma sin enums DB para `status` | String + validación app | Flexibilidad CSV |
 
@@ -393,7 +394,7 @@ Alineado con `docs/07-ai-development-workflow.md` (visión) y práctica real del
 - Sin paginación, filtros ni edición/borrado de stories.
 - Sin colas ni procesamiento async de imports grandes.
 - CI ejecuta `prisma migrate deploy` contra PostgreSQL service container; tests E2E del import no en CI.
-- Despliegue público no ejecutado; configuración de producción (CORS, cookies, `VITE_API_URL`) documentada en VS-01.
+- Despliegue público validado en producción: frontend Vercel, API Railway, PostgreSQL Railway (`CORS_ORIGINS`, cookies, `VITE_API_URL` configurados).
 
 ### Evolución prevista (documentada, no en código)
 
@@ -403,7 +404,7 @@ Orden típico sugerido en specs y backlog:
 2. Entidad `Project` y FKs en `UserStory`
 3. Tipos en `packages/shared`
 4. Proveedor IA real (sustituir mock en `refinement`)
-5. CI/CD con PostgreSQL en runner, despliegue público (Vercel + Railway + Railway PostgreSQL)
+5. Tests integración API con DB en CI (#15), Playwright E2E en GitHub Actions
 
 Consultar `docs/06-technical-backlog.md`, `docs/08-delivery-plan.md` y README sección *Planned* para el roadmap completo del máster.
 

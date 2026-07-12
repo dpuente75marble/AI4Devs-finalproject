@@ -65,7 +65,7 @@
 - Export PDF / reporting avanzado (fuera de US-009 Excel)
 - `Project`, `Sprint`, `TeamMember` como entidades relacionales completas
 - `packages/shared` con tipos/contratos
-- CI con PostgreSQL en runner (#15)
+- Tests de integración API con DB en CI (#15)
 - Tests frontend unitarios (Vitest / RTL)
 - shadcn/ui, TanStack Query, Zustand, React Hook Form, Zod
 - Proveedor IA real (OpenAI / Azure) — hoy solo mock en refinement
@@ -215,7 +215,7 @@ Detalle metodológico: [docs/07-ai-development-workflow.md](docs/07-ai-developme
 | [docs/08-delivery-plan.md](docs/08-delivery-plan.md) | Hitos y alcance por entrega |
 | [prompts.md](prompts.md) | Historial prompts |
 
-**Desfase documental conocido:** ninguno crítico tras alineación jun 2026. Si README y este archivo divergen, **PROJECT_CONTEXT.md** prevalece para estado real.
+**Desfase documental conocido:** ninguno crítico tras la corrección documental final (jul 2026); README, PROJECT_CONTEXT, ARCHITECTURE, DEMO y prompts §6 alineados sobre deploy, CI y pendientes Final Delivery. Si README y este archivo divergen, **PROJECT_CONTEXT.md** prevalece para estado real.
 
 ---
 

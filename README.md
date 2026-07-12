@@ -573,8 +573,11 @@ Open the URL shown by Vite (e.g. `http://localhost:5173`). Unauthenticated users
 ```bash
 pnpm --filter api build && pnpm --filter api test
 pnpm --filter web build
+pnpm exec playwright install chromium
 pnpm test:e2e
 ```
+
+On a clean clone, Playwright requires downloading the Chromium browser binary before the first E2E run.
 
 **Smoke test:** follow [docs/DEMO.md](docs/DEMO.md), import [fixtures/sample-user-stories.csv](fixtures/sample-user-stories.csv) (9 rows with `team_name` / `project_name`), and confirm rows appear in the table. For Sprint Analysis, configure matching capacity in Settings and verify demand on `/sprint-analysis`.
 
